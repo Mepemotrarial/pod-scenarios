@@ -3,7 +3,7 @@
   <Properties>
     <Id>b021f492-303e-43cf-8508-cb20a366653d</Id>
     <Name>Замъкът на таласъмите</Name>
-    <InitialEpisode>149</InitialEpisode>
+    <InitialEpisode>Intro</InitialEpisode>
     <Description>Тази книга не ще ти предложи да следиш чужди приключения. Героят в нея си самият ти. Единствено от теб, от твоята изобретателност и предвидливост, от твоята храброст и решителност зависи дали ще изпълниш поставената задача, или ще загинеш в средата на мисията. Не вярваш ли? Чети тогава и не пропускай правилата на приключението. От теб се очаква да проникнеш в замъка на таласъмите и да победиш страшния Тиквеняк Първи и неговата охрана от таласъми и чукундурти.</Description>
     <Discoverable>True</Discoverable>
   </Properties>
@@ -2626,7 +2626,7 @@ context.showPopupMessage('Възстановяваш 10 жизнени точ
   </Images>
   <View>
     <ScrollX>0</ScrollX>
-    <ScrollY>666.053162</ScrollY>
+    <ScrollY>0</ScrollY>
     <Zoom>58</Zoom>
     <Width>557.5518</Width>
     <Height>1456.5</Height>
