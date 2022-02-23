@@ -89,7 +89,9 @@ context.DEATH_MESSAGE = "Умираш от раните си и приключе
 }
 
 context.endBattle = function() {
-  this.state.inBattle = false;
+  const $ = this.state;
+  $.inBattle = false;
+  $.extraStrength = 0;
 }
 
 context.selectOpponent = function(index) {
@@ -237,13 +239,13 @@ player.life = player.maxLife;[/script][tag]info:return `20 + ${$.result} = ${
       <Text>[p][bold]СИЛА[/bold][/p][p]За да изпълниш мисията, неведнъж ще се наложи да се сражаваш с опасни противници. Затова трябва да знаеш силата си. Избери едно случайно число (1-12) и прибави към него [tag]info:return 10;[/tag].[/p][p][blocker]$.result = context.roll(1, 12); return true;[/blocker][tag]general:return 'Избери число (1-12)';[/tag][endblocker /][/p][p]Избраното число е [tag]info:return $.result;[/tag]. Твоята сила е [script]player.strength = $.result + 10;[/script][tag]info:return `10 + ${$.result} = ${player.strength}`;[/tag].[/p][p][link target='Rules3'](напред)[/link][/p]</Text>
     </Episode>
     <Episode Id="Rules3" IsMarked="true" Location="32.5;42.5">
-      <Text>[p][bold]СХВАТКИ[/bold][/p][p]При всяка схватка книгата ще ти посочва колко живот и сила има противникът. Преди да започне сражението, ще бъде определено съотношението на силите. Това става, като от твоята сила се извади силата на противника. Така например, ако ти имаш сила [tag]info:return 16;[/tag], а врагът е със сила [tag]info:return 20;[/tag], съотношението е [tag]info:return -4;[/tag]. Ако силата ти е [tag]info:return 19;[/tag], а врагът има сила [tag]info:return 17;[/tag], съотношението е [tag]info:return '+2';[/tag].[/p][p]След като бъде определено съотношението на силите, започва размяната на удари. За целта избираш едно случайно число (1-12) от таблицата в края на книгата. То се прибавя към съотношението на силите и се получава нивото на атаката. Следната таблица определя колко жизнени точки губи противникът и колко губиш ти на базата на нивото на атака.[/p][p][image source='2' title='' hspace='0' vspace='0' align='center' width='250' height='717' /][/p][p][/p][p][bold]Пример[/bold]: При съотношение на силите [tag]info:return –5;[/tag] посочваш числото [tag]info:return 4;[/tag]. Нивото на атаката е [tag]info:return –1;[/tag]. Таблицата показва, че ти губиш [tag]info:return 4;[/tag] точки, а противникът [symbol value='mdash' /] [tag]info:return 7;[/tag] точки.[/p][p]Продължаваш схватката по същия начин, докато един от двамата ви загуби и последната си жизнена точка.[/p][p][link target='Rules4'](напред)[/link][/p]</Text>
+      <Text>[p][bold]СХВАТКИ[/bold][/p][p]При всяка схватка книгата ще ти посочва колко живот и сила има противникът. Преди да започне сражението, ще бъде определено съотношението на силите. Това става, като от твоята сила се извади силата на противника. Така например, ако ти имаш сила [tag]info:return 16;[/tag], а врагът е със сила [tag]info:return 20;[/tag], съотношението е [tag]info:return -4;[/tag]. Ако силата ти е [tag]info:return 19;[/tag], а врагът има сила [tag]info:return 17;[/tag], съотношението е [tag]info:return '+2';[/tag].[/p][p]След като бъде определено съотношението на силите, започва размяната на удари. За целта избираш едно случайно число (1-12) от таблицата в края на книгата. То се прибавя към съотношението на силите и се получава нивото на атаката. Следната таблица определя колко жизнени точки губи противникът и колко губиш ти на базата на нивото на атака.[/p][p][image source='2' title='' hspace='0' vspace='0' align='center' width='250' height='717' /][/p][p][/p][p][bold]Пример[/bold]: При съотношение на силите [tag]info:return '–5';[/tag] посочваш числото [tag]info:return 4;[/tag]. Нивото на атаката е [tag]info:return '–1';[/tag]. Таблицата показва, че ти губиш [tag]info:return 4;[/tag] точки, а противникът [symbol value='mdash' /] [tag]info:return 7;[/tag] точки.[/p][p]Продължаваш схватката по същия начин, докато един от двамата ви загуби и последната си жизнена точка.[/p][p][link target='Rules4'](напред)[/link][/p]</Text>
     </Episode>
     <Episode Id="Rules4" IsMarked="true" Location="57.5;42.5">
       <Text>[p][bold]ВЪЛШЕБНИ ПРЕДМЕТИ[/bold][/p][p]По време на приключението ще имаш възможността да се снабдиш с различни вълшебни предмети. Те могат да се окажат извънредно полезни[symbol value='hellip' /] но и опасни. Използвай ги пестеливо, защото всеки от тях се използва само по веднъж (освен ако в книгата е посочено изрично, че се разрешава повторна употреба).[/p][p]А сега, ако всичко изложено дотук ти е ясно, настава време за голямото приключение.[/p][p]И тъй, много, много отдавна, в малка колиба сред старата гора живееш[symbol value='hellip' /] [bold]ти[/bold]![/p][p][link target='Rules5'](продължи)[/link][/p]</Text>
     </Episode>
     <Episode Id="1" IsMarked="true" Location="142.5;42.5">
-      <Text>[p][script]player.addItem(context.createItem('sword');[/script]Разсъмва се. В клоните на дърветата пеят птици. Бодро крачиш по горския път и се питаш как ще стигнеш до замъка на таласъмите. Досега никога не си ходил натам, а и царицата на самодивите не можа да ти помогне с напътствия.[/p][p][tag]item:return context.getItem('book');[/tag] [link target='9' condition='return player.getItem(&amp;apos;book&amp;apos;);']Ако искаш още отсега да потърсиш помощта на вълшебната книга (стига да я имаш)[/link].[br /][link target='25']Ако нямаш книга или смяташ, че е прекалено рано да използуваш толкова ценен дар[/link].[/p]</Text>
+      <Text>[p][script]player.addItem(context.createItem('sword'));[/script]Разсъмва се. В клоните на дърветата пеят птици. Бодро крачиш по горския път и се питаш как ще стигнеш до замъка на таласъмите. Досега никога не си ходил натам, а и царицата на самодивите не можа да ти помогне с напътствия.[/p][p][tag]item:return context.getItem('book');[/tag] [link target='9' condition='return player.getItem(&amp;apos;book&amp;apos;);']Ако искаш още отсега да потърсиш помощта на вълшебната книга (стига да я имаш)[/link].[br /][link target='25']Ако нямаш книга или смяташ, че е прекалено рано да използуваш толкова ценен дар[/link].[/p]</Text>
     </Episode>
     <Episode Id="9" IsMarked="true" Location="122.5;62.5">
       <Text>[p][script]player.removeItem('book', 1);[/script]Разлистваш книгата. Всички страници са празни освен една, на която пише: „Не отминавай гладния! Доброто, което ще сториш, може да ти се върне стократно.“[/p][p][link target='25'](продължи)[/link][/p]</Text>
@@ -526,7 +528,7 @@ $.winEpisode = 10;[/script][/p][p][embed value='32a' /][/p]</Text>
       <Text>[p]Слагаш вълшебната шапка и без никой да те забележи се присъединяваш към спрелия керван. Около теб таласъмите почиват или проверяват как са затегнати товарите. Обикаляш между тях, от време на време сваляш шапката колкото да те забележат и отново я слагаш. Тази тактика има успех. Скоро всички привикват с теб и престават да ти обръщат внимание.[/p][p][link target='111'](продължи)[/link][/p]</Text>
     </Episode>
     <Episode Id="122" IsMarked="true" Location="72.5;547.5">
-      <Text>[p]Керванът се отдалечава по пътя. Следваш го на безопасно разстояние и последните часове на деня отминават без произшествия. Постепенно се свечерява и когато пада нощ, таласъмите спират на[br /]бивак сред широка ливада.[/p][p]Решаваш да пренощуваш в покрайнините на гората. Натрупваш постеля от трева и ланска шума и се готвиш да си легнеш, когато забелязваш как от лагерния огън към тебе се задават два тъмни[br /]силуета. Какво ще правиш?[/p][p][link target='174']Ако решиш да избягаш навътре в гората[/link].[br /][link target='140']Ако предпочиташ да се прикриеш в близките храсти[/link].[/p]</Text>
+      <Text>[p]Керванът се отдалечава по пътя. Следваш го на безопасно разстояние и последните часове на деня отминават без произшествия. Постепенно се свечерява и когато пада нощ, таласъмите спират на[br /]бивак сред широка ливада.[/p][p]Решаваш да пренощуваш в покрайнините на гората. Натрупваш постеля от трева и ланска шума и се готвиш да си легнеш, когато забелязваш как от лагерния огън към тебе се задават два тъмни силуета. Какво ще правиш?[/p][p][link target='174']Ако решиш да избягаш навътре в гората[/link].[br /][link target='140']Ако предпочиташ да се прикриеш в близките храсти[/link].[/p]</Text>
     </Episode>
     <Episode Id="80" IsMarked="true" Location="107.5;442.5">
       <Text>[p][symbol value='mdash' /] Добра стига! [symbol value='mdash' /] поздравяваш ти.[/p][p]Вместо да ти отвърне на поздрава, чукундуртът троснато пита:[/p][p][symbol value='mdash' /] Кой си ти и какво щеш тук?[/p][p]Труден въпрос[symbol value='hellip' /] Едно е ясно [symbol value='ndash' /] не бива да му разкриваш истинската си цел. Може би тук ще ти помогне хитрината на лъжливата жаба?[/p][p][tag]item:return context.getItem('frog');[/tag] [link target='script:89' script='player.removeItem(&amp;apos;frog&amp;apos;, 1); return 89;' condition='return player.getItem(&amp;apos;frog&amp;apos;);']Ако решиш да потърсиш нейното съдействие[/link].[br /][link target='72']Ако разчиташ на собствената си изобретателност[/link].[/p]</Text>
@@ -834,7 +836,7 @@ $.winEpisode = 159;[/script][/p][p][embed value='Battle' /][/p]</Text>
       <Text>[p]Мощните талази те премятат и с оглушителен грохот те запокитват нейде надолу. Водата те обгръща от всички страни, нахлува в гърлото ти. Блъскаш се в нещо твърдо и губиш съзнание.[/p][p][link target='299'](продължи)[/link][/p]</Text>
     </Episode>
     <Episode Id="299" Location="437.5;1027.5">
-      <Text>[p]Бавно се свестяваш. Надигаш се от пода, усещайки мъчителна слабост. Преживяното изпитание ти е отнело [tag]minus:return 5;[/tag] жизнени точки.[script]return context.reducePlayerLife(5);[/script][/p][p]Раницата ти се търкаля наблизо. Отваряш я и с изненада откриваш, че липсват два предмета, най-горните.[script]//TODO[/script][/p][p]Оглеждаш се наоколо. Намираш се в тясна килия. От три страни те ограждат каменни стени. Четвъртата страна е заградена с дебела желязна решетка, зад която има друга стаичка с врати отляво и отдясно.[/p][p]Какво ще правиш сега? Провери дали в раницата не е останало нещо, което да ти помогне.[/p][p][link target='349']Бръмбар железояд[/link].[br /][link target='351']Билка отвори-вратичка[/link] или [link target='351']черен ключ[/link].[br /][link target='234']Зелен каменояд[/link].[br /][link target='58']Шапка-невидимка[/link].[br /][link target='339']Ако нямаш нищо от изброеното[/link].[/p]</Text>
+      <Text>[p]Бавно се свестяваш. Надигаш се от пода, усещайки мъчителна слабост. Преживяното изпитание ти е отнело [tag]minus:return 5;[/tag] жизнени точки.[script]return context.reducePlayerLife(5);[/script][/p][p]Раницата ти се търкаля наблизо. Отваряш я и с изненада откриваш, че липсват два предмета, най-горните.[script]//TODO[/script][/p][p]Оглеждаш се наоколо. Намираш се в тясна килия. От три страни те ограждат каменни стени. Четвъртата страна е заградена с дебела желязна решетка, зад която има друга стаичка с врати отляво и отдясно.[/p][p]Какво ще правиш сега? Провери дали в раницата не е останало нещо, което да ти помогне.[/p][p][tag]item:return context.getItem('beetle');[/tag] [link target='script:349' script='player.removeItem(&amp;apos;beetle&amp;apos;, 1); return 349;' condition='return player.getItem(&amp;apos;beetle&amp;apos;);']Бръмбар железояд[/link].[br /][tag]item:return context.getItem('herb');[/tag] [link target='script:351' script='player.removeItem(&amp;apos;herb&amp;apos;, 1); return 351;' condition='return player.getItem(&amp;apos;herb&amp;apos;);']Билка отвори-вратичка[/link] или [tag]item:return context.getItem('blackKey');[/tag] [link target='script:351' script='player.removeItem(&amp;apos;blackKey&amp;apos;, 1); return 351;' condition='return player.getItem(&amp;apos;blackKey&amp;apos;);']черен ключ[/link].[br /][tag]item:return context.getItem('stoneeater');[/tag] [link target='script:234' script='player.removeItem(&amp;apos;stoneeater&amp;apos;, 1); return 234;' condition='return player.getItem(&amp;apos;stoneeater&amp;apos;);']Зелен каменояд[/link].[br /][tag]item:return context.getItem('hat');[/tag] [link target='script:58' script='player.removeItem(&amp;apos;hat&amp;apos;, 1); return 58;' condition='return player.getItem(&amp;apos;hat&amp;apos;);']Шапка-невидимка[/link].[br /][link target='339']Ако нямаш нищо от изброеното[/link].[/p]</Text>
     </Episode>
     <Episode Id="210" IsMarked="true" Location="177.5;807.5">
       <Text>[p]Излизаш на крепостната стена. Наблизо забелязваш стръмна каменна стълбичка, която слиза към двора. Спускаш се по нея.[/p][p][link target='193'](продължи)[/link][/p]</Text>
@@ -1322,7 +1324,7 @@ return item &amp;&amp; item.stack &gt;= 10;']Кесия с 10 жълтици[/li
       <Text>[p]Пред теб се разкрива огромна зала, осветена от хилядите свещи на кристален полилей. В дъното се издига висок подиум и на него, върху трон от черно дърво, различаваш мършавата фигура на Тиквеняк Първи.[/p][p]Вече няма място за колебания. С решителни крачки се насочваш право напред, към царя на таласъмите. Стъпките ти отекват под високия свод и Тиквеняк надига глава. Щом те вижда, очите му се разширяват от изненада и страх. Ала в следващия миг той скача от трона и замахва срещу теб с черния си магически жезъл.[/p][p]Имаш ли невълшебна пръчка?[/p][p][tag]item:return context.getItem('wand');[/tag] [link target='342' condition='return player.getItem(&amp;apos;wand&amp;apos;);']Да[/link].[br /][link target='279']Не[/link].[/p]</Text>
     </Episode>
     <Episode Id="321" IsMarked="true" Location="452.5;1087.5">
-      <Text>[p]Посягаш към вратата, но тя се отваря още, преди да я докоснеш. Срещу теб нахлува тълпа от злобни брадати чукундурти с мечове и тояги в ръце. Трябва да се спасяваш![/p][p][tag]item:return context.getItem('boots');[/tag] [link target='script:254' script='player.removeItem(&amp;apos;boots&amp;apos;, 1); return 254;' condition='return player.getItem(&amp;apos;boots&amp;apos;);']Ако имаш бързоходни ботуши[/link].[br /][tag]item:return context.getItem('stoneeater');[/tag] [link target='script:234' script='player.getItem(&amp;apos;stoneeater&amp;apos;, 1); return 234;' condition='return context.getItem(&amp;apos;stoneeater&amp;apos;);']Ако имаш зелен каменояд[/link].[br /][link target='95']А ако нямаш нито едното, нито другото[/link].[/p]</Text>
+      <Text>[p]Посягаш към вратата, но тя се отваря още, преди да я докоснеш. Срещу теб нахлува тълпа от злобни брадати чукундурти с мечове и тояги в ръце. Трябва да се спасяваш![/p][p][tag]item:return context.getItem('boots');[/tag] [link target='script:254' script='player.removeItem(&amp;apos;boots&amp;apos;, 1); return 254;' condition='return player.getItem(&amp;apos;boots&amp;apos;);']Ако имаш бързоходни ботуши[/link].[br /][tag]item:return context.getItem('stoneeater');[/tag] [link target='script:234' script='player.getItem(&amp;apos;stoneeater&amp;apos;, 1); return 234;' condition='return player.getItem(&amp;apos;stoneeater&amp;apos;);']Ако имаш зелен каменояд[/link].[br /][link target='95']А ако нямаш нито едното, нито другото[/link].[/p]</Text>
     </Episode>
     <Episode Id="342" IsMarked="true" Location="457.5;1127.5">
       <Text>[p]Каквото и да е замислял Тиквеняк, магията му не се получи. Засега невълшебната пръчка ти помогна. Но изходът на бъдещата схватка ще зависи само от тебе. Как ще се биеш срещу царя на таласъмите?[/p][p][link target='324']С меча си[/link].[br /][tag]item:return context.getItem('goldenSword');[/tag] [link target='374' condition='return player.getItem(&amp;apos;goldenSword&amp;apos;);']Със Златния меч[/link].[br /][tag]item:return context.getItem('staff');[/tag] [link target='script:280' script='player.removeItem(&amp;apos;staff&amp;apos;, 1); return 280;' condition='return player.getItem(&amp;apos;staff&amp;apos;);']С вълшебна тояжка[/link].[br /]Със [tag]item:return context.getItem('rope');[/tag] [link target='script:179' script='player.removeItem(&amp;apos;rope&amp;apos;, 1); return 179;' condition='return player.getItem(&amp;apos;rope&amp;apos;);']самолазещо въже[/link] или [tag]item:return context.getItem('thorn');[/tag] [link target='script:179' script='player.removeItem(&amp;apos;thorn&amp;apos;, 1); return 179;' condition='return player.getItem(&amp;apos;thorn&amp;apos;);']трънка-закачка[/link].[br /][tag]item:return context.getItem('bag');[/tag] [link target='334' condition='return player.getItem(&amp;apos;bag&amp;apos;);']С торбата на Педя човек[/link].[br /][tag]item:return context.getItem('hat');[/tag] [link target='script:336' script='player.removeItem(&amp;apos;hat&amp;apos;, 1); return 336;' condition='return player.getItem(&amp;apos;hat&amp;apos;);']Ако искаш преди схватката да наденеш шапка-невидимка[/link].[/p]</Text>
@@ -1415,7 +1417,7 @@ return item &amp;&amp; item.stack &gt;= 10;']Кесия с 10 жълтици[/li
       <Text>Настанал е мигът на истината! Съдбата на Старата гора ще се[br /]реши тук, в тази зала. Мечът ти със звън среща меча на Тиквеняк[br /]Първи. ТИКВЕНЯК СИЛА: 26 ЖИВОТ: 45.[br /]Ако победиш в тази схватка, премини на #375.[br /]Ако жизнените ти точки паднат под 5, продължи на #291.</Text>
     </Episode>
     <Episode Id="374" Location="447.5;1147.5">
-      <Text>Крясък на ужас излита от гърлото на Тиквеняк Първи, когато[br /]под светлините на полилея блясва острието на Златния меч. Има защо[br /]да се страхува царят на таласъмите. Вълшебният меч ще ти добави[br /]нови 5 точки сила.[br /]Но въпреки ужаса си, Тиквеняк разбира, че няма друг изход,[br /]освен да се защитава. Той измъква изпод плаща си дълъг черен меч и[br /]яростно напада.[br /]ТИКВЕНЯК ПЪРВИ СИЛА: 26 ЖИВОТ: 45[br /]Ако успееш да победиш врага, премини на #375.</Text>
+      <Text>Крясък на ужас излита от гърлото на Тиквеняк Първи, когато[br /]под светлините на полилея блясва острието на Златния меч. Има защо[br /]да се страхува царят на таласъмите. Вълшебният меч ще ти добави[br /]нови 5 точки сила.[script]$.extraStrength = 5;[/script][br /]Но въпреки ужаса си, Тиквеняк разбира, че няма друг изход,[br /]освен да се защитава. Той измъква изпод плаща си дълъг черен меч и[br /]яростно напада.[br /]ТИКВЕНЯК ПЪРВИ СИЛА: 26 ЖИВОТ: 45[br /]Ако успееш да победиш врага, премини на #375.</Text>
     </Episode>
     <Episode Id="280" IsMarked="true" Location="487.5;1147.5">
       <Text>[p]Тояжката изскача от раницата ти и със страховито свистене полита към Тиквеняк. Но царят на таласъмите размахва магическия си жезъл. Раздава се глух пукот и тояжката се пръсва на парчета. Неуспех![/p][p][link target='342'](продължи)[/link][/p]</Text>
@@ -1427,7 +1429,7 @@ return item &amp;&amp; item.stack &gt;= 10;']Кесия с 10 жълтици[/li
       <Text>[p]С треперещи ръце измъкваш от раницата торбата на Педя човек. Сега единствено тя може да ти помогне.[/p][p]Тиквеняк мърмори някакви заклинания и отново размахва магическия жезъл, но няма време да ти попречи. Торбата се разтваря широко. С отчаян писък царят на таласъмите излита във въздуха и изчезва в дълбините на вълшебната торба.[/p][p][link target='375'](продължи)[/link][/p]</Text>
     </Episode>
     <Episode Id="336" IsMarked="true" Location="467.5;1147.5">
-      <Text>[p]Бързо нахлупваш шапката и изчезваш от погледа на Тиквеняк. Единствено мечът в ръката ти остава видим. Това ще затрудни противника и сега можеш да си прибавиш [tag]plus:return 7;[/tag] допълнителни точки сила.[/p][p]Как ще се биеш срещу царя на таласъмите?[/p][p][tag]item:return context.getItem('staff');[/tag] [link target='script:280' script='player.removeItem(&amp;apos;staff&amp;apos;); return 280;' condition='return player.getItem(&amp;apos;staff&amp;apos;);']С вълшебна тояжка[/link].[br /][link target='324']С меча си[/link].[br /][tag]item:return context.getItem('goldenSword');[/tag] [link target='374' condition='return player.getItem(&amp;apos;goldenSword&amp;apos;);']Със Златния меч[/link].[br /][link target='320']Ако предпочиташ напълно да изчезнеш от погледа на врага, можеш да захвърлиш меча и да се биеш с голи ръце[/link].[/p]</Text>
+      <Text>[p]Бързо нахлупваш шапката и изчезваш от погледа на Тиквеняк. Единствено мечът в ръката ти остава видим. Това ще затрудни противника и сега можеш да си прибавиш [tag]plus:return 7;[/tag] допълнителни точки сила.[/p][p]Как ще се биеш срещу царя на таласъмите?[/p][p][tag]item:return context.getItem('staff');[/tag] [link target='script:280' script='player.removeItem(&amp;apos;staff&amp;apos;, 1); return 280;' condition='return player.getItem(&amp;apos;staff&amp;apos;);']С вълшебна тояжка[/link].[br /][link target='324']С меча си[/link].[br /][tag]item:return context.getItem('goldenSword');[/tag] [link target='374' condition='return player.getItem(&amp;apos;goldenSword&amp;apos;);']Със Златния меч[/link].[br /][link target='320']Ако предпочиташ напълно да изчезнеш от погледа на врага, можеш да захвърлиш меча и да се биеш с голи ръце[/link].[/p]</Text>
     </Episode>
     <Episode Id="320" IsMarked="true" Location="487.5;1167.5">
       <Text>[p]Захвърляш меча и той се търкулва със звън по каменните плочки.[/p][p][symbol value='mdash' /] Виждам те, виждам! [symbol value='mdash' /] неуверено подвиква Тиквеняк, но ти разбираш, че лъже. Погледът му е насочен настрани.[/p][p]Сега е моментът! Хвърляш се напред и изтръгваш от ръцете му магическия жезъл. С един замах го строшаваш в главата на противника и Тиквеняк рухва на земята без свяст.[/p][p][link target='375'](продължи)[/link][/p]</Text>
@@ -1454,7 +1456,7 @@ return item &amp;&amp; item.stack &gt;= 10;']Кесия с 10 жълтици[/li
       <Text>[p]Чукундуртът пада под ударите ти. Дребният таласъм се надига от земята и стиска ръката ти.[/p][p][symbol value='mdash' /] Благодаря за помощта! Без теб щях да загина.[br /][symbol value='mdash' /] Няма нищо [symbol value='mdash' /] скромно отвръщаш ти.[br /][symbol value='mdash' /] Не, не! [symbol value='mdash' /] настоява таласъмът. [symbol value='mdash' /] Искам да ти се отблагодаря.[/p][p]На теб дължа три неща: живота си, парите, които щях да спечеля и още нещо. Живота си не мога да ти дам, но за другото предлагам да хвърлим жребий.[/p][p][embed value='FateRoll' /][/p][p][if]return $.result % 2 === 0;[/if][link target='161'](продължи)[/link][else /][link target='169'](продължи)[/link][endif /][/p]</Text>
     </Episode>
     <Episode Id="161" IsMarked="true" Location="52.5;627.5">
-      <Text>[p]Дребният таласъм протяга към теб юмрук, от който се подават две клечки. Изтегляш едната. Той поглежда и въздиша:[/p][p][symbol value='mdash' /] Върви ти, странниче! Знаеш ли какво спечели? Ето това![/p][p]Изпод плаща си таласъмът изважда малка сива пръчица и тържествено ти я показва. Оглеждаш я учудено, защото не прилича на нищо ценно. Забелязвайки изумлението ти, дребосъкът клати глава.[/p][p][symbol value='mdash' /] Това е невълшебна пръчка. С нейна помощ можеш да се опазиш от зли магии. Хайде, вземи я и сбогом.[/p][p]С тия думи той ти подава пръчката и тръгва към лагерния огън. Ти също се отдалечаваш от мястото на схватката. Скоро намираш подходящо кътче, където да прекараш нощта и лягаш да спиш.[/p][p][link target='107'](продължи)[/link][/p][p][image source='37' title='' hspace='0' vspace='0' align='center' width='449' height='299' /][/p]</Text>
+      <Text>[p]Дребният таласъм протяга към теб юмрук, от който се подават две клечки. Изтегляш едната. Той поглежда и въздиша:[/p][p][symbol value='mdash' /] Върви ти, странниче! Знаеш ли какво спечели? Ето това![/p][p]Изпод плаща си таласъмът изважда малка сива пръчица и тържествено ти я показва. Оглеждаш я учудено, защото не прилича на нищо ценно. Забелязвайки изумлението ти, дребосъкът клати глава.[/p][p][symbol value='mdash' /] Това е невълшебна пръчка. С нейна помощ можеш да се опазиш от зли магии. Хайде, вземи я и сбогом.[script]player.addItem(context.createItem('wand'));[/script][/p][p]С тия думи той ти подава пръчката и тръгва към лагерния огън. Ти също се отдалечаваш от мястото на схватката. Скоро намираш подходящо кътче, където да прекараш нощта и лягаш да спиш.[/p][p][link target='107'](продължи)[/link][/p][p][image source='37' title='' hspace='0' vspace='0' align='center' width='449' height='299' /][/p]</Text>
     </Episode>
     <Episode Id="169" Location="72.5;627.5">
       <Text>[p]Дребният таласъм протяга към теб юмрук, от който се подават две клечки. Изтегляш едната. Той поглежда и се усмихва.[/p][p][symbol value='mdash' /] Знаеш ли какво спечели? Кесията на този негодник. Вътре има цели петдесет жълтици! Не мога да ти предложа нещо по- изгодно. Сигурно чу как се карахме. Бяхме се спазарили да му продам невълшебна пръчка.[br /][symbol value='mdash' /] Какво е пък това? [symbol value='mdash' /] учудено питаш ти.[/p][p]Изпод плаща си таласъмът изважда малка сива пръчица и тържествено ти я показва.[/p][p][symbol value='mdash' /] Ето! С нейна помощ можеш да се опазиш от зли магии. Ако се откажеш от кесията и добавиш още пет жълтици [symbol value='mdash' /] твоя е![/p][p]И тъй, трябва да решаваш кое ще предпочетеш [symbol value='mdash' /] невълшебната пръчка или петдесет и пет жълтици. Запиши решението си в дневника на приключението.[script]// TODO:[/script][/p][p]След като уреждате сделката, дребният таласъм се отдалечава към лагерния огън. Ти също напускаш мястото на схватката. Скоро намираш подходящо кътче, където да прекараш нощта и лягаш да спиш.[/p][p][link target='107'](продължи)[/link][/p]</Text>
@@ -1524,8 +1526,6 @@ return item &amp;&amp; item.stack &gt;= 10;']Кесия с 10 жълтици[/li
     <Transition From="144" To="155" />
     <Transition From="144" To="119" />
     <Transition From="31" To="61" />
-    <Transition From="1" To="9" />
-    <Transition From="1" To="25" />
     <Transition From="Rules5" To="1" />
     <Transition From="131" To="160" />
     <Transition From="131" To="195" />
@@ -1581,7 +1581,6 @@ return item &amp;&amp; item.stack &gt;= 10;']Кесия с 10 жълтици[/li
     <Transition From="55" To="61" />
     <Transition From="Rules1" To="Rules2" />
     <Transition From="Rules2" To="Rules3" />
-    <Transition From="Rules3" To="Rules4" />
     <Transition From="42" To="38" />
     <Transition From="33" To="38" />
     <Transition From="8" To="45" />
@@ -1600,8 +1599,6 @@ return item &amp;&amp; item.stack &gt;= 10;']Кесия с 10 жълтици[/li
     <Transition From="68" To="80" />
     <Transition From="68" To="101" />
     <Transition From="98" To="111" />
-    <Transition From="122" To="174" />
-    <Transition From="122" To="140" />
     <Transition From="140" To="149" />
     <Transition From="140" To="44" />
     <Transition From="44" To="138" />
@@ -2037,12 +2034,6 @@ return item &amp;&amp; item.stack &gt;= 10;']Кесия с 10 жълтици[/li
     <Transition From="261" To="359" />
     <Transition From="365" To="46" />
     <Transition From="365" To="359" />
-    <Transition From="299" To="349" />
-    <Transition From="299" To="351" />
-    <Transition From="299" To="351" />
-    <Transition From="299" To="234" />
-    <Transition From="299" To="58" />
-    <Transition From="299" To="339" />
     <Transition From="349" To="369" />
     <Transition From="349" To="321" />
     <Transition From="313" To="321" />
@@ -2056,9 +2047,6 @@ return item &amp;&amp; item.stack &gt;= 10;']Кесия с 10 жълтици[/li
     <Transition From="339" To="266" />
     <Transition From="369" To="342" />
     <Transition From="369" To="279" />
-    <Transition From="321" To="254" />
-    <Transition From="321" To="234" />
-    <Transition From="321" To="95" />
     <Transition From="279" To="254" />
     <Transition From="279" To="234" />
     <Transition From="279" To="60" />
@@ -2141,10 +2129,6 @@ return item &amp;&amp; item.stack &gt;= 10;']Кесия с 10 жълтици[/li
     <Transition From="316" To="366" />
     <Transition From="179" To="342" />
     <Transition From="334" To="375" />
-    <Transition From="336" To="280" />
-    <Transition From="336" To="324" />
-    <Transition From="336" To="374" />
-    <Transition From="336" To="320" />
     <Transition From="320" To="375" />
     <Transition From="115" To="157" />
     <Transition From="115" To="212" />
@@ -2160,8 +2144,26 @@ return item &amp;&amp; item.stack &gt;= 10;']Кесия с 10 жълтици[/li
     <Transition From="23" To="122" />
     <Transition From="158" To="161" />
     <Transition From="158" To="169" />
-    <Transition From="161" To="107" />
     <Transition From="169" To="107" />
+    <Transition From="Rules3" To="Rules4" />
+    <Transition From="336" To="280" />
+    <Transition From="336" To="324" />
+    <Transition From="336" To="374" />
+    <Transition From="336" To="320" />
+    <Transition From="1" To="9" />
+    <Transition From="1" To="25" />
+    <Transition From="122" To="174" />
+    <Transition From="122" To="140" />
+    <Transition From="161" To="107" />
+    <Transition From="299" To="349" />
+    <Transition From="299" To="351" />
+    <Transition From="299" To="351" />
+    <Transition From="299" To="234" />
+    <Transition From="299" To="58" />
+    <Transition From="299" To="339" />
+    <Transition From="321" To="254" />
+    <Transition From="321" To="234" />
+    <Transition From="321" To="95" />
   </Transitions>
   <Groups />
   <Global>
@@ -2625,8 +2627,8 @@ context.showPopupMessage('Възстановяваш 10 жизнени точ
     </Image>
   </Images>
   <View>
-    <ScrollX>0</ScrollX>
-    <ScrollY>0</ScrollY>
+    <ScrollX>235.711487</ScrollX>
+    <ScrollY>913.5204</ScrollY>
     <Zoom>58</Zoom>
     <Width>557.5518</Width>
     <Height>1456.5</Height>
