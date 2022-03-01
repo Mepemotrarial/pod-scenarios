@@ -3,7 +3,7 @@
   <Properties>
     <Id>b021f492-303e-43cf-8508-cb20a366653d</Id>
     <Name>Замъкът на таласъмите</Name>
-    <InitialEpisode>342</InitialEpisode>
+    <InitialEpisode>132</InitialEpisode>
     <Description>Тази книга не ще ти предложи да следиш чужди приключения. Героят в нея си самият ти. Единствено от теб, от твоята изобретателност и предвидливост, от твоята храброст и решителност зависи дали ще изпълниш поставената задача, или ще загинеш в средата на мисията. Не вярваш ли? Чети тогава и не пропускай правилата на приключението. От теб се очаква да проникнеш в замъка на таласъмите и да победиш страшния Тиквеняк Първи и неговата охрана от таласъми и чукундурти.</Description>
     <Discoverable>True</Discoverable>
   </Properties>
@@ -562,14 +562,17 @@ $.winEpisode = 158;[/script][/p][p][embed value='Battle' /][/p]</Text>
       <Text>[p]От далечината долита отчаян вопъл и всичко затихва. Изчакваш още няколко минути и предпазливо се промъкваш назад. Чукундуртът е изчезнал. Спътникът му лежи неподвижно в тревата край храстите. Излизаш и се приближаваш до него.[/p][p][link target='138'](продължи)[/link][/p]</Text>
     </Episode>
     <Episode Id="133" IsMarked="true" Location="147.5;567.5">
-      <Text>[p]Седиш край огъня и подхвърляш съчки в пламъците. Освен теб е останал буден само пазачът [symbol value='ndash' /] дребен таласъм, омотан в дълъг черен плащ. Той се приближава и хитро ти намига. Отвръщаш му с недоумяващ поглед.[/p][p][symbol value='mdash' /] Хайде да поиграем на зарове [symbol value='mdash' /] предлага таласъмът и изважда от кесията си пет жълтъци. [symbol value='mdash' /] Залагам ги всичките наведнъж.[/p][p][tag]item:return context.getItem('gold');[/tag] [link target='201' condition='const item = player.getItem(&amp;apos;gold&amp;apos;);
+      <Text>[p]Седиш край огъня и подхвърляш съчки в пламъците. Освен теб е останал буден само пазачът [symbol value='ndash' /] дребен таласъм, омотан в дълъг черен плащ. Той се приближава и хитро ти намига. Отвръщаш му с недоумяващ поглед.[/p][p][symbol value='mdash' /] Хайде да поиграем на зарове [symbol value='mdash' /] предлага таласъмът и изважда от кесията си пет жълтъци. [symbol value='mdash' /] Залагам ги всичките наведнъж.[script]$.goblinGold = 5;[/script][/p][p][tag]item:return context.getItem('gold');[/tag] [link target='201' condition='const item = player.getItem(&amp;apos;gold&amp;apos;);
 return item &amp;&amp; item.stack &gt;= 5;']Ако искаш да играеш с него[/link].[br /][tag]item:return context.getItem('frog');[/tag] [link target='script:146' script='player.removeItem(&amp;apos;frog&amp;apos;, 1); return 146;' condition='return player.getItem(&amp;apos;frog&amp;apos;);']Впрочем, можеш да изпробваш и таланта на лъжливата жаба[/link].[br /][link target='152']Ако не ти се играе, лягаш да спиш[/link].[/p]</Text>
     </Episode>
     <Episode Id="152" IsMarked="true" Location="177.5;587.5">
       <Text>[p]Посред нощ се събуждаш от приглушени гласове. Таласъмите търчат насам-натам, товарят магаретата и бързат да се приготвят за път.[/p][p][symbol value='mdash' /] Какво става? [symbol value='mdash' /] питаш ти. [symbol value='mdash' /] Закъде сме се разбързали по това време?[br /][symbol value='mdash' /] Пристигна вест от крепостта [symbol value='mdash' /] отговаря ти един кривоглед чукундурт. [symbol value='mdash' /] По изгрев-слънце там ще бъде обявено обсадно положение. Няма да пускат никого, затова трябва да стигнем дотам, преди да се е съмнало.[/p][p]Скоро керванът потегля. Напред пътят е каменист и стръмен, наоколо тъмнеят дълбоки пропасти. Бавно се изкачвате из планините и най-сетне на билото се появява черната грамада на замъка. Тук-там в прозорчетата на кулите блещукат жълтеникави светлинки. Голямата порта на крепостната стена е осветена от факли и колоната се насочва право към нея.[/p][p]Тежките врати се разтварят. Постепенно керванът влиза навътре. Ти крачиш между последните таласъми.[/p][p][tag]item:return context.getItem('hat');[/tag] [link target='script:193' script='player.removeItem(&amp;apos;hat&amp;apos;, 1); return 193;' condition='return player.getItem(&amp;apos;hat&amp;apos;);']Ако искаш да си сложиш шапка-невидимка[/link].[br /][link target='103']Ако предпочиташ засега да не използуваш вълшебства[/link].[/p]</Text>
     </Episode>
-    <Episode Id="201" Location="147.5;587.5">
-      <Text>Изваждаш 5 жълтици и ги слагаш на земята до кесията на таласъма. После хвърляш заровете. Посочи едно число от таблицата в края на книгата. Ако то е от 6[br /]до 12, печелиш. В противен случай — губиш.[br /]Ако спечелиш жълтиците на таласъма, премини на #116.[br /]Ако загубиш, можеш да продължаваш играта по същия начин[br /]докато:[br /]а) останеш без нито една жълтица и отидеш да си легнеш на[br /]#152;[br /]б) играта ти омръзне и отидеш да си легнеш на #152;[br /]в) таласъмът остане без нито една жълтица (в началото той има[br /]само 5). В такъв случай премини на #116.</Text>
+    <Episode Id="201" IsMarked="true" Location="147.5;587.5">
+      <Text>[p]Изваждаш 5 жълтици и ги слагаш на земята до кесията на таласъма. В момента той има [script]return $.goblinGold;[/script] жълтици. После хвърляш заровете.[/p][p][embed value='FateRoll' /][/p][p][if]return $.result &amp;gt;= 6;[/if]Печелиш.[script]$.goblinGold -= 5;
+player.addItem(context.createItem('gold', 5));[/script] [if]return $.goblinGold === 0;[/if]Спечелил си всички жълтици на таласъма.[/p][p][link target='116'](продължи)[/link][else /][/p][p][tag]item:return context.getItem('gold');[/tag] [link target='201']Ако искаш да играеш пак[/link].[br /][link target='152']Ако предпочиташ да си легнеш[/link].[endif /][else /]Губиш.[script]$.goblinGold += 5;
+player.removeItem('gold', 5);[/script][/p][p][tag]item:return context.getItem('gold');[/tag] [link target='201' condition='const item = player.getItem(&amp;apos;gold&amp;apos;);
+return item &amp;&amp; item.stack &gt;= 5;']Ако искаш да играеш пак[/link].[br /][link target='152']Ако предпочиташ да си легнеш[/link].[endif /][/p]</Text>
     </Episode>
     <Episode Id="146" IsMarked="true" Location="167.5;567.5">
       <Text>[p]Като те вижда да измъкваш жабата от раницата, дребният таласъм изненадано примигва, ала приема да играе с нея. Това е най-голямата му грешка, защото жабата се оказва изкусен играч. С едно хвърляне на заровете тя обира петте му жълтици и доволна ти ги подава.[/p][p]Таласъмът пребърква кесията си, тръска я, но всичко е напразно. Вече няма нито една жълтица. Внезапно му хрумва нещо. Той вади от торбата си малка сива пръчица и тържествено ти я показва.[/p][p][symbol value='mdash' /] Знаеш ли какво е това? Невълшебна пръчка! Залагам я срещу пет жълтици.[br /][symbol value='mdash' /] Че за какво ми е, щом не е вълшебна? [symbol value='mdash' /] вдигаш рамене ти.[br /][symbol value='mdash' /] Нищо не разбираш! [symbol value='mdash' /] ядосва се таласъмът. [symbol value='mdash' /] Невълшебната пръчка може да те опази от зли магии.[br /][symbol value='mdash' /] Добре де, да играем! [symbol value='mdash' /] квака жабата.[/p][p]С още едно хвърляне на заровете се сдобиваш и с невълшебната пръчка. Дребният таласъм ядосано махва с ръка и се отдалечава из мрака. Жабата изчезва нанякъде, а ти ставаш и отиваш да си легнеш.[script]player.addItem(context.createItem('wand'));
@@ -836,8 +839,13 @@ $.winEpisode = 159;[/script][/p][p][embed value='Battle' /][/p]</Text>
     <Episode Id="359" IsMarked="true" Location="437.5;987.5">
       <Text>[p]Мощните талази те премятат и с оглушителен грохот те запокитват нейде надолу. Водата те обгръща от всички страни, нахлува в гърлото ти. Блъскаш се в нещо твърдо и губиш съзнание.[/p][p][link target='299'](продължи)[/link][/p]</Text>
     </Episode>
-    <Episode Id="299" Location="437.5;1027.5">
-      <Text>[p]Бавно се свестяваш. Надигаш се от пода, усещайки мъчителна слабост. Преживяното изпитание ти е отнело [tag]minus:return 5;[/tag] жизнени точки.[script]return context.reducePlayerLife(5);[/script][/p][p]Раницата ти се търкаля наблизо. Отваряш я и с изненада откриваш, че липсват два предмета, най-горните.[script]//TODO[/script][/p][p]Оглеждаш се наоколо. Намираш се в тясна килия. От три страни те ограждат каменни стени. Четвъртата страна е заградена с дебела желязна решетка, зад която има друга стаичка с врати отляво и отдясно.[/p][p]Какво ще правиш сега? Провери дали в раницата не е останало нещо, което да ти помогне.[/p][p][tag]item:return context.getItem('beetle');[/tag] [link target='script:349' script='player.removeItem(&amp;apos;beetle&amp;apos;, 1); return 349;' condition='return player.getItem(&amp;apos;beetle&amp;apos;);']Бръмбар железояд[/link].[br /][tag]item:return context.getItem('herb');[/tag] [link target='script:351' script='player.removeItem(&amp;apos;herb&amp;apos;, 1); return 351;' condition='return player.getItem(&amp;apos;herb&amp;apos;);']Билка отвори-вратичка[/link] или [tag]item:return context.getItem('blackKey');[/tag] [link target='script:351' script='player.removeItem(&amp;apos;blackKey&amp;apos;, 1); return 351;' condition='return player.getItem(&amp;apos;blackKey&amp;apos;);']черен ключ[/link].[br /][tag]item:return context.getItem('stoneeater');[/tag] [link target='script:234' script='player.removeItem(&amp;apos;stoneeater&amp;apos;, 1); return 234;' condition='return player.getItem(&amp;apos;stoneeater&amp;apos;);']Зелен каменояд[/link].[br /][tag]item:return context.getItem('hat');[/tag] [link target='script:58' script='player.removeItem(&amp;apos;hat&amp;apos;, 1); return 58;' condition='return player.getItem(&amp;apos;hat&amp;apos;);']Шапка-невидимка[/link].[br /][link target='339']Ако нямаш нищо от изброеното[/link].[/p]</Text>
+    <Episode Id="299" IsMarked="true" Location="437.5;1027.5">
+      <Text>[p]Бавно се свестяваш. Надигаш се от пода, усещайки мъчителна слабост. Преживяното изпитание ти е отнело [tag]minus:return 5;[/tag] жизнени точки. [script]return context.reducePlayerLife(5);[/script][/p][p]Раницата ти се търкаля наблизо. Отваряш я и с изненада откриваш, че липсват два предмета, най-горните.[script]if (player.itemOrder.length &amp;gt; 0) {
+  player.removeItem(player.itemOrder&amp;ob;player.itemOrder.length - 1&amp;cb;, 1);
+}
+if (player.itemOrder.length &amp;gt; 0) {
+  player.removeItem(player.itemOrder&amp;ob;player.itemOrder.length - 1&amp;cb;, 1);
+}[/script][/p][p]Оглеждаш се наоколо. Намираш се в тясна килия. От три страни те ограждат каменни стени. Четвъртата страна е заградена с дебела желязна решетка, зад която има друга стаичка с врати отляво и отдясно.[/p][p]Какво ще правиш сега? Провери дали в раницата не е останало нещо, което да ти помогне.[/p][p][tag]item:return context.getItem('beetle');[/tag] [link target='script:349' script='player.removeItem(&amp;apos;beetle&amp;apos;, 1); return 349;' condition='return player.getItem(&amp;apos;beetle&amp;apos;);']Бръмбар железояд[/link].[br /][tag]item:return context.getItem('herb');[/tag] [link target='script:351' script='player.removeItem(&amp;apos;herb&amp;apos;, 1); return 351;' condition='return player.getItem(&amp;apos;herb&amp;apos;);']Билка отвори-вратичка[/link] или [tag]item:return context.getItem('blackKey');[/tag] [link target='script:351' script='player.removeItem(&amp;apos;blackKey&amp;apos;, 1); return 351;' condition='return player.getItem(&amp;apos;blackKey&amp;apos;);']черен ключ[/link].[br /][tag]item:return context.getItem('stoneeater');[/tag] [link target='script:234' script='player.removeItem(&amp;apos;stoneeater&amp;apos;, 1); return 234;' condition='return player.getItem(&amp;apos;stoneeater&amp;apos;);']Зелен каменояд[/link].[br /][tag]item:return context.getItem('hat');[/tag] [link target='script:58' script='player.removeItem(&amp;apos;hat&amp;apos;, 1); return 58;' condition='return player.getItem(&amp;apos;hat&amp;apos;);']Шапка-невидимка[/link].[br /][link target='339']Ако нямаш нищо от изброеното[/link].[/p]</Text>
     </Episode>
     <Episode Id="210" IsMarked="true" Location="177.5;807.5">
       <Text>[p]Излизаш на крепостната стена. Наблизо забелязваш стръмна каменна стълбичка, която слиза към двора. Спускаш се по нея.[/p][p][link target='193'](продължи)[/link][/p]</Text>
@@ -860,8 +868,32 @@ $.item = context.createItem('blackKey');[/script][embed value='ItemPickup' /].
       <Text>[p]Предпазливо се промъкваш зад гърба на таласъмите. Стъпваш на пръсти и като че ще успееш да пресечеш кухнята без произшествия. Но внезапно единият се обръща и надава пронизителен вик. Размахвайки заканително огромния си черпак, той се хвърля към теб. Миг по-късно го последва и вторият готвач. Ти изваждаш меча и се приготвяш за бой.[script]context.startBattle('goblin330-1', 'goblin330-2');
 $.winEpisode = 253;[/script][/p][p][embed value='Battle' /][/p]</Text>
     </Episode>
-    <Episode Id="281" Location="142.5;867.5">
-      <Text>[p]Вратата се отваря и попадаш в кръгло помещение, претъпкано с всевъзможни чували, сандъци, кутии, буркани и торби. Очевидно това е склад за провизии. Повечето храни тук са ти непознати. Разпознаваш само няколко буркана с конфитюр от кисели краставички, голяма торба със сушени гъби и делва, пълна до горе с пчелен мед. Ако искаш, можеш да вземеш в раницата си за запас САМО ЕДИН от тези продукти.[script]// TODO[/script][/p][p]В другия край на склада има нова врата, затворена отвътре с резе.[/p][p][link target='118']Ако искаш да минеш през нея[/link].[br /][link target='248']Ако предпочиташ да се върнеш в столовата[/link].[/p]</Text>
+    <Episode Id="281" IsMarked="true" Location="142.5;867.5">
+      <Text>[p]Вратата се отваря и попадаш в кръгло помещение, претъпкано с всевъзможни чували, сандъци, кутии, буркани и торби. Очевидно това е склад за провизии. Повечето храни тук са ти непознати. Разпознаваш само няколко буркана с конфитюр от кисели краставички, голяма торба със сушени гъби и делва, пълна до горе с пчелен мед. Ако искаш, можеш да вземеш в раницата си за запас САМО ЕДИН от тези продукти.[script]$.itemsPicked = 0;[/script] [clicker]if ($.itemsPicked &amp;gt; 0) {
+  context.showPopupMessage('Вече си взел един предмет.');
+} else {
+  $.itemsPicked += 1;
+  const item = context.createItem('jam');
+  player.addItem(item);
+  context.showPopupMessage(`Взимаш ${item.name}`);
+}
+return true;[/clicker][tag]pickupItem:return context.getItem('jam');[/tag][endclicker /] [clicker]if ($.itemsPicked &amp;gt; 0) {
+  context.showPopupMessage('Вече си взел един предмет.');
+} else {
+  $.itemsPicked += 1;
+  const item = context.createItem('mushrooms');
+  player.addItem(item);
+  context.showPopupMessage(`Взимаш ${item.name}`);
+}
+return true;[/clicker][tag]pickupItem:return context.getItem('mushrooms');[/tag][endclicker /] [clicker]if ($.itemsPicked &amp;gt; 0) {
+  context.showPopupMessage('Вече си взел един предмет.');
+} else {
+  $.itemsPicked += 1;
+  const item = context.createItem('honey');
+  player.addItem(item);
+  context.showPopupMessage(`Взимаш ${item.name}`);
+}
+return true;[/clicker][tag]pickupItem:return context.getItem('honey');[/tag][endclicker /][/p][p]В другия край на склада има нова врата, затворена отвътре с резе.[/p][p][link target='118']Ако искаш да минеш през нея[/link].[br /][link target='248']Ако предпочиташ да се върнеш в столовата[/link].[/p]</Text>
     </Episode>
     <Episode Id="335" IsMarked="true" Location="207.5;867.5">
       <Text>[p]Бързо слизаш надолу по стъпалата. Внезапно едно от тях изпуква под краката ти. Какво ще се случи сега?[/p][p][embed value='FateRoll' /][/p][p][if]return $.result % 2 === 0;[/if][link target='358'](продължи)[/link][else /][link target='343'](продължи)[/link][endif /][/p]</Text>
@@ -906,7 +938,15 @@ if (!$.itemPickedUp&amp;ob;context.index&amp;cb;) {
       <Text>[p]Намираш се в тесен вестибюл в подножието на кулата. От едната страна е вратата към двора, от другата [symbol value='ndash' /] стръмна винтова стълба се изкачва към горните етажи. Сред полумрака в ъгъла започва още една стълба [symbol value='ndash' /] надолу, към подземията на крепостта. А отстрани тясна и невзрачна вратичка води към някакво помещение в централната сграда. Накъде ще се запътиш?[/p][p][link target='118']Към горните етажи на кулата[/link].[br /][link target='202']Към подземието[/link].[br /][link target='193']Към двора[/link].[br /][link target='224']Към помещението в централната сграда[/link].[/p]</Text>
     </Episode>
     <Episode Id="132" Location="47.5;927.5">
-      <Text>[p]Вратата се отваря и ти попадаш в кръгло помещение, претъпкано с всевъзможни чували, сандъци, кутии, буркани и торби. Очевидно това е склад за провизии.[/p][p]Гледката ти напомня, че е крайно време да похапнеш. Ако не го сториш, ще изгубиш 2 жизнени точки от изтощение.[script]// TODO[/script] Но с какво ще утолиш глада си? Можеш да прибегнеш към услугите на вълшебната покривчица. Ако това е решението ти, не забравяй да го отметнеш в дневника на приключението[script]// TODO[/script].[/p][p]Така или иначе, повечето храни тук са ти непознати и не би било благоразумно да ги опитваш. Разпознаваш само няколко буркана с конфитюр от кисели краставички, голяма торба със сушени гъби и глинена делва, пълна до горе с пчелен мед. Ако желаеш, можеш да вземеш в раницата си за запас САМО ЕДНО от тия неща.[script]// TODO[/script][/p][p]И преди да тръгнеш по-нататък, помисли какво ще хапнеш:[/p][p]Мед — премини на #327.[br /]Сушени гъби — #272.[br /]Конфитюр от кисели краставички — #245.[br /]Но вече е време да решиш накъде ще продължиш (ако не желаеш[br /]да опитваш нищо от тукашните запаси).[br /]В другия край на склада нова врата води към централната сграда.[br /]През нея ще попаднеш на #248.[br /]Ако ли пък искаш да излезеш на стълбищната площадка, можеш[br /]да се изкачиш по стъпалата към горния етаж — на #141 или да слезеш[br /]— на #87.[/p]</Text>
+      <Text>[p]Вратата се отваря и ти попадаш в кръгло помещение, претъпкано с всевъзможни чували, сандъци, кутии, буркани и торби. Очевидно това е склад за провизии.[/p][p]Гледката ти напомня, че е крайно време да похапнеш. Ако не го сториш, ще изгубиш [tag]info:return 2;[/tag] жизнени точки от изтощение.[script]// TODO
+$.hasEaten = false;[/script] Но с какво ще утолиш глада си?[if]return player.getItem('tablecloth');[/if] Можеш да прибегнеш към услугите на вълшебната покривчица: [clicker]if (player.getItem('tablecloth')) {
+  context.showPopupMessage('Използваш покривчицата и се нахранваш донасита.');
+  player.removeItem('tablecloth', 1);
+  $.hasEaten = true;
+  return true;
+} else {
+  return false;
+}[/clicker][tag]useItem:return context.getItem('tablecloth');[/tag][endclicker /].[endif /][/p][p]Така или иначе, повечето храни тук са ти непознати и не би било благоразумно да ги опитваш. Разпознаваш само няколко буркана с конфитюр от кисели краставички, голяма торба със сушени гъби и глинена делва, пълна до горе с пчелен мед. Ако желаеш, можеш да вземеш в раницата си за запас САМО ЕДНО от тия неща: [clicker][/clicker][tag]pickupItem:return context.getItem('jam');[/tag][endclicker /], [clicker][/clicker][tag]pickupItem:return context.getItem('mushrooms');[/tag][endclicker /], [clicker][/clicker][tag]pickupItem:return context.getItem('honey');[/tag][endclicker /].[/p][p]И преди да тръгнеш по-нататък, помисли какво ще хапнеш:[/p][p][link target='327']Мед[/link].[br /][link target='272']Сушени гъби[/link].[br /][link target='245']Конфитюр от кисели краставички[/link].[/p][p]Но вече е време да решиш накъде ще продължиш (ако не желаеш да опитваш нищо от тукашните запаси). В другия край на склада нова врата води към централната сграда.[/p][p][link target='248']Можеш да минеш през нея[/link].[br /]Ако искаш да излезеш на стълбищната площадка, можеш [link target='141']да се изкачиш по стъпалата към горния етаж[/link] или [link target='87']да слезеш[/link].[/p]</Text>
     </Episode>
     <Episode Id="216" IsMarked="true" Location="102.5;927.5">
       <Text>[p]Бавно крачиш по стената и се вслушваш във всеки звук, долитащ откъм двора. Засега всичко е наред. Все още не са те забелязали. Но колко ли ще трае това измамно спокойствие? Вече приближаваш дясната кула, когато забелязваш, че от стената към двора се спуска стръмна каменна стълбичка.[/p][p][link target='193']Ако искаш да слезеш по нея[/link].[br /][link target='104']Ако продължиш към кулата[/link].[/p]</Text>
@@ -1157,8 +1197,40 @@ $.selectedOpponent = -1;[/script][/p][p][embed value='BattleRound' /][/p][p][i
       <Text>[p]Чукундуртът злобно се озъбва и без да каже нито дума, замахва с алебардата си. Отбиваш удара и започваш схватката.[script]combat.beginBattle('brute221');
 $.winEpisode = 87;[/script][/p][p][embed value='Battle' /][/p]</Text>
     </Episode>
-    <Episode Id="194" Location="157.5;727.5">
-      <Text>[p]Сядаш край огъня. Никой не ти обръща внимание, само рошавият таласъм ти предлага да купиш налъмите за 2 жълтици. Ако се съгласиш да го сториш, запиши покупката в дневника. Съседът му използува възможността, за да ти предложи за 5 жълтици своята жална гъдулка.[script]//TODO[/script][/p][p][symbol value='mdash' /] Велик инструмент! [symbol value='mdash' /] хвали стоката си той. [symbol value='mdash' /] Вълшебна работа! Може да разплаче и най-коравосърдечния. Не изпускай случая, ще съжаляваш цял живот![/p][p]Решавай дали ти трябва жална гъдулка. А след това се върни и направи нов избор.[/p][p][link target='193'](продължи)[/link][/p]</Text>
+    <Episode Id="194" IsMarked="true" Location="157.5;727.5">
+      <Text>[p]Сядаш край огъня. Никой не ти обръща внимание, само рошавият таласъм ти предлага да купиш налъмите за 2 жълтици: [script]$.selectedPattens = false;[/script][clicker]if ($.selectedPattens) {
+  context.showPopupMessage('Вече си купил налъмите.');
+  return false;
+} else {
+  const gold = player.getItem('gold');
+  if (gold &amp;amp;&amp;amp; gold.stack &amp;gt;= 2) {
+    const item = context.createItem('pattens');
+    context.showPopupMessage(`Купуваш ${item.name}.`);
+    player.addItem(item);
+    player.removeItem('gold', 2);
+    $.selectedPattens = true;
+    return true;
+  } else {
+    context.showPopupMessage('Нямаш достатъчно жълтици.');
+    return false;
+  }
+}[/clicker][tag]pickupItem:return context.createItem('pattens');[/tag][endclicker /]. Съседът му използува възможността, за да ти предложи за 5 жълтици своята жална гъдулка: [script]$.selectedReed = false;[/script][clicker]if ($.selectedReed) {
+  context.showPopupMessage('Вече си купил гъдулката.');
+  return false;
+} else {
+  const gold = player.getItem('gold');
+  if (gold &amp;amp;&amp;amp; gold.stack &amp;gt;= 5) {
+    const item = context.createItem('reed');
+    context.showPopupMessage(`Купуваш ${item.name}.`);
+    player.addItem(item);
+    player.removeItem('gold', 5);
+    $.selectedReed = true;
+    return true;
+  } else {
+    context.showPopupMessage('Нямаш достатъчно жълтици.');
+    return false;
+  }
+}[/clicker][tag]pickupItem:return context.createItem('reed');[/tag][endclicker /].[/p][p][symbol value='mdash' /] Велик инструмент! [symbol value='mdash' /] хвали стоката си той. [symbol value='mdash' /] Вълшебна работа! Може да разплаче и най-коравосърдечния. Не изпускай случая, ще съжаляваш цял живот![/p][p]Решавай дали ти трябва жална гъдулка. А след това се върни и направи нов избор.[/p][p][link target='193'](продължи)[/link][/p]</Text>
     </Episode>
     <Episode Id="204" IsMarked="true" Location="92.5;727.5">
       <Text>[p]Когато пристъпваш край огъня, двамата чукундурти изненадано надигат очи.[/p][p][symbol value='mdash' /] Добър вечер! [symbol value='mdash' /] поздравяваш ги ти. [symbol value='mdash' /] Оставете животинката, в раницата имам нещо по-добро.[/p][p]И пред смаяните им погледи изваждаш буркана с конфитюр от кисели краставички. Чукундуртите оставят дамаджаната и лакомо се облизват.[/p][p][symbol value='mdash' /] Дай ни го, бе! [symbol value='mdash' /] жалко се обажда единият.[br /][symbol value='mdash' /] А вие какво ще ми дадете? [symbol value='mdash' /] питаш ти.[br /][symbol value='mdash' /] Ами[symbol value='hellip' /] Ето, вземи каменояда. Страшно полезно добиче. Камъните ги хрупа като бонбони. Може да троши чакъл, може да помага в зидарската работа или[symbol value='hellip' /] градината от камъни да ти разчисти.[/p][p]Ти мълчиш. Тогава другият чукундурт бърка в джоба си и изважда голям черен ключ.[/p][p][symbol value='mdash' /] Ето вземи и този ключ! Само дай буркана. Умирам за конфитюр от кисели краставички![/p][p]Подаваш му буркана, прибираш в раницата си зеления каменояд и ключа, след което се връщаш обратно.[script]player.addItem(context.createItem('stoneeater'));
@@ -1334,12 +1406,7 @@ return item &amp;&amp; item.stack &gt;= 10;']Кесия с 10 жълтици[/li
       <Text>[p]Посягаш към вратата, но тя се отваря още, преди да я докоснеш. Срещу теб нахлува тълпа от злобни брадати чукундурти с мечове и тояги в ръце. Трябва да се спасяваш![/p][p][tag]item:return context.getItem('boots');[/tag] [link target='script:254' script='player.removeItem(&amp;apos;boots&amp;apos;, 1); return 254;' condition='return player.getItem(&amp;apos;boots&amp;apos;);']Ако имаш бързоходни ботуши[/link].[br /][tag]item:return context.getItem('stoneeater');[/tag] [link target='script:234' script='player.getItem(&amp;apos;stoneeater&amp;apos;, 1); return 234;' condition='return player.getItem(&amp;apos;stoneeater&amp;apos;);']Ако имаш зелен каменояд[/link].[br /][link target='95']А ако нямаш нито едното, нито другото[/link].[/p]</Text>
     </Episode>
     <Episode Id="342" IsMarked="true" Location="457.5;1127.5">
-      <Text>[p]Каквото и да е замислял Тиквеняк, магията му не се получи. Засега невълшебната пръчка ти помогна. Но изходът на бъдещата схватка ще зависи само от тебе. Как ще се биеш срещу царя на таласъмите?[script]$.extraStrength = 0;
-
-player.addItem(context.createItem('goldenSword'));
-player.addItem(context.createItem('boots'));
-player.addItem(context.createItem('stoneeater'));
-player.addItem(context.createItem('hat'));[/script][/p][p][link target='324']С меча си[/link].[br /][tag]item:return context.getItem('goldenSword');[/tag] [link target='374' condition='return player.getItem(&amp;apos;goldenSword&amp;apos;);']Със Златния меч[/link].[br /][tag]item:return context.getItem('staff');[/tag] [link target='script:280' script='player.removeItem(&amp;apos;staff&amp;apos;, 1); return 280;' condition='return player.getItem(&amp;apos;staff&amp;apos;);']С вълшебна тояжка[/link].[br /]Със [tag]item:return context.getItem('rope');[/tag] [link target='script:179' script='player.removeItem(&amp;apos;rope&amp;apos;, 1); return 179;' condition='return player.getItem(&amp;apos;rope&amp;apos;);']самолазещо въже[/link] или [tag]item:return context.getItem('thorn');[/tag] [link target='script:179' script='player.removeItem(&amp;apos;thorn&amp;apos;, 1); return 179;' condition='return player.getItem(&amp;apos;thorn&amp;apos;);']трънка-закачка[/link].[br /][tag]item:return context.getItem('bag');[/tag] [link target='334' condition='return player.getItem(&amp;apos;bag&amp;apos;);']С торбата на Педя човек[/link].[br /][tag]item:return context.getItem('hat');[/tag] [link target='script:336' script='player.removeItem(&amp;apos;hat&amp;apos;, 1); return 336;' condition='return player.getItem(&amp;apos;hat&amp;apos;);']Ако искаш преди схватката да наденеш шапка-невидимка[/link].[/p]</Text>
+      <Text>[p]Каквото и да е замислял Тиквеняк, магията му не се получи. Засега невълшебната пръчка ти помогна. Но изходът на бъдещата схватка ще зависи само от тебе. Как ще се биеш срещу царя на таласъмите?[script]$.extraStrength = 0;[/script][/p][p][link target='324']С меча си[/link].[br /][tag]item:return context.getItem('goldenSword');[/tag] [link target='374' condition='return player.getItem(&amp;apos;goldenSword&amp;apos;);']Със Златния меч[/link].[br /][tag]item:return context.getItem('staff');[/tag] [link target='script:280' script='player.removeItem(&amp;apos;staff&amp;apos;, 1); return 280;' condition='return player.getItem(&amp;apos;staff&amp;apos;);']С вълшебна тояжка[/link].[br /]Със [tag]item:return context.getItem('rope');[/tag] [link target='script:179' script='player.removeItem(&amp;apos;rope&amp;apos;, 1); return 179;' condition='return player.getItem(&amp;apos;rope&amp;apos;);']самолазещо въже[/link] или [tag]item:return context.getItem('thorn');[/tag] [link target='script:179' script='player.removeItem(&amp;apos;thorn&amp;apos;, 1); return 179;' condition='return player.getItem(&amp;apos;thorn&amp;apos;);']трънка-закачка[/link].[br /][tag]item:return context.getItem('bag');[/tag] [link target='334' condition='return player.getItem(&amp;apos;bag&amp;apos;);']С торбата на Педя човек[/link].[br /][tag]item:return context.getItem('hat');[/tag] [link target='script:336' script='player.removeItem(&amp;apos;hat&amp;apos;, 1); return 336;' condition='return player.getItem(&amp;apos;hat&amp;apos;);']Ако искаш преди схватката да наденеш шапка-невидимка[/link].[/p]</Text>
     </Episode>
     <Episode Id="279" IsMarked="true" Location="442.5;1107.5">
       <Text>[p]С ужас виждаш как мечът изчезва от ръката ти. Един по един започват да чезнат и вълшебните дарове от раницата ти. Зловещият смях на Тиквеняк Първи оглася тронната зала. Трябва да се спасяваш, преди да те е омагьосал окончателно.[/p][p][tag]item:return context.getItem('boots');[/tag] [link target='script:254' script='player.removeItem(&amp;apos;boots&amp;apos;, 1); return 254;' condition='return player.getItem(&amp;apos;boots&amp;apos;);']Ако имаш бързоходни ботуши[/link].[br /][tag]item:return context.getItem('stoneeater');[/tag] [link target='script:234' script='player.removeItem(&amp;apos;stoneeater&amp;apos;, 1); return 234;' condition='return player.getItem(&amp;apos;stoneeater&amp;apos;);']Ако имаш зелен каменояд[/link].[br /][link target='60']Ако нямаш нито едното, нито другото[/link].[/p]</Text>
@@ -1472,8 +1539,26 @@ $.extraStrength += 5;[/script][/p][p][embed value='Battle' /][/p]</Text>
     <Episode Id="161" IsMarked="true" Location="52.5;627.5">
       <Text>[p]Дребният таласъм протяга към теб юмрук, от който се подават две клечки. Изтегляш едната. Той поглежда и въздиша:[/p][p][symbol value='mdash' /] Върви ти, странниче! Знаеш ли какво спечели? Ето това![/p][p]Изпод плаща си таласъмът изважда малка сива пръчица и тържествено ти я показва. Оглеждаш я учудено, защото не прилича на нищо ценно. Забелязвайки изумлението ти, дребосъкът клати глава.[/p][p][symbol value='mdash' /] Това е невълшебна пръчка. С нейна помощ можеш да се опазиш от зли магии. Хайде, вземи я и сбогом.[script]player.addItem(context.createItem('wand'));[/script][/p][p]С тия думи той ти подава пръчката и тръгва към лагерния огън. Ти също се отдалечаваш от мястото на схватката. Скоро намираш подходящо кътче, където да прекараш нощта и лягаш да спиш.[/p][p][link target='107'](продължи)[/link][/p][p][image source='37' title='' hspace='0' vspace='0' align='center' width='449' height='299' /][/p]</Text>
     </Episode>
-    <Episode Id="169" Location="72.5;627.5">
-      <Text>[p]Дребният таласъм протяга към теб юмрук, от който се подават две клечки. Изтегляш едната. Той поглежда и се усмихва.[/p][p][symbol value='mdash' /] Знаеш ли какво спечели? Кесията на този негодник. Вътре има цели петдесет жълтици! Не мога да ти предложа нещо по- изгодно. Сигурно чу как се карахме. Бяхме се спазарили да му продам невълшебна пръчка.[br /][symbol value='mdash' /] Какво е пък това? [symbol value='mdash' /] учудено питаш ти.[/p][p]Изпод плаща си таласъмът изважда малка сива пръчица и тържествено ти я показва.[/p][p][symbol value='mdash' /] Ето! С нейна помощ можеш да се опазиш от зли магии. Ако се откажеш от кесията и добавиш още пет жълтици [symbol value='mdash' /] твоя е![/p][p]И тъй, трябва да решаваш кое ще предпочетеш [symbol value='mdash' /] невълшебната пръчка или петдесет и пет жълтици. Запиши решението си в дневника на приключението.[script]// TODO:[/script][/p][p]След като уреждате сделката, дребният таласъм се отдалечава към лагерния огън. Ти също напускаш мястото на схватката. Скоро намираш подходящо кътче, където да прекараш нощта и лягаш да спиш.[/p][p][link target='107'](продължи)[/link][/p]</Text>
+    <Episode Id="169" IsMarked="true" Location="72.5;627.5">
+      <Text>[p]Дребният таласъм протяга към теб юмрук, от който се подават две клечки. Изтегляш едната. Той поглежда и се усмихва.[/p][p][symbol value='mdash' /] Знаеш ли какво спечели? Кесията на този негодник. Вътре има цели петдесет жълтици! Не мога да ти предложа нещо по- изгодно. Сигурно чу как се карахме. Бяхме се спазарили да му продам невълшебна пръчка.[br /][symbol value='mdash' /] Какво е пък това? [symbol value='mdash' /] учудено питаш ти.[/p][p]Изпод плаща си таласъмът изважда малка сива пръчица и тържествено ти я показва.[/p][p][symbol value='mdash' /] Ето! С нейна помощ можеш да се опазиш от зли магии. Ако се откажеш от кесията и добавиш още пет жълтици [symbol value='mdash' /] твоя е![/p][p]И тъй, трябва да решаваш кое ще предпочетеш [symbol value='mdash' /] [script]$.itemSelected = false;[/script][clicker]if ($.itemSelected) {
+  context.showPopupMessage('Вече си избрал предмет.');
+  return false;
+} else {
+  const item = context.createItem('wand');
+  context.showPopupMessage(`Взимаш ${item.name}.`);
+  player.addItem(item);
+  $.itemSelected = true;
+  return true;
+}[/clicker][tag]pickupItem:return context.createItem('wand');[/tag][endclicker /] или [clicker]if ($.itemSelected) {
+  context.showPopupMessage('Вече си избрал предмет.');
+  return false;
+} else {
+  const item = context.createItem('gold', 55);
+  context.showPopupMessage(`Взимаш ${item.stack} ${item.name}.`);
+  player.addItem(item);
+  $.itemSelected = true;
+  return true;
+}[/clicker][tag]pickupItem:return context.createItem('gold', 55);[/tag][endclicker /].[/p][p]След като уреждате сделката, дребният таласъм се отдалечава към лагерния огън. Ти също напускаш мястото на схватката. Скоро намираш подходящо кътче, където да прекараш нощта и лягаш да спиш.[/p][p][link target='107'](продължи)[/link][/p]</Text>
     </Episode>
     <Episode Id="76" IsMarked="true" Location="82.5;867.5">
       <Text>[p]Таласъмът се просва на каменните плочи. Ти стоиш над него и се мъчиш да поемеш дъх. Битката не беше лека.[/p][p]На врата на поваления враг забелязваш верижка, на която виси черен ключ. Ако искаш, можеш да го вземеш.[script]$.itemPickedUp = null;
@@ -1499,6 +1584,24 @@ $.item = context.createItem('goldenSword');[/script] [embed value='ItemPickup' 
     </Episode>
     <Episode Id="322" IsMarked="true" Location="457.5;1207.5">
       <Text>[p]Очите на Тиквеняк се разширяват от ужас, когато посягаш към сребърния ключ. Устните му треперят, той се мъчи да извика нещо, ала не му остава време.[/p][p]Рязко завърташ ключа. Раздава се грохот. От всички страни в залата нахлуват освободените води на горските извори. Светлините изгасват и в пълен мрак сводовете рухват над двама ви.[/p][p]Това е и твоята гибел. Но споменът за подвига ти ще остане завинаги в легендите на Старата гора. Защото ти победи[symbol value='hellip' /] с цената на живота си.[/p]</Text>
+    </Episode>
+    <Episode Id="327" IsMarked="true" Location="27.5;947.5">
+      <Text>[p]Медът е чудесен [symbol value='ndash' /] сладък и ароматен. Усещаш как по цялото ти тяло се разлива нова сила. Можеш да увеличиш с [tag]plus:return 2;[/tag] постоянните си жизнени точки.[script]player.maxLife += 2;[/script][/p][p][link target='248']А сега е време да продължиш напред[/link].[br /][link target='118']Ако предпочиташ да се върнеш[/link].[/p]</Text>
+    </Episode>
+    <Episode Id="272" IsMarked="true" Location="47.5;947.5">
+      <Text>[p]Отваряш една торбичка и предпазливо опитваш от сушените гъби. Вкусът е приятен. Продължаваш да дъвчеш и скоро гладът ти преминава, но постепенно по цялото ти тяло се разлива тежест. Сядаш на пода и задрямваш.[/p][p][link target='299'](продължи)[/link][/p]</Text>
+    </Episode>
+    <Episode Id="245" Location="67.5;947.5">
+      <Text>[p]Изплюваш първата хапка и се намръщваш. Конфитюрът се оказва ужасно кисел. Устата ти пламва. От непоносимата жажда губиш [tag]minus:return 2;[/tag] жизнени точки (и още [tag]minus:return 2;[/tag] от глад, ако не хапнеш нещо друго). [script]return context.reducePlayerLife(2);[/script][/p][p][link target='248']Сега можеш да продължиш през отсрещната врата към централната сграда[/link].[br /][link target='118']Ако искаш да се върнеш в кулата[/link].[/p]</Text>
+    </Episode>
+    <Episode Id="116" IsMarked="true" Location="147.5;607.5">
+      <Text>[p]Таласъмът пребърква кесията си, тръска я, но всичко е напразно. Вече няма нито една жълтица. Внезапно му хрумва нещо. Той вади от торбата си малка сива пръчица и тържествено ти я показва.[/p][p][symbol value='mdash' /] Знаеш ли какво е това? Невълшебна пръчка! Залагам я срещу пет жълтици.[br /][symbol value='mdash' /] Че за какво ми е, щом не е вълшебна? [symbol value='mdash' /] питаш ти.[br /][symbol value='mdash' /] Нищо не разбираш! [symbol value='mdash' /] ядосва се таласъмът. [symbol value='mdash' /] Невълшебната пръчка може да те опази от зли магии. Е, ще играеш ли?[/p][p][link target='152']Ако не ти се играе и предпочиташ да си легнеш[/link].[br /][link target='116a']Ако искаш, можеш да продължиш играта, докато един от двама ви изгуби всичко[/link].[/p]</Text>
+    </Episode>
+    <Episode Id="116a" IsMarked="true" Location="147.5;627.5">
+      <Text>[p]Изваждаш 5 жълтици и ги слагаш на земята. После хвърляш заровете.[/p][p][embed value='FateRoll' /][/p][p][if]return $.result &amp;gt;= 6;[/if]Печелиш. [if]return $.goblinGold === 0;[/if]Прибираш невълшебната пръчка на таласъма и решаваш да си легнеш.[script]player.addItem(context.createItem('wand'));[/script][/p][p][link target='152'](продължи)[/link][else /][script]$.goblinGold -= 5;
+player.addItem(context.createItem('gold', 5));[/script][/p][p][tag]item:return context.getItem('gold');[/tag] [link target='116a']Ако искаш да играеш пак[/link].[br /][link target='152']Ако предпочиташ да си легнеш[/link].[endif /][else /]Губиш.[script]$.goblinGold += 5;
+player.removeItem('gold', 5);[/script][/p][p][tag]item:return context.getItem('gold');[/tag] [link target='116a' condition='const item = context.getItem(&amp;apos;gold&amp;apos;);
+return item &amp;&amp; item.stack &gt;= 5;']Ако искаш да играеш пак[/link].[br /][link target='152']Ако предпочиташ да си легнеш[/link].[endif /][/p]</Text>
     </Episode>
   </Episodes>
   <Transitions>
@@ -1645,9 +1748,6 @@ $.item = context.createItem('goldenSword');[/script] [embed value='ItemPickup' 
     <Transition From="174" To="209" />
     <Transition From="111" To="133" />
     <Transition From="111" To="152" />
-    <Transition From="133" To="201" />
-    <Transition From="133" To="146" />
-    <Transition From="133" To="152" />
     <Transition From="152" To="193" />
     <Transition From="152" To="103" />
     <Transition From="146" To="152" />
@@ -1783,7 +1883,6 @@ $.item = context.createItem('goldenSword');[/script] [embed value='ItemPickup' 
     <Transition From="123" To="148" />
     <Transition From="148" To="114" />
     <Transition From="70" To="261" />
-    <Transition From="359" To="299" />
     <Transition From="164" To="137" />
     <Transition From="53" To="6" />
     <Transition From="53" To="6" />
@@ -1979,7 +2078,6 @@ $.item = context.createItem('goldenSword');[/script] [embed value='ItemPickup' 
     <Transition From="186" To="159" />
     <Transition From="246" To="194" />
     <Transition From="246" To="193" />
-    <Transition From="194" To="193" />
     <Transition From="108" To="204" />
     <Transition From="108" To="125" />
     <Transition From="108" To="139" />
@@ -2174,27 +2272,18 @@ $.item = context.createItem('goldenSword');[/script] [embed value='ItemPickup' 
     <Transition From="23" To="122" />
     <Transition From="158" To="161" />
     <Transition From="158" To="169" />
-    <Transition From="169" To="107" />
     <Transition From="Rules3" To="Rules4" />
     <Transition From="1" To="9" />
     <Transition From="1" To="25" />
     <Transition From="122" To="174" />
     <Transition From="122" To="140" />
     <Transition From="161" To="107" />
-    <Transition From="299" To="349" />
-    <Transition From="299" To="351" />
-    <Transition From="299" To="351" />
-    <Transition From="299" To="234" />
-    <Transition From="299" To="58" />
-    <Transition From="299" To="339" />
     <Transition From="321" To="254" />
     <Transition From="321" To="234" />
     <Transition From="321" To="95" />
     <Transition From="76" To="333" />
     <Transition From="76" To="92" />
     <Transition From="333" To="92" />
-    <Transition From="281" To="118" />
-    <Transition From="281" To="248" />
     <Transition From="244" To="183" />
     <Transition From="244" To="141" />
     <Transition From="187" To="185" />
@@ -2209,6 +2298,13 @@ $.item = context.createItem('goldenSword');[/script] [embed value='ItemPickup' 
     <Transition From="336" To="324" />
     <Transition From="336" To="374" />
     <Transition From="336" To="320" />
+    <Transition From="327" To="248" />
+    <Transition From="327" To="118" />
+    <Transition From="272" To="299" />
+    <Transition From="245" To="248" />
+    <Transition From="245" To="118" />
+    <Transition From="281" To="118" />
+    <Transition From="281" To="248" />
     <Transition From="342" To="324" />
     <Transition From="342" To="374" />
     <Transition From="342" To="280" />
@@ -2216,6 +2312,36 @@ $.item = context.createItem('goldenSword');[/script] [embed value='ItemPickup' 
     <Transition From="342" To="179" />
     <Transition From="342" To="334" />
     <Transition From="342" To="336" />
+    <Transition From="299" To="349" />
+    <Transition From="299" To="351" />
+    <Transition From="299" To="351" />
+    <Transition From="299" To="234" />
+    <Transition From="299" To="58" />
+    <Transition From="299" To="339" />
+    <Transition From="359" To="299" />
+    <Transition From="201" To="116" />
+    <Transition From="201" To="201" />
+    <Transition From="201" To="152" />
+    <Transition From="201" To="201" />
+    <Transition From="201" To="152" />
+    <Transition From="116" To="152" />
+    <Transition From="116" To="116a" />
+    <Transition From="116a" To="152" />
+    <Transition From="116a" To="116a" />
+    <Transition From="116a" To="152" />
+    <Transition From="116a" To="116a" />
+    <Transition From="116a" To="152" />
+    <Transition From="169" To="107" />
+    <Transition From="133" To="201" />
+    <Transition From="133" To="146" />
+    <Transition From="133" To="152" />
+    <Transition From="194" To="193" />
+    <Transition From="132" To="327" />
+    <Transition From="132" To="272" />
+    <Transition From="132" To="245" />
+    <Transition From="132" To="248" />
+    <Transition From="132" To="141" />
+    <Transition From="132" To="87" />
   </Transitions>
   <Groups />
   <Global>
@@ -2653,6 +2779,9 @@ context.showPopupMessage('Възстановяваш 10 жизнени точ
     <Template Name="selectCharacter">
       <Content>&amp;lt;div class='entity select'&amp;gt;[script]return context.target.name;[/script]&amp;lt;div class='tooltip'&amp;gt;&amp;lt;p class='emphasize'&amp;gt;[script]return context.target.name;[/script]&amp;lt;/p&amp;gt;&amp;lt;span class='highlight'&amp;gt;(Натисни за да избереш)&amp;lt;/span&amp;gt;&amp;lt;/div&amp;gt;&amp;lt;/div&amp;gt;</Content>
     </Template>
+    <Template Name="useItem">
+      <Content>&amp;lt;div class='item select'&amp;gt;[script]return context.target.name;[/script][if]return context.target.stack &amp;gt; 1[/if] x[script]return context.target.stack;[/script][endif /]&amp;lt;div class='tooltip'&amp;gt;&amp;lt;p class='emphasize'&amp;gt;[script]return context.target.name;[/script]&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;&amp;lt;span class='description'&amp;gt;[script]return context.toHtml(context.target.description);[/script]&amp;lt;/span&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;span class='highlight'&amp;gt;(Натисни за да използваш)&amp;lt;/span&amp;gt;&amp;lt;/div&amp;gt;&amp;lt;/div&amp;gt;</Content>
+    </Template>
   </Templates>
   <Images>
     <Image Id="1">
@@ -2769,7 +2898,7 @@ context.showPopupMessage('Възстановяваш 10 жизнени точ
   </Images>
   <View>
     <ScrollX>0</ScrollX>
-    <ScrollY>801.070435</ScrollY>
+    <ScrollY>875</ScrollY>
     <Zoom>58</Zoom>
     <Width>557.5518</Width>
     <Height>1456.5</Height>
