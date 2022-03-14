@@ -56,11 +56,12 @@ context.getSelectedItemMessage = function(selectedItems, itemsToThrow) {
 
 context.getItemCount = function(items) {
   let result = 0;
-  for (const [key, value] of Object.entries(items)) {
-    if (key === 'gold') {
-      result += value / 10;
+  for (let i = 0; i &lt; items.length; i++) {
+    const item = items[i];
+    if (item.id === 'gold') {
+      result += item.stack / 10;
     } else {
-      result += value;
+      result += item.stack;
     }
   }
   return result;
@@ -285,18 +286,39 @@ return 30;' condition='return player.getItem(&amp;apos;gold&amp;apos;);']Ако 
       <Text>[p][script]player.removeItem('ball', 1);[/script]Кълбенцето се търкулна към левия път. Изтичваш подир него.[/p][p][link target='39'](продължи)[/link][/p]</Text>
     </Episode>
     <Episode Id="55" IsMarked="true" Location="222.5;142.5">
-      <Text>[p]Свиркането се раздава все по-наблизо. Промъкваш се през храстите и излизаш на широка поляна. В средата е седнало с кръстосани крака дребно човече с пъстри дрехи и дълга бяла брада. Позна ли го? Разбира се, това е прочутият Педя човек [symbol value='mdash' /] лакът брада. Само не мисли, че срещата е добра! Щом те забелязва, човечето отваря чудодейната си торба. Усещаш как в раницата ти нещо се размърдва. Отвътре един по един излитат вълшебните дарове и се изгубват в торбата на Педя човек. Колко са?[/p][p][blocker]$.result = context.roll(1, 12); return true;[/blocker][tag]general:return 'Избери число (1-12)';[/tag][endblocker /][/p][p]Избраното число е [tag]info:return $.result;[/tag]. Определи сам кои предмети си изгубил.[script]$.itemsToThrow = $.result;
-$.itemIds = {};
-$.selectedItems = {};
-$.itemsSelected = false;[/script][/p][p][script]$.item = 'staff';[/script][embed value='SelectItem' /][script]$.item = 'carpet';[/script][embed value='SelectItem' /][script]$.item = 'tablecloth';[/script][embed value='SelectItem' /][script]$.item = 'hat';[/script][embed value='SelectItem' /][script]$.item = 'ball';[/script][embed value='SelectItem' /][script]$.item = 'whistle';[/script][embed value='SelectItem' /][script]$.item = 'boots';[/script][embed value='SelectItem' /][script]$.item = 'frog';[/script][embed value='SelectItem' /][script]$.item = 'potion';[/script][embed value='SelectItem' /][script]$.item = 'rope';[/script][embed value='SelectItem' /][script]$.item = 'shoes';[/script][embed value='SelectItem' /][script]$.item = 'beetle';[/script][embed value='SelectItem' /][script]$.item = 'mouse';[/script][embed value='SelectItem' /][script]$.item = 'book';[/script][embed value='SelectItem' /][script]$.item = 'herb';[/script][embed value='SelectItem' /][script]$.item = 'thorn';[/script][embed value='SelectItem' /][script]$.item = 'candle';[/script][embed value='SelectItem' /][script]$.item = 'gold';[/script][embed value='SelectItem' /][/p][p][blocker]if ($.itemsToThrow &amp;gt; 0 &amp;amp;&amp;amp; context.getWeight() - context.getItemCount($.selectedItems) &amp;gt;= 2) {
+      <Text>[p]Свиркането се раздава все по-наблизо. Промъкваш се през храстите и излизаш на широка поляна. В средата е седнало с кръстосани крака дребно човече с пъстри дрехи и дълга бяла брада. Позна ли го? Разбира се, това е прочутият Педя човек [symbol value='mdash' /] лакът брада. Само не мисли, че срещата е добра! Щом те забелязва, човечето отваря чудодейната си торба. Усещаш как в раницата ти нещо се размърдва. Отвътре един по един излитат вълшебните дарове и се изгубват в торбата на Педя човек. Колко са?[/p][p][blocker]$.result = context.roll(1, 12); return true;[/blocker][tag]general:return 'Избери число (1-12)';[/tag][endblocker /][/p][p]Избраното число е [tag]info:return $.result;[/tag]. Определи сам кои предмети си изгубил.[/p][p][script]$.itemsSelected = false;
+$.items = &amp;ob;&amp;cb;;
+for (var itemId in player.items) {
+  if (player.items.hasOwnProperty(itemId) &amp;amp;&amp;amp; itemId !== 'sword') {
+    $.items.push(player.items&amp;ob;itemId&amp;cb;);
+  }
+}
+$.selectedItems = &amp;ob;&amp;cb;;[/script][/p][p][clicker]if (!$.itemsSelected) {
+  context.showItemTransferDialog($.items, $.selectedItems, 'Екипировка', 'Торбата на Педя човек', `Избрани предмети: 0 от общо ${$.result}`, 'Избери предмети',
+    function(result) {
+      if (result) {
+        $.items = result.leftItems;
+        $.selectedItems = result.rightItems;
+      }
+    },
+    function(payload) {
+      return `Избрани предмети: ${context.getItemCount(payload.rightItems)} от общо ${$.result}`;
+    },
+    {
+      stackTransfers: {
+        'gold': 10
+      }
+    });
+}
+return true;[/clicker][tag]general:return 'Определи';[/tag][endclicker /][/p][p][blocker]if ($.items.length &amp;gt; 0 &amp;amp;&amp;amp; context.getItemCount($.selectedItems) &amp;lt; $.result) {
   context.showPopupMessage('Трябва да избереш още предмети.');
   return false;
 } else {
   $.itemsSelected = true;
   return true;
-}[/blocker][tag]general:return '(продължи)';[/tag][endblocker /][script]for (const &amp;ob;key, value&amp;cb; of Object.entries($.selectedItems)) {
-  player.removeItem(key, value);
-}[/script][/p][p][symbol value='mdash' /] Хей, какво правиш? [symbol value='mdash' /] възмутено подвикваш ти.[br /][symbol value='mdash' /] То си е моя работа [symbol value='mdash' /] сопва се Педя човек. Върви си по пътя, докато не е станало по-лошо.[/p][p]Явно с добро няма да се разберете.[/p][p][link target='24']Ако искаш да се биеш с безсъвестния грабител[/link].[br /][link target='61']Ако предпочиташ да се махнеш от поляната[/link].[/p]</Text>
+}[/blocker][tag]general:return '(продължи)';[/tag][endblocker /][script]$.selectedItems.forEach(item =&amp;gt; {
+  player.removeItem(item.id, item.stack);
+});[/script][/p][p][symbol value='mdash' /] Хей, какво правиш? [symbol value='mdash' /] възмутено подвикваш ти.[br /][symbol value='mdash' /] То си е моя работа [symbol value='mdash' /] сопва се Педя човек. Върви си по пътя, докато не е станало по-лошо.[/p][p]Явно с добро няма да се разберете.[/p][p][link target='24']Ако искаш да се биеш с безсъвестния грабител[/link].[br /][link target='61']Ако предпочиташ да се махнеш от поляната[/link].[/p]</Text>
     </Episode>
     <Episode Id="61" IsMarked="true" Location="242.5;222.5">
       <Text>[p]Скоро поляната изчезва между дърветата зад гърба ти. А пътят изглежда все по-запустял. Бурени са избуяли в старите коловози, провлачени къпини се проточват от единия до другия края. Нарядко отстрани се мяркат прогнили, полусрутени дървени къщички, в които отдавна не живее никой. Какво ли те чака напред?[/p][p][link target='79']Ако държиш да продължиш по пътя[/link].[br /][link target='126']Ако решиш да тръгнеш през гората надясно[/link].[br /][link target='117']Ако тръгнеш през гората наляво[/link].[br /]А ако се затрудняваш в избора, можеш да потърсиш съвет от [tag]item:return context.getItem('book');[/tag] [link target='26' condition='return player.getItem(&amp;apos;book&amp;apos;);']вълшебната книга[/link] или от [tag]item:return context.getItem('ball');[/tag] [link target='77' condition='return player.getItem(&amp;apos;ball&amp;apos;);']кълбенцето[/link].[/p]</Text>
@@ -335,9 +357,9 @@ $.itemsSelected = false;[/script][/p][p][script]$.item = 'staff';[/script][em
       <Text>[p]Съветът в книгата гласи: „Не посягай към меча! Сега той няма да ти помогне. Използвай свирка-танцувачка, лъжлива жаба, шапка- невидимка или свещичка-самопалка. Ако нямаш нищо такова [symbol value='ndash' /] бягай, докато не е станало късно!“.[script]player.removeItem('book', 1);[/script][/p][p][link target='24']Сега се върни и направи своя избор[/link].[/p]</Text>
     </Episode>
     <Episode Id="31" IsMarked="true" Location="312.5;222.5">
-      <Text>[p]Браво! Великолепна победа над един опасен противник, с който малцина са се преборвали. Ти успя не само да си възвърнеш отнетите вещи[script]for (const &amp;ob;key, value&amp;cb; of Object.entries($.selectedItems)) {
-  player.addItem(context.createItem(key, value));
-}[/script], но се сдоби и с вълшебната торба на Педя човек.[/p][p]Няма какво повече да правиш на полянката. Продължаваш по пътя.[script]player.addItem(context.createItem('bag'));[/script][/p][p][link target='61'](напред)[/link][/p]</Text>
+      <Text>[p]Браво! Великолепна победа над един опасен противник, с който малцина са се преборвали. Ти успя не само да си възвърнеш отнетите вещи[script]$.selectedItems.forEach(item =&amp;gt; {
+  player.addItem(context.createItem(item.id, item.stack));
+});[/script], но се сдоби и с вълшебната торба на Педя човек.[/p][p]Няма какво повече да правиш на полянката. Продължаваш по пътя.[script]player.addItem(context.createItem('bag'));[/script][/p][p][link target='61'](напред)[/link][/p]</Text>
     </Episode>
     <Episode Id="79" IsMarked="true" Location="237.5;262.5">
       <Text>[p][image source='23' title='' hspace='0' vspace='0' align='right' width='466' height='747' /]Пътят потъва все по-надълбоко сред околните скалисти възвишения. Отпред се появява тясна усойна клисура. А входът в нея е преграден от нещо голямо и тъмно. Какво ли е? Може би рухнала канара? Не, не прилича на камък[symbol value='hellip' /][/p][p]Приближаваш и замръзваш на място от удивление. Пред теб се издига странна дървена къщичка на грамадни кокоши крака. Ами сега?[/p][p][link target='117']Ако искаш да потърсиш обиколен път през гората наляво[/link].[br /][link target='126']Ако предпочиташ да заобиколиш през гората отдясно[/link].[br /][link target='110']А ако не се боиш и възнамеряваш да вървиш напред[/link].[/p]</Text>
@@ -353,44 +375,6 @@ $.itemsSelected = false;[/script][/p][p][script]$.item = 'staff';[/script][em
     </Episode>
     <Episode Id="77" IsMarked="true" Location="222.5;222.5">
       <Text>[p]Кълбенцето бързо се търкулва назад по тревясалия път. Тичаш след него с всичка сила, но скоро го изгубваш от поглед. Впрочем и без него вече всичко е ясно. Посоката е погрешна. Трябва да се върнеш на кръстопътя.[script]player.removeItem('ball', 1);[/script][/p][p][link target='15'](продължи)[/link][/p]</Text>
-    </Episode>
-    <Episode Id="SelectItem" IsMarked="true" Location="242.5;142.5">
-      <Text>[p][if]return player.getItem($.item);[/if][script]$.itemIds&amp;ob;context.getNextActivatorIndex()&amp;cb; = $.item;
-$.selectedItems&amp;ob;$.item&amp;cb; = 0;[/script][tag]item:return context.getItem($.item);[/tag] [clicker]if (!$.itemsSelected) {
-  if ($.itemsToThrow &amp;gt; 0) {
-    const itemId = $.itemIds&amp;ob;context.index&amp;cb;;
-    if (itemId !== 'gold') {
-      if ($.selectedItems&amp;ob;itemId&amp;cb; &amp;lt; player.getItem(itemId).stack) {
-        $.selectedItems&amp;ob;itemId&amp;cb; += 1;
-        $.itemsToThrow -= 1;
-        context.showPopupMessage(context.getSelectedItemMessage($.selectedItems, $.itemsToThrow));
-      } else {
-        context.showPopupMessage(`Нямаш повече (${context.getItem(itemId).name})`);
-      }
-    } else {
-      if ($.selectedItems&amp;ob;itemId&amp;cb; &amp;lt; player.getItem(itemId).stack - 10) {
-        $.selectedItems&amp;ob;itemId&amp;cb; += 10;
-        $.itemsToThrow -= 1;
-        context.showPopupMessage(context.getSelectedItemMessage($.selectedItems, $.itemsToThrow));
-      } else {
-        context.showPopupMessage(`Нямаш повече (${context.getItem(itemId).name})`);
-      }
-    }
-  } else {
-    context.showPopupMessage('Избрал си достатъчно предмети.');
-  }
-}[/clicker][tag]general:return '+';[/tag][endclicker /] [clicker]if (!$.itemsSelected) {
-  const itemId = $.itemIds&amp;ob;context.index - 1&amp;cb;;
-  if ($.selectedItems&amp;ob;itemId&amp;cb; &amp;gt; 0) {
-    if (itemId === 'gold') {
-      $.selectedItems&amp;ob;itemId&amp;cb; -= 10;
-    } else {
-      $.selectedItems&amp;ob;itemId&amp;cb; -= 1;
-    }
-    $.itemsToThrow += 1;
-    context.showPopupMessage(context.getSelectedItemMessage($.selectedItems, $.itemsToThrow));
-  }
-}[/clicker][tag]general:return '-';[/tag][endclicker /][endif /][/p]</Text>
     </Episode>
     <Episode Id="110" IsMarked="true" Location="237.5;282.5">
       <Text>[p]Приближаваш до къщичката и виждаш, че е невъзможно да се промъкнеш край нея [symbol value='ndash' /] стените й плътно преграждат входа на клисурата. Как ще продължиш напред?[/p][p][link target='124']Ако искаш да почукаш на вратата[/link].[br /][link target='131']Ако се опиташ да се промъкнеш отдолу, между кокошите крака[/link].[br /][tag]item:return context.getItem('hat');[/tag] [link target='172' condition='return player.getItem(&amp;apos;hat&amp;apos;);']Ако решиш да си сложиш шапка-невидимка, преди да пролазиш отдолу[/link].[br /][tag]item:return context.getItem('carpet');[/tag] [link target='188' condition='return player.getItem(&amp;apos;carpet&amp;apos;);']Ако предпочиташ да прелетиш отгоре с летящо килимче[/link].[/p]</Text>
@@ -1712,7 +1696,6 @@ return item &amp;&amp; item.stack &gt;= 5;']Ако искаш да играеш 
     <Transition From="144" To="192" />
     <Transition From="144" To="155" />
     <Transition From="144" To="119" />
-    <Transition From="31" To="61" />
     <Transition From="Rules5" To="1" />
     <Transition From="131" To="160" />
     <Transition From="131" To="195" />
@@ -1760,8 +1743,6 @@ return item &amp;&amp; item.stack &gt;= 5;']Ако искаш да играеш 
     <Transition From="6" To="42" />
     <Transition From="6" To="33" />
     <Transition From="11" To="15" />
-    <Transition From="55" To="24" />
-    <Transition From="55" To="61" />
     <Transition From="Rules1" To="Rules2" />
     <Transition From="Rules2" To="Rules3" />
     <Transition From="42" To="38" />
@@ -2389,6 +2370,9 @@ return item &amp;&amp; item.stack &gt;= 5;']Ако искаш да играеш 
     <Transition From="25" To="19" />
     <Transition From="25" To="9" />
     <Transition From="25" To="11" />
+    <Transition From="31" To="61" />
+    <Transition From="55" To="24" />
+    <Transition From="55" To="61" />
   </Transitions>
   <Groups />
   <Global>
@@ -2944,8 +2928,8 @@ context.showPopupMessage('Възстановяваш 10 жизнени точ
     </Image>
   </Images>
   <View>
-    <ScrollX>0</ScrollX>
-    <ScrollY>0</ScrollY>
+    <ScrollX>85</ScrollX>
+    <ScrollY>73</ScrollY>
     <Zoom>58</Zoom>
     <Width>557.5518</Width>
     <Height>1456.5</Height>
