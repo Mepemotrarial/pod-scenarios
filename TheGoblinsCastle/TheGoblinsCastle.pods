@@ -245,13 +245,13 @@ player.life = player.maxLife;[/script][tag]info:return `20 + ${$.result} = ${
       <Text>[p][bold]ВЪЛШЕБНИ ПРЕДМЕТИ[/bold][/p][p]По време на приключението ще имаш възможността да се снабдиш с различни вълшебни предмети. Те могат да се окажат извънредно полезни[symbol value='hellip' /] но и опасни. Използвай ги пестеливо, защото всеки от тях се използва само по веднъж (освен ако в книгата е посочено изрично, че се разрешава повторна употреба).[/p][p]А сега, ако всичко изложено дотук ти е ясно, настава време за голямото приключение.[/p][p]И тъй, много, много отдавна, в малка колиба сред старата гора живееш[symbol value='hellip' /] [bold]ти[/bold]![/p][p][link target='Rules5'](продължи)[/link][/p]</Text>
     </Episode>
     <Episode Id="1" IsMarked="true" Location="142.5;42.5">
-      <Text>[p][script]player.addItem(context.createItem('sword'));[/script]Разсъмва се. В клоните на дърветата пеят птици. Бодро крачиш по горския път и се питаш как ще стигнеш до замъка на таласъмите. Досега никога не си ходил натам, а и царицата на самодивите не можа да ти помогне с напътствия.[/p][p][tag]item:return context.getItem('book');[/tag] [link target='9' condition='return player.getItem(&amp;apos;book&amp;apos;);']Ако искаш още отсега да потърсиш помощта на вълшебната книга (стига да я имаш)[/link].[br /][link target='25']Ако нямаш книга или смяташ, че е прекалено рано да използуваш толкова ценен дар[/link].[/p]</Text>
+      <Text>[p][script]player.addItem(context.createItem('sword'));[/script]Разсъмва се. В клоните на дърветата пеят птици. Бодро крачиш по горския път и се питаш как ще стигнеш до замъка на таласъмите. Досега никога не си ходил натам, а и царицата на самодивите не можа да ти помогне с напътствия.[/p][p][tag]item:return context.getItem('book');[/tag] [link target='9' condition='return player.getItem(&amp;apos;book&amp;apos;);']Ако искаш още отсега да потърсиш помощта на вълшебната книга[/link].[br /][link target='25']Ако нямаш книга или смяташ, че е прекалено рано да използуваш толкова ценен дар[/link].[/p]</Text>
     </Episode>
     <Episode Id="9" IsMarked="true" Location="122.5;62.5">
       <Text>[p][script]player.removeItem('book', 1);[/script]Разлистваш книгата. Всички страници са празни освен една, на която пише: „Не отминавай гладния! Доброто, което ще сториш, може да ти се върне стократно.“[/p][p][link target='25'](продължи)[/link][/p]</Text>
     </Episode>
     <Episode Id="25" IsMarked="true" Location="142.5;62.5">
-      <Text>[p]В далечината край пътя забелязваш нещо черно. Приближаваш се и скоро разбираш, че това е първата ти среща. На тревата седи дребно, мършаво човече с парцаливи черни дрехи, отпуснало нозе в канавката. Щом те вижда, то се изправя и с дълбок поклон се обръща към теб.[/p][p][symbol value='mdash' /] Добра среща, ваша светлост! Желая ви успех в работата, по която сте тръгнали![br /][symbol value='mdash' /] Добра среща и на теб, страннико! [symbol value='mdash' /] отвръщаш ти.[br /][symbol value='mdash' /] Благодаря за поздрава [symbol value='mdash' /] тъжно казва човечето. [symbol value='mdash' /] Само че поздрав стомах не пълни. Хайде, ваша светлост, отворете тая голяма раница! В нея все ще се намери нещичко за един изгладнял сиромах.[/p][p]Какво ще правиш сега?[/p][p][tag]item:return context.getItem('tablecloth');[/tag] [link target='4' condition='return player.getItem(&amp;apos;tablecloth&amp;apos;);']Можеш да извадиш от раницата вълшебна покривчица (стига да си се запасил с нея) и да предложиш на гладното човече богата гощавка[/link].[br /][tag]item:return context.getItem('gold');[/tag] [link target='19' condition='return player.getItem(&amp;apos;gold&amp;apos;);']Можеш да дадеш на човечето една жълтица[/link].[br /][tag]item:return context.getItem('book');[/tag] [link target='9' condition='return player.getItem(&amp;apos;book&amp;apos;);']Можеш и да се посъветваш с вълшебната книга[/link].[br /][link target='11']А ако смяташ, че няма смисъл да си губиш времето с разни човечета[/link].[/p]</Text>
+      <Text>[p]В далечината край пътя забелязваш нещо черно. Приближаваш се и скоро разбираш, че това е първата ти среща. На тревата седи дребно, мършаво човече с парцаливи черни дрехи, отпуснало нозе в канавката. Щом те вижда, то се изправя и с дълбок поклон се обръща към теб.[/p][p][symbol value='mdash' /] Добра среща, ваша светлост! Желая ви успех в работата, по която сте тръгнали![br /][symbol value='mdash' /] Добра среща и на теб, страннико! [symbol value='mdash' /] отвръщаш ти.[br /][symbol value='mdash' /] Благодаря за поздрава [symbol value='mdash' /] тъжно казва човечето. [symbol value='mdash' /] Само че поздрав стомах не пълни. Хайде, ваша светлост, отворете тая голяма раница! В нея все ще се намери нещичко за един изгладнял сиромах.[/p][p]Какво ще правиш сега?[/p][p][tag]item:return context.getItem('tablecloth');[/tag] [link target='4' condition='return player.getItem(&amp;apos;tablecloth&amp;apos;);']Можеш да извадиш от раницата вълшебна покривчица и да предложиш на гладното човече богата гощавка[/link].[br /][tag]item:return context.getItem('gold');[/tag] [link target='19' condition='return player.getItem(&amp;apos;gold&amp;apos;);']Можеш да дадеш на човечето една жълтица[/link].[br /][tag]item:return context.getItem('book');[/tag] [link target='9' condition='return player.getItem(&amp;apos;book&amp;apos;);']Можеш и да се посъветваш с вълшебната книга[/link].[br /][link target='11']А ако смяташ, че няма смисъл да си губиш времето с разни човечета[/link].[/p]</Text>
     </Episode>
     <Episode Id="4" IsMarked="true" Location="142.5;82.5">
       <Text>[p][script]player.removeItem('tablecloth', 1);[/script]Изваждаш покривката от раницата, разпъваш я на тревата и тя мигом се отрупва с лакомства. Какво ли няма тук! Печена кокошка, баница, тънко нарязана сланина, питка с прясно сирене, тава с печено прасенце, домашна луканка, баклава и още много благини.[/p][p]Дребното човече хлъцва от възторг и без да чака покана, се заема да унищожи всичко до последната троха. В устата му като в бездънен кладенец изчезва и прасенцето, и питката, и баницата[symbol value='hellip' /] След няколко минути от цялото изобилие няма и помен. Остава само[br /]празната покривчица, но ето че и тя бавно изчезва.[/p][p][link target='30'](продължи)[/link][/p]</Text>
@@ -1759,10 +1759,6 @@ return item &amp;&amp; item.stack &gt;= 5;']Ако искаш да играеш 
     <Transition From="38" To="1" />
     <Transition From="6" To="42" />
     <Transition From="6" To="33" />
-    <Transition From="25" To="4" />
-    <Transition From="25" To="19" />
-    <Transition From="25" To="9" />
-    <Transition From="25" To="11" />
     <Transition From="11" To="15" />
     <Transition From="55" To="24" />
     <Transition From="55" To="61" />
@@ -2309,8 +2305,6 @@ return item &amp;&amp; item.stack &gt;= 5;']Ако искаш да играеш 
     <Transition From="158" To="161" />
     <Transition From="158" To="169" />
     <Transition From="Rules3" To="Rules4" />
-    <Transition From="1" To="9" />
-    <Transition From="1" To="25" />
     <Transition From="122" To="174" />
     <Transition From="122" To="140" />
     <Transition From="161" To="107" />
@@ -2389,6 +2383,12 @@ return item &amp;&amp; item.stack &gt;= 5;']Ако искаш да играеш 
     <Transition From="208" To="191" />
     <Transition From="208" To="225" />
     <Transition From="208" To="371" />
+    <Transition From="1" To="9" />
+    <Transition From="1" To="25" />
+    <Transition From="25" To="4" />
+    <Transition From="25" To="19" />
+    <Transition From="25" To="9" />
+    <Transition From="25" To="11" />
   </Transitions>
   <Groups />
   <Global>
