@@ -1,0 +1,482 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Scenario>
+  <Properties>
+    <Id>245523b4-dc92-4e96-a0cf-f7f784dd4f46</Id>
+    <Name>Огнена пустиня</Name>
+    <InitialEpisode>125</InitialEpisode>
+    <Description>Здравей, незнайни храбрецо! Знай, че с разгръщането на тази книга се впускаш в приключение, което ще изисква от теб да напрегнеш сили и съобразителност, за да изпълниш една опасна мисия.</Description>
+    <Discoverable>True</Discoverable>
+  </Properties>
+  <GlobalScripts>
+    <Script Name="player">context.increasePlayerLife = function(value) {
+  this.player.life = Math.min(this.player.life + value, this.player.maxLife);
+}
+
+context.reducePlayerLife = function(value) {
+  this.player.life -= value;
+  if (this.player.life &lt;= 0) {
+    context.gameOver();
+    return context.DEATH_MESSAGE;
+  }
+}</Script>
+    <Script Name="constants">context.DEFEAT_MESSAGE = "Приключението ти свършва тук.";
+context.DEATH_MESSAGE = "Умираш от раните си и приключението ти завършва."</Script>
+  </GlobalScripts>
+  <GlobalDefinition>
+    <Attributes />
+    <Events>
+      <Event Name="canTransition" IsIntrinsic="true" Description="Invoked every time a player attempts to follow a link in order to verify whether this is possible. Individual (direct) transitions contain a condition script as well, which is used with higher priority." />
+      <Event Name="canPickup" IsIntrinsic="true" Description="Invoked to verify that a character can pick up an item." />
+      <Event Name="canDrop" IsIntrinsic="true" Description="Invoked to verify that a character can drop an item." />
+      <Event Name="canEquip" IsIntrinsic="true" Description="Invoked to verify that a character can equip a specific item in a specific inventory slot." />
+      <Event Name="canUnequip" IsIntrinsic="true" Description="Invoked to verify that a character can equip a specific item." />
+      <Event Name="canUse" IsIntrinsic="true" Description="Invoked to verify that a character can use a specific item and the possible usage types." />
+      <Event Name="canAttack" IsIntrinsic="true" Description="Invoked to verify that a character can attacks another character in combat." />
+      <Event Name="onAttack" IsIntrinsic="true" Description="Invoked when a character attacks another character in combat." />
+      <Event Name="onTurn" IsIntrinsic="true" Description="Invoked at the end of every turn during combat." />
+      <Event Name="onCharacterAttributeChanged" IsIntrinsic="true" Description="Invoked when an attribute of a character is changed." />
+      <Event Name="onItemAttributeChanged" IsIntrinsic="true" Description="Invoked when an attribute of an item is changed." />
+    </Events>
+  </GlobalDefinition>
+  <ItemDefinition IdentityAttribute="id">
+    <Attributes>
+      <Attribute Id="id" Name="Id" IsIntrinsic="true" IsMandatory="true" IsUnique="true" Type="String" Description="A unique item identifier." />
+      <Attribute Id="name" Name="Name" IsIntrinsic="true" IsMandatory="true" IsUnique="false" Type="String" Description="A human readable name." />
+      <Attribute Id="description" Name="Description" IsIntrinsic="false" IsMandatory="false" IsUnique="false" Type="Description" DefaultValue="" Category="" />
+    </Attributes>
+    <Events>
+      <Event Name="onInit" IsIntrinsic="true" Description="Invoked when the item is created." />
+      <Event Name="onAttacked" IsIntrinsic="true" Description="Invoked when the character wielding the item attacked another character in combat." />
+      <Event Name="onHit" IsIntrinsic="true" Description="Invoked when the character wielding the item hit another character in combat." />
+      <Event Name="onMissed" IsIntrinsic="true" Description="Invoked when the character wielding the item missed another character in combat." />
+      <Event Name="onGotHit" IsIntrinsic="true" Description="Invoked when the character wielding the item got hit by another character in combat." />
+      <Event Name="onPicked" IsIntrinsic="true" Description="Invoked when the item was picked up." />
+      <Event Name="onDropped" IsIntrinsic="true" Description="Invoked when the item was dropped." />
+      <Event Name="onEquipped" IsIntrinsic="true" Description="Invoked when the item was equipped in an inventory slot." />
+      <Event Name="onUnequipped" IsIntrinsic="true" Description="Invoked when the item was unequipped." />
+      <Event Name="onUsed" IsIntrinsic="true" Description="Invoked when the item was used." />
+      <Event Name="onTurn" IsIntrinsic="true" Description="Invoked at the end of every turn during combat." />
+    </Events>
+  </ItemDefinition>
+  <CharacterDefinition IdentityAttribute="id">
+    <Attributes>
+      <Attribute Id="id" Name="Id" IsIntrinsic="true" IsMandatory="true" IsUnique="true" Type="String" Description="A unique item identifier." />
+      <Attribute Id="name" Name="Name" IsIntrinsic="true" IsMandatory="true" IsUnique="false" Type="String" Description="A human readable name." />
+      <Attribute Id="strength" Name="Сила" IsIntrinsic="false" IsMandatory="false" IsUnique="false" Type="Integer" DefaultValue="10" Category="Атрибути" />
+      <Attribute Id="life" Name="Живот" IsIntrinsic="false" IsMandatory="false" IsUnique="false" Type="Integer" DefaultValue="20" Category="Атрибути" />
+      <Attribute Id="maxLife" Name="Max life" IsIntrinsic="false" IsMandatory="false" IsUnique="false" Type="Integer" DefaultValue="20" Category="" />
+    </Attributes>
+    <Events>
+      <Event Name="onInit" IsIntrinsic="true" Description="Invoked when the character is created." />
+      <Event Name="onAttacked" IsIntrinsic="true" Description="Invoked when the character attacked another character in combat." />
+      <Event Name="onGotHit" IsIntrinsic="true" Description="Invoked when the character got hit by another character in combat." />
+      <Event Name="onTurn" IsIntrinsic="true" Description="Invoked at the end of every turn during combat." />
+    </Events>
+  </CharacterDefinition>
+  <SkillDefinition IdentityAttribute="id">
+    <Attributes>
+      <Attribute Id="id" Name="Id" IsIntrinsic="true" IsMandatory="true" IsUnique="true" Type="String" Description="A unique skill identifier." />
+      <Attribute Id="name" Name="Name" IsIntrinsic="true" IsMandatory="true" IsUnique="false" Type="String" Description="A human readable name." />
+      <Attribute Id="passive" Name="Passive" IsIntrinsic="true" IsMandatory="false" IsUnique="false" Type="Boolean" DefaultValue="False" Description="Indicates whether the skill is passive or can be explicitly activated." />
+    </Attributes>
+    <Events>
+      <Event Name="canUse" IsIntrinsic="true" Description="Invoked to verify that the skill can be used." />
+      <Event Name="onUse" IsIntrinsic="true" Description="Invoked when the skill is used." />
+      <Event Name="onTurn" IsIntrinsic="true" Description="Invoked at the end of every turn during combat." />
+    </Events>
+  </SkillDefinition>
+  <Episodes>
+    <Episode Id="Intro" IsMarked="true" Location="32.5;22.5">
+      <Text>[p]Здравей, незнайни храбрецо! Знай, че с разгръщането на тази книга се впускаш в приключение, което ще изисква от теб да напрегнеш сили и съобразителност, за да изпълниш една опасна мисия. Не мисли, че авторът ще описва приключенията, а за теб ще остава само да четеш. Напротив! Всеки твой избор, всяко решение ще влияе върху събитията и четенето може да завърши както с победа за теб, така и с гибел. Защото истинският автор на книгата и нейният истински герой,[/p][p]ТОВА СИ ТИ![/p][p]Но кой си ти всъщност?[/p][p][link target='Intro2'](продължи)[/link][/p][p][image source='1' title='' hspace='0' vspace='0' align='center' width='405' height='394' /][/p]</Text>
+    </Episode>
+    <Episode Id="Intro2" IsMarked="true" Location="52.5;22.5">
+      <Text>[p]Днес е почивен ден и ти с удоволствие се излежаваш на припек край колибата си сред Старата гора. Приятно е да знаеш, че работата може да почака. Пък и нямаш кой знае колко работа. Животът ти тук е спокоен и най-често монотонен.[/p][p]Шум от стъпки те кара да надигнеш глава. В следващия миг скачаш на крака и с изненада се вглеждаш към пътеката в края на поляната. От гората излиза прегърбен старец с дълга бяла дреха, който се подпира на полиран дървен жезъл. Сбръчканото му лице е добродушно, но в дълбоко хлътналите очи се крие тревога. От удивление ти даже забравяш да го поздравиш. Та това е великият вълшебник Сиян! Самият Сиян е решил да ти дойде на гости! И по всичко изглежда, че се кани да обсъди с теб някакъв сериозен въпрос.[/p][p][symbol value='mdash' /] Здравей, младежо [symbol value='mdash' /] раздава се гласът му, учудващо мощен за крехкото старческо тяло.[/p][p]Смутено промърморваш някакво приветствие, но Сиян махва с ръка.[/p][p][symbol value='mdash' /] Остави любезностите! Трябва да поговорим.[/p][p]Докато сядате на тревата, вълшебникът изпитателно се вглежда в лицето ти.[/p][p][symbol value='mdash' /] Безделието не ти се отразява добре [symbol value='mdash' /] лукаво казва той. [symbol value='mdash' /] На твоята възраст човек се нуждае от приключения.[br /][symbol value='mdash' /] Аз съм само един мирен дървар [symbol value='mdash' /] възразяваш ти. [symbol value='mdash' /] Приключенията са за странстващите рицари. Предпочитам да си живея мирно и тихо.[br /][symbol value='mdash' /] Не се прави на скромен! [symbol value='mdash' /] прекъсва те старецът. [symbol value='mdash' /] За странстващите рицари, а? Позволи ми да ти кажа, младежо, че никакъв странстващ рицар не би успял да извърши подвиг, какъвто те чака. Нали те познавам.[br /][symbol value='mdash' /] Вероятно си прав [symbol value='mdash' /] съгласяваш се ти. [symbol value='mdash' /] Особено, ако се налага. Например, ако трябва да спася Старата гора от гибел[symbol value='hellip' /][br /][symbol value='mdash' /] Именно това се налага! [symbol value='mdash' /] категорично заявява Сиян. [symbol value='mdash' /] Старата гора е заплашена от самия Агамор. Чувал ли си това име?[/p][p]Иска ли питане! От години насам в Старата гора се носят зловещи слухове за Агамор. Някога той е бил най-способният ученик на Сиян, ала след това е тръгнал по пътя на злото и днес е един от най-опасните магьосници.[/p][p][symbol value='mdash' /] Виждам, че ме разбираш [symbol value='mdash' /] продължава старецът. [symbol value='mdash' /] Позволи ми сега да ти задам един въпрос. Откога не си сънувал приятни сънища?[/p][p]Странен въпрос[symbol value='hellip' /] Напрягаш паметта си и с изненада откриваш, че не си спомняш напоследък да си сънувал.[/p][p][symbol value='mdash' /] Да, така е [symbol value='mdash' /] кимва Сиян. [symbol value='mdash' /] От няколко седмици хората по нашия край сънуват само кошмари или изобщо не сънуват. Приятните им сънища са откраднати чрез магия. А само двама души на света имат силата да сторят това [symbol value='ndash' /] аз и Агамор.[br /][symbol value='mdash' /] Но защо са му сънищата на хората? [symbol value='mdash' /] учудваш се ти.[/p][p]Вълшебникът тъжно поклаща глава.[/p][p][symbol value='mdash' /] Преди години, когато изгоних Агамор оттук, той се закле, че един ден ще се върне и ще превърне Старата гора в царство на злото. Смятах заплахите му за празни приказки[symbol value='hellip' /] ала сега разбирам, че съм грешал. Знаеш ли, че една от най-страшните магии е тъкмо тази [symbol value='ndash' /] да се откраднат сънищата на хората? Чрез нея могат да се изтъкат невидими черни нишки право към човешките души. И тогава Агамор ще се превърне в повелител на всичко живо из нашата област. Но за щастие все още имаме време. Черната магия на сънищата е дълга и бавна. Ако в близките дни някой храбрец успее да открие Агамор и да се пребори с него[symbol value='hellip' /][/p][p][symbol value='mdash' /] Мене ли имаш предвид? [symbol value='mdash' /] възкликваш ти. [symbol value='mdash' /] Чакай малко, аз почти нищо не разбирам от магии и вълшебства! Защо сам не се справиш с Агамор?[br /][symbol value='mdash' /] Мислих за това [symbol value='mdash' /] с въздишка отвръща Сиян. [symbol value='mdash' /] Да, канех се да тръгна да диря Агамор и да сложа край на злодеянията му. Но ако го сторя, ще трябва да оставя гората без защита. А все още не всички сънища са откраднати. Трябва да стоя тук и с всички сили да преча на черната магия. Така поне ще забавя плановете му. А в това време ти[symbol value='hellip' /][/p][p]Старецът не довършва думите си. Гледа те право в очите и ти разбираш, че нямаш право да откажеш. Тихата ти въздишка е всъщност знак за съгласие. Веднага обаче ти хрумва нов въпрос.[/p][p][symbol value='mdash' /] Добре, да речем, че приема. Къде да търся Агамор?[br /][symbol value='mdash' /] Тъкмо това е най-трудното [symbol value='mdash' /] неохотно признава Сиян. [symbol value='mdash' /] Той е прекалено опитен магьосник и е изтъкал около себе си Завесата на Незнанието. Опитах всички вълшебства, но дори Премъдрата книга не може да ми помогне. Чувал съм само неясни слухове, че сега Агамор живее в някаква долина отвъд Огнената пустиня. Но къде е тази долина и дали изобщо съществува[symbol value='hellip' /] ще трябва да го узнаеш сам. И тъй, мисля, че се разбрахме. Утре призори потегляш да търсиш нашия общ враг. Знаеш ли правилата?[/p][p]Наистина, знаеш ли правилата? За всеки случай, нека ги кажем. Чети внимателно, защото от тях зависи съдбата ти в тази книга.[/p][p][link target='Chance'](продължи)[/link][/p]</Text>
+    </Episode>
+    <Episode Id="Chance" IsMarked="true" Location="72.5;22.5">
+      <Text>[p][bold]ШАНС[/bold][/p][p]Съдбата неведнъж ще се намесва в твоето приключение. Всеки път, когато се налага да изпробваш шанса, можеш да го сториш чрез натискане на специален бутон ([clicker]return true;[/clicker][tag]general:return 'Избери число';[/tag][endclicker /]). Това действие ще генерира случайно число в интервала от 1 до 12, което ще определи какъв е късметът ти.[/p][p]По подобен начин ще определиш силата и живота си, както и ще провеждаш схватки с многобройните си врагове, но за това ще стане дума по-нататък.[/p][p][link target='Strength'](продължи)[/link][/p]</Text>
+    </Episode>
+    <Episode Id="Strength" IsMarked="true" Location="92.5;22.5">
+      <Text>[p][bold]СИЛА[/bold][/p][p]Избери едно случайно число. То ще бъде разделено на две и към получения резултат ще се прибави още [tag]info:return '10';[/tag]. Това ще са твоите точки сила. Ако посоченото число е нечетно и в резултата има половинка, закръглянето е към по-горното число.[/p][p][blocker]$.result = context.roll(1, 12);
+player.strength = Math.round($.result / 2) + 10;
+return true;[/blocker][tag]general:return 'Избери число';[/tag][endblocker /][/p][p]Избраното число е [tag]info:return $.result;[/tag]. Твоята сила е [tag]info:return player.strength;[/tag]. Помни, че силата ти е постоянна и може да се променя само в изключителни случаи.[/p][p][link target='Life'](продължи)[/link][/p]</Text>
+    </Episode>
+    <Episode Id="Life" Location="112.5;22.5">
+      <Text></Text>
+    </Episode>
+    <Episode Id="Battles" Location="52.5;42.5">
+      <Text></Text>
+    </Episode>
+    <Episode Id="Equipment" Location="72.5;42.5">
+      <Text></Text>
+    </Episode>
+    <Episode Id="Items" Location="92.5;42.5">
+      <Text></Text>
+    </Episode>
+    <Episode Id="Intro3" IsMarked="true" Location="112.5;42.5">
+      <Text>[p]След дълги колебания вадиш избраните предмети един по един и започваш да ги подреждаш в раницата си. Неочаквано Сиян те потупва по рамото.[/p][p][symbol value='mdash' /] Не мисли, че ще те изпратя сам срещу Агамор. Погрижил съм се да имаш верни спътници. Погледни![/p][p]Обръщаш се и виждаш, че до вълшебника са застанали двама мъже, облечени в изтъркани кожени дрехи. Брадатите им лица са почти еднакви, макар че единият е нисък и широкоплещест, а другият [symbol value='ndash' /] слаб и висок.[/p][p][symbol value='mdash' /] Запознай се [symbol value='mdash' /] казва Сиян. [symbol value='mdash' /] Този дангалак е Пано, отличен познавач на пустинята. До него е брат му Борил. Той неведнъж е пътувал по бреговете на река Сайданал. Двамата са опитни бойци и се надявам, че ще ти помогнат успешно да преодолееш всички изпитания. Е, съгласни ли сте да поемете мисията? Ако се колебаете, сега е последната възможност да откажете.[/p][p]Двамата брадати мъже решително кимват. После пристъпват към тебе и протягат ръце.[/p][p]Решено е! Утре призори потегляте на път [symbol value='ndash' /] и само смъртта може да ви попречи в търсенето на злодея-магьосник Агамор и Долината на изгубените сънища.[/p][p]За нощувка се настанявате в колибата. А на разсъмване[symbol value='hellip' /][/p][p][link target='1'](продължи)[/link][/p]</Text>
+    </Episode>
+    <Episode Id="1" IsMarked="true" Location="252.5;42.5">
+      <Text>[p]В ранното утро тримата бодро вървите напред. Гората наоколо постепенно оредява. Неочаквано Пано, който крачи начело, спира и вдига ръка. Дошло е време за първото решение.[/p][p]Пътят пред вас се разделя на три разклонения. Лявото води към река Сайданал и пристанищния град Аквадил. Ако продължите направо, скоро ще стигнете до търговския град Перодон в покрайнините на пустинята. А десният път минава през Аспар и води покрай подножието на Полумесечната планина.[/p][p]Обсъждането на възможностите скоро се превръща в бурен спор. Борил настоява да изберете пътуването по реката като най-бързо и леко. Ти смяташ, че пътят в подножието на планините също е достатъчно удобен. Колкото до Пано [symbol value='ndash' /] той е горещ привърженик на пътеките през пустинята. Според него в Тихия оазис можете да намерите сведения за тайнственото скривалище на Агамор.[/p][p]В крайна сметка решението се пада на теб. Избирай по кой път ще потеглите.[/p][p][link target='19']Наляво, към реката[/link].[br /][link target='73']Направо, към пустинята[/link].[br /][link target='48']Надясно, покрай планините[/link].[/p]</Text>
+    </Episode>
+    <Episode Id="19" IsMarked="true" Location="112.5;62.5">
+      <Text>[p]През идния ден не срещате никого по пътя за Аквадил, но въпреки това те мъчи чувството, че ви следят. Навярно Пано и Борил също имат подобни подозрения, защото от време на време спират и се озъртат назад. Все пак денят минава без произшествия. Привечер спирате на бивак в покрайнините на гъста гора. Може би тревогата ти е излишна, ала все пак решаваш, че не бива да спите без пазач. След вечеря тримата сядате край огъня и разпределяте смените. Ти избираш да пазиш пръв. Още около половин час разговаряте за предстоящата мисия, но умората от дългия ден надделява. Пано се омотава с плаща си и веднага заспива. След малко към него се присъединява и Борил. Какво ще правиш сега?[/p][p][link target='37']Ако решиш да седиш край огъня, докато свърши смяната ти[/link].[br /][link target='52']Ако предпочиташ да се прикриеш в близките храсти и да пазиш оттам[/link].[/p]</Text>
+    </Episode>
+    <Episode Id="73" Location="252.5;62.5">
+      <Text></Text>
+    </Episode>
+    <Episode Id="48" Location="387.5;62.5">
+      <Text></Text>
+    </Episode>
+    <Episode Id="37" IsMarked="true" Location="102.5;82.5">
+      <Text>[p]Провери шанса си с число от таблицата в края на книгата.[/p][p][embed value='FateRoll' /][/p][p][if]return $.result &amp;lt;= 8;[/if][link target='20'](продължи)[/link][else /][link target='293'](продължи)[/link][endif /][/p]</Text>
+    </Episode>
+    <Episode Id="52" Location="122.5;82.5">
+      <Text>[p]Може би си прекалено подозрителен, но все пак решаваш да вземеш всички предпазни мерки. Изваждаш от раницата си резервните дрехи и оформяш от тях чучело. Когато го слагаш край огъня и се отдръпваш в храстите, картината е съвсем убедителна [symbol value='ndash' /] сякаш някой наистина седи задрямал до спящите си другари.[/p][p]В нощната тишина времето тече мъчително бавно. След около час вече започваш да се питаш дали е имало смисъл да си правиш излишен труд. Всичко наоколо изглежда спокойно. Но неочаквано погледът ти е привлечен от движение в полумрака. Към гаснещия огън пълзи човек в тъмни дрехи! След миг той скача на крака, хвърля се напред и забива кинжал в гърба на чучелото.[/p][p]Преди нападателят да се опомни от изненадата, ти изскачаш от храстите и стоварваш върху тила му дръжката на меча си. Падайки на земята, той надава глух вик, който събужда двамата ти спътници. И докато Пано и Борил се изправят, от гората се появяват още двама врагове. По-едрият от разбойниците замахва с меча си срещу теб.[/p][p]РАЗБОЙНИК[br /]СИЛА — 7, ЖИВОТ — 10[/p][p]Ако успееш да победиш в схватката, мини на #130.[/p]</Text>
+    </Episode>
+    <Episode Id="130" IsMarked="true" Location="132.5;102.5">
+      <Text>[p]Врагът пада мъртъв и ти веднага се завърташ за нова схватка, но Борил и Пано вече са ликвидирали третия разбойник. Докато си отдъхваш от битката, твоите спътници ловко връзват човека, когото си зашеметил. След малко пленникът се размърдва и отваря очи.[/p][p][symbol value='mdash' /] Кои те изпраща? [symbol value='mdash' /] питаш ти.[/p][p]В отговор получаваш само груба ругатня. Явно няма да е лесно да изкопчиш истината от него.[/p][p][tag]item:return context.getItem('stone');[/tag] [link target='script:117' script='player.removeItem(&amp;apos;stone&amp;apos;, 1); return 117;' condition='return player.getItem(&amp;apos;stone&amp;apos;);']Ако решиш да използваш камък на истината[/link].[br /][link target='144']Ако нямаш камък или не желаеш да го използваш[/link].[/p]</Text>
+    </Episode>
+    <Episode Id="117" IsMarked="true" Location="122.5;122.5">
+      <Text>[p][symbol value='mdash' /] Това ще ти развърже езика [symbol value='mdash' /] казваш ти и притискаш камъка върху челото на пленника. [symbol value='mdash' /] Говори! Кой те изпраща?[/p][p]Изведнъж очите му се разтварят широко и безсмисленият му поглед се забива в нощното небе, сякаш търси нещо там. Гласът му е тих и безизразен:[/p][p][symbol value='mdash' /] Изпраща ме[symbol value='hellip' /] Агамор[symbol value='hellip' /] Той знае за тебе[symbol value='hellip' /] Иска на всяка цена[symbol value='hellip' /] да ти попречим[symbol value='hellip' /] да стигнеш до Оракула в Тихия оазис[symbol value='hellip' /][br /][symbol value='mdash' /] Защо?[br /][symbol value='mdash' /] Не знам[symbol value='hellip' /] не знам [symbol value='mdash' /] мъчително стене човекът, като че незнанието му причинява болка.[br /][symbol value='mdash' /] А има ли и други наемници на Агамор по пътя ни? [symbol value='mdash' /] питаш ти.[br /][symbol value='mdash' /] Да[symbol value='hellip' /] има[symbol value='hellip' /] Много са[symbol value='hellip' /] но аз знам само[symbol value='hellip' /] къщата в Аквадил[symbol value='hellip' /] Триетажна каменна къща в покрайнините[symbol value='hellip' /] с каменен кораб над вратата[symbol value='hellip' /][br /][symbol value='mdash' /] Питай го къде е скривалището на Агамор [symbol value='mdash' /] подхвърля Борил. Наистина, това е най-важният въпрос.[/p][p][link target='137'](продължи)[/link][/p]</Text>
+    </Episode>
+    <Episode Id="144" IsMarked="true" Location="142.5;122.5">
+      <Text>[p][symbol value='mdash' /] Говори! [symbol value='mdash' /] повишаваш глас ти. [symbol value='mdash' /] Само така можеш да си спасиш живота.[/p][p]Пленникът презрително изкривява устни.[/p][p][symbol value='mdash' /] Ха, животът ми! Ти по-добре мисли за своя! Агамор ще ти види сметката, тъй да знаеш![/p][p][link target='137'](продължи)[/link][/p]</Text>
+    </Episode>
+    <Episode Id="FateRoll" IsMarked="true" Location="32.5;62.5">
+      <Text>[p][blocker]$.result = context.roll(1, 12);
+return true;[/blocker][tag]general:return 'Избери число (1-12)';[/tag][endblocker /][/p][p]Избраното число е [tag]info:return $.result;[/tag].[/p]</Text>
+    </Episode>
+    <Episode Id="20" Location="102.5;102.5">
+      <Text>[p]Настанала е дълбока тишина, нарушавана само от монотонния шепот на листата. Седиш край огъня и от време на време подхвърляш нови съчки. Но неочаквано в нощния покой зад гърба ти се раздава пукот на строшена вейка.[/p][p]Мигновено скачаш на крака и се обръщаш. В отблясъците на огъня забелязваш човек в тъмни дрехи, който се прокрадва към теб. Щом разбира, че е разкрит, той измъква от пояса си кинжал и се хвърля насреща ти.[/p][p]С рязък жест изтегляш меча от ножницата, като същевременно надаваш вик, за да събудиш спътниците си. Борил и Пано се събуждат веднага и се изправят [symbol value='ndash' /] тъкмо навреме, защото от храстите се появяват още двама противници. Схватката ще бъде жестока.[/p][p]Разбойникът пред теб замахва с кинжала, ти отскачаш от удара и на свой ред завърташ меча.[/p][p]РАЗБОЙНИК[br /]СИЛА — 6, ЖИВОТ — 12[/p][p]Ако победиш в сражението, мини на #63.[/p]</Text>
+    </Episode>
+    <Episode Id="293" IsMarked="true" Location="82.5;82.5">
+      <Text>[p]Седиш до огъня и от време на време подхвърляш съчки в пламъците. Наоколо царува тишина, нарушавана само от монотонния шепот на листата и гръмкото хъркане на двамата ти спътници.[/p][p]Ненадейно пращеше на строшена вейка те кара да трепнеш. Но не успяваш да се обърнеш. В гърба ти със страшна сила се забива хладното острие на кинжал и светлината на огъня помръква през погледа ти.[/p][p]Уви, приключението завършва дотук заедно с живота ти.[/p]</Text>
+    </Episode>
+    <Episode Id="63" IsMarked="true" Location="102.5;122.5">
+      <Text>[p]Противникът рухва на земята. Без да губиш време, се обръщаш за нова схватка, но Борил и Пано са се справили с нападателите.[/p][p][link target='125'](продължи)[/link][/p]</Text>
+    </Episode>
+    <Episode Id="125" IsMarked="true" Location="112.5;142.5">
+      <Text>[p]Претърсвате труповете на нападателите, но не откривате нищо, освен вехта кожена кесия със 7 жълтици.[script]player.addItem(context.createItem('gold', 7));[/script][/p][p]Останалата част от нощта преминава спокойно и на сутринта след закуска потегляте към Аквадил. Пътят постепенно навлиза в блатисти низини, набраздени от множество поточета и рекички. Далече на ниския хоризонт мътно блестят водите на река Сайданал.[/p][p]Около пладне наближавате покрайнините на Аквадил [symbol value='ndash' /] дълъг и тесен град, разтеглен покрай брега. Много от къщите са дървени, подпрени на колове направо над водата, а край тях се полюшват привързани рибарски лодки. Десетки дъсчени кейчета навлизат навътре в реката. Минавате през лабиринт от складове и магазини и накрая излизате на централното пристанище.[/p][p][symbol value='mdash' /] Почакайте ме тук [symbol value='mdash' /] заръчва Борил и изтичва към каменния кей.[/p][p]Десетина минути по-късно той се връща с добра новина [symbol value='ndash' /] открил е търговски кораб, който утре сутринта потегля нагоре по течението към Мардуз. Капитанът е съгласен да ви вземе на борда срещу 2 жълтици на човек.[/p][p]Пак по препоръка на опитния Борил се настанявате в една странноприемница близо до пристанището. Заплащаш по 1 жълтица на човек за нощувката.[script]player.removeItem('gold', 3);[/script][/p][p]Следобеда прекарвате в почивка, но привечер започваш да се питаш дали да не излезеш на разходка из града. Пано и Борил предпочитат да си останат в леглата.[/p][p][link target='304']Ако искаш да излезеш сам[/link].[br /][link target='150']Ако останеш в странноприемницата[/link].[/p]</Text>
+    </Episode>
+    <Episode Id="137" IsMarked="true" Location="132.5;142.5">
+      <Text>[p]Внезапно пленникът извива глава и захапва яката на дрехата си. Мощен гърч разтърсва цялото му тяло и след миг той се отпуска безжизнен, с изцъклени очи. Из нощния въздух се разнася острият мирис на „черната капка“ [symbol value='ndash' /] една от най-смъртоносните отрови.[/p][p][link target='125'](продължи)[/link][/p]</Text>
+    </Episode>
+    <Episode Id="304" IsMarked="true" Location="102.5;162.5">
+      <Text>[p]Вечерният Аквадил се оказва не толкова интересно място за разходки. Тъй като шумните пристанищни кръчми не те привличат, тръгваш към жилищните квартали. Но улиците пред теб са пусти. Изглежда, че хората тук са свикнали да се прибират рано по домовете си.[/p][p]Вече се каниш да тръгнеш обратно към пристанището, когато от една мрачна пресечка някой хвърля кинжал към гърдите ти. В последния момент успяваш да се наведеш и острието само леко одрасква рамото ти. Губиш една точка живот.[script]return context.reducePlayerLife(1);[/script] Ще оставиш ли нападението безнаказано?[/p][p][link target='290']Ако решиш да изтичаш към пресечката[/link].[br /][link target='261']Ако не искаш да рискуваш[/link].[/p]</Text>
+    </Episode>
+    <Episode Id="150" IsMarked="true" Location="132.5;267.5">
+      <Text>[p][image source='3' title='' hspace='0' vspace='0' align='right' width='436' height='659' /]Нощта в странноприемницата минава спокойно. Рано сутринта, бодри и отпочинали, се отправяте към пристанището, където корабът вече вдига платна. По тясно дъсчено мостче се качвате на борда. Плащаш на капитана 6 жълтици и заедно със спътниците си търсиш място за настаняване на палубата, отрупана с купища денкове, сандъци и кошове.[script]player.removeItem('gold', 6);[/script] Наоколо групички търговци тихо разговарят за цените на стоките в Мардуз.[/p][p]Скоро мостчето е вдигнато. Корабът бавно се отделя от кея и с издути от попътен вятър платна се отправя нагоре срещу течението. Постепенно дървените къщи на Аквадил остават назад. Наоколо се простират мътните води на широката река. От време на време по гористите брегове се мяркат рибарски селца.[/p][p]Пътуването е бавно и монотонно. Гледката е все една и съща, само далече на хоризонта пейзажът се променя [symbol value='ndash' /] там горите изчезват и се появяват покрайнините на Огнената пустиня.[/p][p]Малко преди пладне корабът наближава голям остров, обрасъл с буйна зеленина. Докато гледаш към него, някой те потупва по рамото. Обръщаш се и с изненада виждаш, че до теб е спрял капитанът.[/p][p][symbol value='mdash' /] Как мислиш, от коя страна ще е по-добре да заобиколим? [symbol value='mdash' /] пита той. [symbol value='mdash' /] Отляво течението е по-бързо и ще ни затрудни. Отдясно реката е по-широка и по-бавна, но понякога водите докарват пясъчни наноси и се случва корабите да заседнат на плитчина.[/p][p]Откъде ще препоръчаш да заобиколите?[br /][link target='91']Отдясно[/link].[br /][link target='8']Отляво[/link].[br /][link target='133']Ако не искаш да се месиш в решението на капитана[/link].[/p]</Text>
+    </Episode>
+    <Episode Id="290" IsMarked="true" Location="92.5;182.5">
+      <Text>[p]Изтичваш към уличката и в полумрака зърваш далече напред фигурата на бягащ човек.[/p][p][link target='273']Ако решиш да го подгониш[/link].[br /][link target='261']Ако предпочиташ да се въздържиш от риска[/link].[/p]</Text>
+    </Episode>
+    <Episode Id="261" IsMarked="true" Location="112.5;202.5">
+      <Text>[p]Не, няма смисъл да рискуваш повече. Из този непознат град ти си същинска мишена за наемните убийци. А нападателят[symbol value='hellip' /] да върви по дяволите. Прибираш се в странноприемницата.[/p][p][link target='150'](продължи)[/link][/p]</Text>
+    </Episode>
+    <Episode Id="273" IsMarked="true" Location="72.5;182.5">
+      <Text>[p]Втурваш се напред, но фигурата на бягащия изчезва в мрака. Когато стигаш до мястото, където си го видял за последен път, от него няма и следа. Тук градът свършва и напред се простира само голо мочурливо поле. Дълго се взираш в сенките на бурени и храсти, ала нищо не помръдва из блатата.[/p][p]Дали пък нападателят не се е укрил в някоя от последните къщи на града? Оглеждаш се. Наблизо има три къщи. Едната е ниска и схлупена, с глинени стени и покрив от каменни плочи. Другата е дървена, на два етажа, с дъсчени капаци на прозорците. Малко по-настрани се издига триетажна каменна сграда с широк параден вход, над които е изваян кораб с разперени платна. И трите къщи изглеждат отдавна изоставени.[/p][p]Коя от тях ще провериш?[br /][link target='266']Дървената[/link].[br /][link target='240']Глинената[/link].[br /][link target='333']Каменната[/link].[br /][link target='261']Ако не желаеш да провериш нито една от къщите[/link].[/p][p][image source='2' title='' hspace='0' vspace='0' align='center' width='379' height='179' /][/p]</Text>
+    </Episode>
+    <Episode Id="266" IsMarked="true" Location="92.5;202.5">
+      <Text>[p]Предпазливо се промъкваш през буренясалата градина. Оглеждаш къщата от всички страни, но не откриваш никакви признаци за човешко присъствие. Вратите и прозорците са облепени с паяжини, в дебелия слой прах няма отпечатъци от стъпки. Явно нападателят не е тук. Навярно вече е изчезнал към центъра на града.[/p][p]Искаш да продължиш проучването на другите две къщи, но приближаването на нощен патрул те кара да се откажеш от това решение. Разминаваш се с отряда на стражата и се прибираш в странноприемницата.[/p][p][link target='150'](продължи)[/link][/p]</Text>
+    </Episode>
+    <Episode Id="240" IsMarked="true" Location="72.5;202.5">
+      <Text>[p][link target='266'](продължи)[/link][/p]</Text>
+    </Episode>
+    <Episode Id="333" IsMarked="true" Location="52.5;182.5">
+      <Text>[p]Предпазливо се промъкваш из сенките на буренясалата градина. Къщата изглежда изоставена, но когато минаваш отзад, забелязваш, че в един от прозорците на третия етаж потрепва жълтеникаво пламъче[br /]на свещ. Какво ще предприемеш сега?[/p][p][tag]item:return context.getItem('mittens');[/tag] [link target='script:318' script='player.removeItem(&amp;apos;mittens&amp;apos;, 1); return 318;' condition='return player.getItem(&amp;apos;mittens&amp;apos;);']Ще се изкатериш до прозореца с лепнещи ръкавици[/link].[br /][link target='279']Ще се опиташ да влезеш през вратата[/link].[br /][link target='150']Ако решиш, че ще е най-добре да не рискуваш повече и да се прибереш в странноприемницата[/link].[/p]</Text>
+    </Episode>
+    <Episode Id="318" IsMarked="true" Location="87.5;242.5">
+      <Text>[p]Надяваш ръкавиците и докосваш стената с длани. Усещането е удивително. Когато притискаш с цяла длан, ръцете ти залепват за камъка, но лек натиск с пръстите е достатъчен, за да ги отделиш. Няколко опита ти доказват, че ръкавиците ще издържат цялата ти тежест. Събираш смелост и започваш изкачването нагоре. След минута вече си до прозореца и предпазливо надникваш в стаята. Вътре има само гола дъбова маса, край която седят двама души. По силуета разпознаваш нападателя от уличката. Сега той е навел виновно глава, докато човекът срещу него гневно размахва ръце.[/p][p][symbol value='mdash' /] Нали ти казах, глупако, никакви прибързани акции! [symbol value='mdash' /] долита през стъклото приглушен глас.[br /][symbol value='mdash' /] Ама аз мислех[symbol value='hellip' /] — опитва се да възрази нападателят.[br /][symbol value='mdash' /] Ще се научиш да не мислиш! Няма защо да ги подплашваме преждевременно. Всичко е уредено с пиратите. Те ще атакуват кораба, когато тръгне да заобикаля острова отдясно. Нали запомни, отдясно! Всички кораби заобикалят оттам. Хайде сега да си вървим.[/p][p]Двамата стават. Онзи, който е говорил за нападението се навежда напред и духва свещта. Докато заговорниците излизат от стаята, ти бързо се спускаш надолу. Прибираш се в странноприемницата.[/p][p][link target='150'](продължи)[/link][/p]</Text>
+    </Episode>
+    <Episode Id="279" IsMarked="true" Location="52.5;202.5">
+      <Text>[p]Вратата под каменния барелеф е заключена. Явно ще трябва да прибегнеш към решителни мерки, за да проникнеш в къщата.[/p][p][tag]item:return context.getItem('herb');[/tag] [link target='script:263' script='player.removeItem(&amp;apos;herb&amp;apos;, 1); return 263;' condition='return player.getItem(&amp;apos;herb&amp;apos;);']Ако искаш да използваш билка отвори-вратичка[/link].[br /][link target='256']Ако опиташ да изкъртиш вратата[/link].[br /][link target='150']А ако смяташ, че ще е най-добре да се прибереш в странноприемницата[/link].[/p]</Text>
+    </Episode>
+    <Episode Id="263" IsMarked="true" Location="17.5;222.5">
+      <Text>[p]Едно докосване с билката е достатъчно. Ключалката щраква и вратата леко се открехва. Безшумно се промъкваш в сумрачния вестибюл на изоставената къща. Питаш се дали изобщо е имало смисъл да влизаш тук, но изведнъж забелязваш в праха на пода два чифта човешки стъпки. С разтуптяно сърце ги проследяваш нагоре по стълбата. На втория етаж няма нищо. Наближаваш площадката на третия етаж, когато от мрака долита тих гневен глас:[/p][p][symbol value='mdash' /] Нали ти казах, глупако, никакви прибързани акции![/p][p]Вглеждаш се напред. Изпод една врата се процежда бледата светлинка на свещ.[/p][p][symbol value='mdash' /] Ама аз мислех[symbol value='hellip' /] [symbol value='mdash' /] обажда се втори глас.[br /][symbol value='mdash' /] Ще се научиш да не мислиш! Няма защо да ги подплашваме преждевременно. Всичко е уредено с пиратите. Те ще атакуват кораба, когато тръгне да заобикаля острова отдясно. Нали запомни, отдясно. Всички кораби заобикалят оттам. Хайде сега да си вървим.[/p][p]Чуваш шума на изместени столове. Трябва да се измъкваш, преди да са те заварили.[/p][p][embed value='FateRoll' /][/p][p][if]return $.result &amp;lt;= 8;[/if][link target='234'](продължи)[/link][else /][link target='178'](продължи)[/link][endif /][/p]</Text>
+    </Episode>
+    <Episode Id="256" IsMarked="true" Location="57.5;222.5">
+      <Text>[p]Засилваш се и блъскаш вратата с рамо.[/p][p][embed value='FateRoll' /][/p][p][if]return $.result &amp;lt;= 7;[/if][link target='228'](продължи)[/link][else /][link target='204'](продължи)[/link][endif /][/p]</Text>
+    </Episode>
+    <Episode Id="228" IsMarked="true" Location="67.5;242.5">
+      <Text>[p]Дебелата врата не се поддава. От всичките си усилия печелиш само синини по рамото и загуба на една жизнена точка.[script]return context.reducePlayerLife(1);[/script] Докато разтриваш натъртеното място и се чудиш какво да правиш, от полумрака долитат стъпки. По улицата се задава нощен патрул на градската стража. Благоразумно се отдалечаваш и тръгваш към пристанището. Не след дълго пристигаш в странноприемницата.[/p][p][link target='150'](продължи)[/link][/p]</Text>
+    </Episode>
+    <Episode Id="204" IsMarked="true" Location="47.5;242.5">
+      <Text>[p]Дебелата врата не се поддава. От всичките си усилия печелиш само синини по рамото и загуба на една жизнена точка.[script]return context.reducePlayerLife(1);[/script] Докато разтриваш натъртеното място и се чудиш какво да правиш, от полумрака долитат стъпки. По улицата се задава нощен патрул на градската стража. Благоразумно се отдалечаваш и тръгваш към пристанището. Не след дълго пристигаш в странноприемницата.[/p][p][link target='150'](продължи)[/link][/p]</Text>
+    </Episode>
+    <Episode Id="91" Location="112.5;287.5">
+      <Text />
+    </Episode>
+    <Episode Id="8" Location="132.5;287.5">
+      <Text />
+    </Episode>
+    <Episode Id="133" IsMarked="true" Location="152.5;287.5">
+      <Text>[p][symbol value='mdash' /] Трудно ми е да преценя [symbol value='mdash' /] казваш ти. [symbol value='mdash' /] Не съм чак толкова опитен в моряшките дела. А и не е редно пътник да се меси в решенията на капитана.[br /][symbol value='mdash' /] Прав си [symbol value='mdash' /] кимва капитанът. [symbol value='mdash' /] Но понякога разговорът прояснява мислите. Решено, ще минем отдясно. Там течението е по-слабо.[/p][p]Той се отдалечава към носа на кораба и започва да дава команди на моряците.[/p][p][link target='100'](продължи)[/link][/p]</Text>
+    </Episode>
+    <Episode Id="234" Location="7.5;242.5">
+      <Text>[p]Вече си във вестибюла, когато зад гърба ти се раздава тропот и двамата заговорници тичешком се спускат по стълбата. Нямаш време да се измъкнеш. Едва успяваш да се завъртиш към по-едрия нападател, който върти над главата си тежка бойна секира. За миг лъч светлина от прозореца пада върху оголената му ръка и осветява татуиран зелен скорпион [symbol value='mdash' /] знакът на бродещите наемници.[/p][p]НАЕМНИК[br /]СИЛА — 8, ЖИВОТ — 8[/p][p]Ако успееш да го победиш, мини на #200.[/p]</Text>
+    </Episode>
+    <Episode Id="178" IsMarked="true" Location="27.5;242.5">
+      <Text>[p]Напускаш изоставената къща и тръгваш обратно към пристанището. Нервите ти са напрегнати и всеки звук по нощните улици те кара да трепнеш, но за щастие никой не те напада. Въздъхваш от облекчение, когато стигаш до вратата на странноприемницата.[/p][p][link target='150'](продължи)[/link][/p]</Text>
+    </Episode>
+    <Episode Id="200" Location="17.5;262.5">
+      <Text>Веднага след последния удар отскачаш към стената и се озърташ[br /]за другия противник, но той отдавна е изчезнал през отворената врата[br /]към улицата. Прибираш меча в ножницата и се навеждаш да[br /]претърсиш убития. След проверка на всичките му джобове, плячката[br /]ти не е кой знае каква — кесия с 5 жълтици и късче пергамент, върху[br /]което е записано числото 231. Интересно… Добре ще е да запомниш[br /]това число.[br /]Премини на #178.</Text>
+    </Episode>
+    <Episode Id="100" Location="152.5;307.5">
+      <Text />
+    </Episode>
+  </Episodes>
+  <Transitions>
+    <Transition From="Intro" To="Intro2" />
+    <Transition From="Intro2" To="Chance" />
+    <Transition From="Chance" To="Strength" />
+    <Transition From="Strength" To="Life" />
+    <Transition From="Intro3" To="1" />
+    <Transition From="1" To="19" />
+    <Transition From="1" To="73" />
+    <Transition From="1" To="48" />
+    <Transition From="19" To="37" />
+    <Transition From="19" To="52" />
+    <Transition From="130" To="117" />
+    <Transition From="130" To="144" />
+    <Transition From="37" To="20" />
+    <Transition From="37" To="293" />
+    <Transition From="63" To="125" />
+    <Transition From="117" To="137" />
+    <Transition From="144" To="137" />
+    <Transition From="137" To="125" />
+    <Transition From="125" To="304" />
+    <Transition From="125" To="150" />
+    <Transition From="304" To="290" />
+    <Transition From="304" To="261" />
+    <Transition From="266" To="150" />
+    <Transition From="240" To="266" />
+    <Transition From="333" To="318" />
+    <Transition From="333" To="279" />
+    <Transition From="333" To="150" />
+    <Transition From="279" To="263" />
+    <Transition From="279" To="256" />
+    <Transition From="279" To="150" />
+    <Transition From="261" To="150" />
+    <Transition From="256" To="228" />
+    <Transition From="256" To="204" />
+    <Transition From="228" To="150" />
+    <Transition From="150" To="91" />
+    <Transition From="150" To="8" />
+    <Transition From="150" To="133" />
+    <Transition From="263" To="234" />
+    <Transition From="263" To="178" />
+    <Transition From="318" To="150" />
+    <Transition From="290" To="273" />
+    <Transition From="290" To="261" />
+    <Transition From="273" To="266" />
+    <Transition From="273" To="240" />
+    <Transition From="273" To="333" />
+    <Transition From="273" To="261" />
+    <Transition From="204" To="150" />
+    <Transition From="178" To="150" />
+    <Transition From="133" To="100" />
+  </Transitions>
+  <Groups />
+  <Global>
+    <Attributes />
+    <Events />
+  </Global>
+  <Items>
+    <Item>
+      <Attributes>
+        <Attribute Id="id">flask</Attribute>
+        <Attribute Id="name">Бездънна манерка</Attribute>
+        <Attribute Id="description">На вид тя изглежда съвсем обикновена, но в нея може да се побере цяло езеро. Изключително полезен предмет за човек, който се кани да прекоси Огнената пустиня.</Attribute>
+      </Attributes>
+      <Events />
+    </Item>
+    <Item>
+      <Attributes>
+        <Attribute Id="id">cloak</Attribute>
+        <Attribute Id="name">Плащ-прикривало</Attribute>
+        <Attribute Id="description">Този плащ непрекъснато мени цвета си и се слива с околните багри. Ако застанеш неподвижно и се наметнеш с него, за противника би било почти невъзможно да те открие.</Attribute>
+      </Attributes>
+      <Events />
+    </Item>
+    <Item>
+      <Attributes>
+        <Attribute Id="id">gold</Attribute>
+        <Attribute Id="name">Злато</Attribute>
+        <Attribute Id="description">Дарът не е вълшебен, но парите никога не са излишни. Особено когато знаеш, че те чака дълъг път.</Attribute>
+      </Attributes>
+      <Events />
+    </Item>
+    <Item>
+      <Attributes>
+        <Attribute Id="id">ash</Attribute>
+        <Attribute Id="name">Мъртва пепел</Attribute>
+        <Attribute Id="description">Кожена кесийка с мигновено действащ отровен прах. Може да се разпръсква из въздуха или да се сипва в храна и питие. Резултатът е един и същ [symbol value='ndash' /] незабавна гибел на врага.</Attribute>
+      </Attributes>
+      <Events />
+    </Item>
+    <Item>
+      <Attributes>
+        <Attribute Id="id">rope</Attribute>
+        <Attribute Id="name">Самолазещо въже</Attribute>
+        <Attribute Id="description">По твоя заповед това въже може да пропълзи като живо и да омотае здраво противника или да ти помогне в катеренето по непристъпни скали и стени.</Attribute>
+      </Attributes>
+      <Events />
+    </Item>
+    <Item>
+      <Attributes>
+        <Attribute Id="id">dagger</Attribute>
+        <Attribute Id="name">Сребърен кинжал</Attribute>
+        <Attribute Id="description">Сигурно оръжие в борбата със зли духове.</Attribute>
+      </Attributes>
+      <Events />
+    </Item>
+    <Item>
+      <Attributes>
+        <Attribute Id="id">fire</Attribute>
+        <Attribute Id="name">Гръцки огън</Attribute>
+        <Attribute Id="description">Стъкленица, пълна до половината с кафяв прах. На вид изглежда безвредна, но не се заблуждавай. При най-малък допир с въздуха кафявият прах лумва със страшни пламъци.</Attribute>
+      </Attributes>
+      <Events />
+    </Item>
+    <Item>
+      <Attributes>
+        <Attribute Id="id">mittens</Attribute>
+        <Attribute Id="name">Лепнещи ръкавици</Attribute>
+        <Attribute Id="description">Сложиш ли ги на ръцете си, не ще срещнеш никаква трудност в катеренето по гладки стени.</Attribute>
+      </Attributes>
+      <Events />
+    </Item>
+    <Item>
+      <Attributes>
+        <Attribute Id="id">stone</Attribute>
+        <Attribute Id="name">Камък на истината</Attribute>
+        <Attribute Id="description">Вълшебен и изключително рядко срещан минерал. Допреш ли го до челото на някого, той ще бъде заставен да отговори на въпросите ти.</Attribute>
+      </Attributes>
+      <Events />
+    </Item>
+    <Item>
+      <Attributes>
+        <Attribute Id="id">herb</Attribute>
+        <Attribute Id="name">Билка отвори-вратичка</Attribute>
+        <Attribute Id="description">Авантюристите и разбойниците отдавна познават вълшебството на това странно растение. Достатъчно е да докоснеш каквато и да било ключалка с листенцата на билката, за да си осигуриш незабавно отваряне на вратата.</Attribute>
+      </Attributes>
+      <Events />
+    </Item>
+    <Item>
+      <Attributes>
+        <Attribute Id="id">frog</Attribute>
+        <Attribute Id="name">Лъжлива жаба</Attribute>
+        <Attribute Id="description">Забавно и твърде полезно животинче. Не само умее да говори, но и знае с каква лъжа да те измъкне от трудно положение.</Attribute>
+      </Attributes>
+      <Events />
+    </Item>
+    <Item>
+      <Attributes>
+        <Attribute Id="id">smoke</Attribute>
+        <Attribute Id="name">Дим на миражите</Attribute>
+        <Attribute Id="description">Стъкленица, пълна със синкав дим. Когато се разсее из въздуха, този дим поражда в съзнанието на противника измамни видения и отклонява вниманието му.</Attribute>
+      </Attributes>
+      <Events />
+    </Item>
+    <Item>
+      <Attributes>
+        <Attribute Id="id">elixirStrength</Attribute>
+        <Attribute Id="name">Еликсир на сила</Attribute>
+        <Attribute Id="description">Ако го изпиеш, той временно увеличава силата ти с 2 точки над определената стойност. Действието му трае само в течение на една битка.</Attribute>
+      </Attributes>
+      <Events />
+    </Item>
+    <Item>
+      <Attributes>
+        <Attribute Id="id">elixirLife</Attribute>
+        <Attribute Id="name">Еликсир на живота</Attribute>
+        <Attribute Id="description">Когато го изпиеш, той ще възстанови жизнените ти точки до първоначалната им стойност.</Attribute>
+      </Attributes>
+      <Events />
+    </Item>
+    <Item>
+      <Attributes>
+        <Attribute Id="id">snake</Attribute>
+        <Attribute Id="name">Змийски камък</Attribute>
+        <Attribute Id="description">Мощна противоотрова. Действа през кожата. При отравяне е достатъчно да го допреш до тялото си или просто да го стиснеш в ръка.</Attribute>
+      </Attributes>
+      <Events />
+    </Item>
+    <Item>
+      <Attributes>
+        <Attribute Id="id">boots</Attribute>
+        <Attribute Id="name">Бързоходни ботуши</Attribute>
+        <Attribute Id="description">Названието им говори само за себе си. Щом ги обуеш, ще можеш да тичаш по-бързо и от най-буйния жребец.</Attribute>
+      </Attributes>
+      <Events />
+    </Item>
+    <Item>
+      <Attributes>
+        <Attribute Id="id">tear</Attribute>
+        <Attribute Id="name">Скална сълза</Attribute>
+        <Attribute Id="description">Малко шишенце с бистра прозрачна течност. Няколко капки от нея са достатъчни, за да превърнат на пясък и най-здравия камък.</Attribute>
+      </Attributes>
+      <Events />
+    </Item>
+    <Item>
+      <Attributes>
+        <Attribute Id="id">boomerang</Attribute>
+        <Attribute Id="name">Бумеранг</Attribute>
+        <Attribute Id="description">Не е вълшебно, но е отлично оръжие за бой от разстояние.</Attribute>
+      </Attributes>
+      <Events />
+    </Item>
+  </Items>
+  <Characters>
+    <Character>
+      <Attributes>
+        <Attribute Id="id">player</Attribute>
+        <Attribute Id="name">Ти</Attribute>
+      </Attributes>
+      <Events />
+    </Character>
+  </Characters>
+  <Skills />
+  <Battles />
+  <Templates>
+    <Template Name="general">
+      <Content>&amp;lt;div class='general'&amp;gt;[script]return context.target;[/script]&amp;lt;/div&amp;gt;</Content>
+    </Template>
+    <Template Name="info">
+      <Content>&amp;lt;div class='info'&amp;gt;[script]return context.target;[/script]&amp;lt;/div&amp;gt;</Content>
+    </Template>
+    <Template Name="item">
+      <Content>&amp;lt;div class='item'&amp;gt;[script]return context.target.name;[/script]&amp;lt;div class='tooltip'&amp;gt;&amp;lt;p class='emphasize'&amp;gt;[script]return context.target.name;[/script]&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;&amp;lt;span class='description'&amp;gt;[script]return context.toHtml(context.target.description);[/script]&amp;lt;/span&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;/div&amp;gt;&amp;lt;/div&amp;gt;</Content>
+    </Template>
+    <Template Name="plus">
+      <Content>&amp;lt;div class='plus'&amp;gt;[script]return context.target;[/script]&amp;lt;/div&amp;gt;</Content>
+    </Template>
+    <Template Name="minus">
+      <Content>&amp;lt;div class='minus'&amp;gt;[script]return context.target;[/script]&amp;lt;/div&amp;gt;</Content>
+    </Template>
+    <Template Name="pickupItem">
+      <Content>&amp;lt;div class='item select'&amp;gt;[script]return context.target.name;[/script][if]return context.target.stack &amp;gt; 1[/if] x[script]return context.target.stack;[/script][endif /]&amp;lt;div class='tooltip'&amp;gt;&amp;lt;p class='emphasize'&amp;gt;[script]return context.target.name;[/script]&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;&amp;lt;span class='description'&amp;gt;[script]return context.toHtml(context.target.description);[/script]&amp;lt;/span&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;span class='highlight'&amp;gt;(Натисни за да вземеш)&amp;lt;/span&amp;gt;&amp;lt;/div&amp;gt;&amp;lt;/div&amp;gt;</Content>
+    </Template>
+    <Template Name="character">
+      <Content>&amp;lt;p&amp;gt;[script]return context.target.name.toUpperCase();[/script]&amp;lt;br /&amp;gt;&amp;lt;span&amp;gt;СИЛА:&amp;lt;/span&amp;gt; [script]return context.target&amp;ob;'strength'&amp;cb;;[/script]&amp;lt;br /&amp;gt;&amp;lt;span&amp;gt;ЖИВОТ:&amp;lt;/span&amp;gt; [script]return context.target.life;[/script]&amp;lt;/p&amp;gt;</Content>
+    </Template>
+  </Templates>
+  <Images>
+    <Image Id="1">
+      <FileName>armor.png</FileName>
+    </Image>
+    <Image Id="2">
+      <FileName>gem.png</FileName>
+    </Image>
+    <Image Id="3">
+      <FileName>150-ship.png</FileName>
+    </Image>
+  </Images>
+  <View>
+    <ScrollX>0</ScrollX>
+    <ScrollY>0</ScrollY>
+    <Zoom>58</Zoom>
+    <Width>441.5</Width>
+    <Height>335.4354</Height>
+  </View>
+</Scenario>
