@@ -1450,8 +1450,7 @@ return item &amp;&amp; item.stack &gt;= 10;']Кесия с 10 жълтици[/li
       <Text>[p]Гъдулката навярно е вълшебна. Щом я изваждаш от раницата, лъкът сам се плъзва по струните и под свода на тунела се разлива жална мелодия. Кикимора трепва и се вслушва. После подпира с юмрук острата си брадичка и зарейва поглед нейде надалече. От очите й бавно се стичат сълзи.[/p][p]Оставяш гъдулката на пода и крадешком се отдалечаваш. Кикимора не ти обръща внимание, все тъй заслушана в тъжната песен на гъдулката.[/p][p][link target='208'](продължи)[/link][/p]</Text>
     </Episode>
     <Episode Id="208" IsMarked="true" Location="282.5;1287.5">
-      <Text>[p]Продължаваш напред, но скоро тунелът се разклонява в две посоки. На кръстопътя е написано с едри букви:[/p][p]ВХОД ЗА ТАЙНИТЕ ПОКОИ НА НЕГОВО ВЕЛИЧЕСТВО ТИКВЕНЯК ПЪРВИ, ЦАР НА ТАЛАСЪМИТЕ. ДОПУСКА СЕ САМО ОНЗИ, КОЙТО ЗНАЕ ТАЙНОТО ЧИСЛО. ЗА ДА СТИГНЕШ ДО ВРАТАТА, ОТМЕРИ ТОЛКОВА КРАЧКИ, КОЛКОТО Е ТАЙНОТО ЧИСЛО. НАЛЯВО ИЛИ НАДЯСНО [symbol value='mdash' /] ИЗБЕРИ САМ.[/p][p][script]$.knowsSecretNumber = true;
-// TODO[/script][/p][p][if]return $.knowsSecretNumber;[/if]Ти знаеш тайното число [symbol value='ndash' /] 17 [symbol value='ndash' /] това е броят на крачките, които трябва да направиш, но в коя посока [symbol value='ndash' /] [link target='191']наляво[/link] или [link target='225']надясно[/link].[else /]Не знаеш тайното число.[/p][p][link target='371'](продължи)[/link][endif /][/p]</Text>
+      <Text>[p]Продължаваш напред, но скоро тунелът се разклонява в две посоки. На кръстопътя е написано с едри букви:[/p][p]ВХОД ЗА ТАЙНИТЕ ПОКОИ НА НЕГОВО ВЕЛИЧЕСТВО ТИКВЕНЯК ПЪРВИ, ЦАР НА ТАЛАСЪМИТЕ. ДОПУСКА СЕ САМО ОНЗИ, КОЙТО ЗНАЕ ТАЙНОТО ЧИСЛО. ЗА ДА СТИГНЕШ ДО ВРАТАТА, ОТМЕРИ ТОЛКОВА КРАЧКИ, КОЛКОТО Е ТАЙНОТО ЧИСЛО. НАЛЯВО ИЛИ НАДЯСНО [symbol value='mdash' /] ИЗБЕРИ САМ.[/p][p][if]return $.knowsSecretNumber;[/if]Ти знаеш тайното число [symbol value='ndash' /] 17 [symbol value='ndash' /] това е броят на крачките, които трябва да направиш, но в коя посока [symbol value='ndash' /] [link target='191']наляво[/link] или [link target='225']надясно[/link].[else /]Не знаеш тайното число.[/p][p][link target='371'](продължи)[/link][endif /][/p]</Text>
     </Episode>
     <Episode Id="371" IsMarked="true" Location="337.5;1287.5">
       <Text>[p]Докато стоиш и се чудиш, зад гърба ти се раздава глъчка. Обръщаш се, но вече е късно. По коридора връхлита тълпа от чукундурти. Под свода на тунела отекват яростни крясъци: „Шпионин! Шпионин!“.[/p][p]Трябва да бягаш незабавно, иначе има опасност мисията ти да завърши дотук.[/p][p][tag]item:return context.getItem('boots');[/tag] [link target='script:254' script='player.removeItem(&amp;apos;boots&amp;apos;, 1); return 254;' condition='return player.getItem(&amp;apos;boots&amp;apos;);']Ако имаш бързоходни ботуши[/link].[br /][tag]item:return context.getItem('stoneeater');[/tag] [link target='script:234' script='player.removeItem(&amp;apos;stoneeater&amp;apos;, 1); return 234;' condition='return player.getItem(&amp;apos;stoneeater&amp;apos;);']Ако имаш зелен каменояд[/link].[br /][link target='307']Ако нямаш нито едното, нито другото[/link].[/p]</Text>
@@ -2360,9 +2359,6 @@ return item &amp;&amp; item.stack &gt;= 5;']Ако искаш да играеш 
     <Transition From="223" To="94" />
     <Transition From="223" To="243" />
     <Transition From="82" To="299" />
-    <Transition From="208" To="191" />
-    <Transition From="208" To="225" />
-    <Transition From="208" To="371" />
     <Transition From="1" To="9" />
     <Transition From="1" To="25" />
     <Transition From="25" To="4" />
@@ -2373,6 +2369,9 @@ return item &amp;&amp; item.stack &gt;= 5;']Ако искаш да играеш 
     <Transition From="55" To="24" />
     <Transition From="55" To="61" />
     <Transition From="Rules3" To="Rules4" />
+    <Transition From="208" To="191" />
+    <Transition From="208" To="225" />
+    <Transition From="208" To="371" />
   </Transitions>
   <Groups />
   <Global>
@@ -2811,7 +2810,7 @@ context.showPopupMessage('Възстановяваш 10 жизнени точ
       <Content>&amp;lt;div class='entity select'&amp;gt;[script]return context.target.name;[/script]&amp;lt;div class='tooltip'&amp;gt;&amp;lt;p class='emphasize'&amp;gt;[script]return context.target.name;[/script]&amp;lt;/p&amp;gt;&amp;lt;span class='highlight'&amp;gt;(Натисни за да избереш)&amp;lt;/span&amp;gt;&amp;lt;/div&amp;gt;&amp;lt;/div&amp;gt;</Content>
     </Template>
     <Template Name="useItem">
-      <Content>&amp;lt;div class='item select'&amp;gt;[script]return context.target.name;[/script][if]return context.target.stack &amp;gt; 1[/if] x[script]return context.target.stack;[/script][endif /]&amp;lt;div class='tooltip'&amp;gt;&amp;lt;p class='emphasize'&amp;gt;[script]return context.target.name;[/script]&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;&amp;lt;span class='description'&amp;gt;[script]return context.toHtml(context.target.description);[/script]&amp;lt;/span&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;span class='highlight'&amp;gt;(Натисни за да използваш)&amp;lt;/span&amp;gt;&amp;lt;/div&amp;gt;&amp;lt;/div&amp;gt;</Content>
+      <Content>&amp;lt;div class='item select'&amp;gt;[script]return context.target.name;[/script][if]return context.target.stack &amp;gt; 1;[/if] x[script]return context.target.stack;[/script][endif /]&amp;lt;div class='tooltip'&amp;gt;&amp;lt;p class='emphasize'&amp;gt;[script]return context.target.name;[/script]&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;&amp;lt;span class='description'&amp;gt;[script]return context.toHtml(context.target.description);[/script]&amp;lt;/span&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;span class='highlight'&amp;gt;(Натисни за да използваш)&amp;lt;/span&amp;gt;&amp;lt;/div&amp;gt;&amp;lt;/div&amp;gt;</Content>
     </Template>
   </Templates>
   <Images>
@@ -2928,8 +2927,8 @@ context.showPopupMessage('Възстановяваш 10 жизнени точ
     </Image>
   </Images>
   <View>
-    <ScrollX>0</ScrollX>
-    <ScrollY>0</ScrollY>
+    <ScrollX>124.114944</ScrollX>
+    <ScrollY>1188.05322</ScrollY>
     <Zoom>58</Zoom>
     <Width>557.5518</Width>
     <Height>1456.5</Height>
