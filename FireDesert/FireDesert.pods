@@ -3,7 +3,7 @@
   <Properties>
     <Id>245523b4-dc92-4e96-a0cf-f7f784dd4f46</Id>
     <Name>Огнена пустиня</Name>
-    <InitialEpisode>Intro</InitialEpisode>
+    <InitialEpisode>301</InitialEpisode>
     <Description>Здравей, незнайни храбрецо! Знай, че с разгръщането на тази книга се впускаш в приключение, което ще изисква от теб да напрегнеш сили и съобразителност, за да изпълниш една опасна мисия.</Description>
     <Discoverable>True</Discoverable>
   </Properties>
@@ -37,6 +37,7 @@ context.endBattle = function() {
   $.inBattle = false;
   $.doubleAttack = false;
   $.hitEpisode = 0;
+  $.bonusStrength = 0;
 }
 
 context.selectOpponent = function(index) {
@@ -208,7 +209,9 @@ $.items.push(context.createItem('tear'));
 $.items.push(context.createItem('boomerang'));[/script][/p][p][clicker]if (!$.itemsSelected) {
   context.showItemTransferDialog($.inventory, $.items, 'Инвентар', 'Премети', `Можеш да избереш ${player.carryLimit} предмета`, 'Предмети',
     function(result) {
-      $.inventory = result.leftItems;
+      if ($.result) {
+        $.inventory = result.leftItems;
+      }
     },
     function(payload) {
       return `Избрал си ${context.getItemCount(payload.leftItems)} предмета от общо ${player.carryLimit}`;
@@ -363,6 +366,10 @@ $.playerPowerBonus = 0;
 if (player.getItem('gauntlet')) {
   $.playerPowerString += ' + 1 (Бойна ръкавица)';
   $.playerPowerBonus = 1;
+}
+if ($.bonusStrength) {
+  $.playerPowerString += ` + ${$.bonusStrength} (Елексир на сила)`;
+  $.playerPowerBonus = $.bonusStrength;
 }[/script] [tag]info:return `${$.playerPowerString} = ${player.strength + $.attackRoll + $.playerPowerBonus}`;[/tag]. Ударът на противника е [tag]info:return `${$.opponent.strength} + ${$.enemyRoll} = ${$.opponent.strength + $.enemyRoll}`;[/tag]. [if]return player.strength + $.attackRoll + $.playerPowerBonus &amp;gt; $.opponent.strength + $.enemyRoll;[/if]Атаката ти е успешна и противникът губи [tag]info:return 2;[/tag] жизнени точки.[script]$.opponent.life -= 2;[/script][else /][if]return player.strength + $.attackRoll + $.playerPowerBonus &amp;lt; $.opponent.strength + $.enemyRoll;[/if]Противникът те удря и губиш[script]$.damageString = '2';
 $.damage = 2;
 if (player.getItem('chainmail')) {
@@ -716,7 +723,7 @@ player.addItem(sword);[/script][/p][p]Продължаваш напред с к�
 $.winEpisode = 264;[/script][/p][p][embed value='Battle' /][/p]</Text>
     </Episode>
     <Episode Id="301" IsMarked="true" Location="312.5;162.5">
-      <Text>[p]Промъкваш се след грабителя, като се прикриваш зад сухите трънаци из пущинака. След няколко минути разбираш, че човекът се насочва към някаква полуразрушена гробница, в която потрепва червеникава светлинка. Когато той влиза вътре, ти предпазливо пристъпваш към входа и надникваш.[/p][p]Край малък огън седят трима души. Единият от тях тържествено потупва раницата.[/p][p][symbol value='mdash' /] Готово! [symbol value='mdash' /] гордо съобщава той. [symbol value='mdash' /] Всичко мина като по масло. Агамор ще бъде доволен.[br /][symbol value='mdash' /] Не бързай толкова [symbol value='mdash' /] прекъсва го един от съучастниците му.[br /][symbol value='mdash' /] Тепърва предстои най-важното. Трябва да му попречим да стигне до оазиса.[/p][p]Разговорът започва да става интересен. Толкова интересен, че се подпираш на каменната стена, за да слушаш по-отблизо. И това е грешката ти. Под натиска един разхлабен камък се изкъртва от зида. Губиш равновесие и падаш напред, но веднага скачаш на крака.[/p][p]Без да се колебаят нито секунда, тримата разбойници вадят мечовете си и връхлитат срещу теб.[script]context.startBattle('firstBandit', 'secondBandit', 'thirdBandit');
+      <Text>[p]Промъкваш се след грабителя, като се прикриваш зад сухите трънаци из пущинака. След няколко минути разбираш, че човекът се насочва към някаква полуразрушена гробница, в която потрепва червеникава светлинка. Когато той влиза вътре, ти предпазливо пристъпваш към входа и надникваш.[/p][p]Край малък огън седят трима души. Единият от тях тържествено потупва раницата.[/p][p][symbol value='mdash' /] Готово! [symbol value='mdash' /] гордо съобщава той. [symbol value='mdash' /] Всичко мина като по масло. Агамор ще бъде доволен.[br /][symbol value='mdash' /] Не бързай толкова [symbol value='mdash' /] прекъсва го един от съучастниците му.[br /][symbol value='mdash' /] Тепърва предстои най-важното. Трябва да му попречим да стигне до оазиса.[/p][p]Разговорът започва да става интересен. Толкова интересен, че се подпираш на каменната стена, за да слушаш по-отблизо. И това е грешката ти. Под натиска един разхлабен камък се изкъртва от зида. Губиш равновесие и падаш напред, но веднага скачаш на крака.[script]player.addItem(context.createItem('elixirStrength', 5));[/script][/p][p]Без да се колебаят нито секунда, тримата разбойници вадят мечовете си и връхлитат срещу теб.[script]context.startBattle('firstBandit', 'secondBandit', 'thirdBandit');
 $.winEpisode = 239;[/script][/p][p][embed value='Battle' /][/p]</Text>
     </Episode>
     <Episode Id="264" IsMarked="true" Location="292.5;182.5">
@@ -2103,7 +2110,6 @@ return true;[/blocker][tag]general:return 'Продължи';[/tag][endblocker 
     <Transition From="229" To="330" />
     <Transition From="Life" To="Battles" />
     <Transition From="Equipment" To="Items" />
-    <Transition From="Items" To="Intro3" />
     <Transition From="330" To="314" />
     <Transition From="330" To="96" />
     <Transition From="287" To="250" />
@@ -2305,6 +2311,7 @@ return true;[/blocker][tag]general:return 'Продължи';[/tag][endblocker 
     <Transition From="250" To="287" />
     <Transition From="250" To="96" />
     <Transition From="409" To="230" />
+    <Transition From="Items" To="Intro3" />
   </Transitions>
   <Groups />
   <Global>
@@ -2414,7 +2421,15 @@ return true;[/blocker][tag]general:return 'Продължи';[/tag][endblocker 
         <Attribute Id="name">Еликсир на сила</Attribute>
         <Attribute Id="description">Ако го изпиеш, той временно увеличава силата ти с 2 точки над определената стойност. Действието му трае само в течение на една битка.</Attribute>
       </Attributes>
-      <Events />
+      <Events>
+        <Event Name="onUsed">[script]if (!$.bonusStrength) {
+  $.bonusStrength = 2;
+} else {
+  $.bonusStrength += 2;
+}
+context.player.removeItem('elixirStrength', 1);
+context.showPopupMessage('Силата ти нараства с 2 до края на следващото сражение');[/script]</Event>
+      </Events>
     </Item>
     <Item>
       <Attributes>
@@ -2422,7 +2437,11 @@ return true;[/blocker][tag]general:return 'Продължи';[/tag][endblocker 
         <Attribute Id="name">Еликсир на живота</Attribute>
         <Attribute Id="description">Когато го изпиеш, той ще възстанови жизнените ти точки до първоначалната им стойност.</Attribute>
       </Attributes>
-      <Events />
+      <Events>
+        <Event Name="onUsed">[script]player.life = player.maxLife;
+context.player.removeItem('elixirLife', 1);
+context.showPopupMessage('Възстановяваш жизнените си точки');[/script]</Event>
+      </Events>
     </Item>
     <Item>
       <Attributes>
