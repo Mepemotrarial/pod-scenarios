@@ -3,7 +3,7 @@
   <Properties>
     <Id>245523b4-dc92-4e96-a0cf-f7f784dd4f46</Id>
     <Name>Огнена пустиня</Name>
-    <InitialEpisode>274</InitialEpisode>
+    <InitialEpisode>Intro</InitialEpisode>
     <Description>Здравей, незнайни храбрецо! Знай, че с разгръщането на тази книга се впускаш в приключение, което ще изисква от теб да напрегнеш сили и съобразителност, за да изпълниш една опасна мисия.</Description>
     <Discoverable>True</Discoverable>
   </Properties>
@@ -29,11 +29,14 @@ context.DEATH_MESSAGE = "Умираш от раните си и приключе
   }
   $.inBattle = true;
   $.selectedOpponent = -1;
+  $.outcome = '';
 }
 
 context.endBattle = function() {
   const $ = this.state;
   $.inBattle = false;
+  $.doubleAttack = false;
+  $.hitEpisode = 0;
 }
 
 context.selectOpponent = function(index) {
@@ -50,6 +53,9 @@ context.selectOpponent = function(index) {
 context.battlePlayerAttack = function() {
   const $ = this.state;
   $.attackRoll = context.roll(1, 12);
+  if ($.doubleAttack) {
+    $.attackRoll2 = context.roll(1, 12);
+  }
   $.enemyRoll = context.roll(1, 12);
 }
 </Script>
@@ -73,6 +79,15 @@ context.getItemPrice = function(items) {
     result += item.stack * item.price;
   }
   return result;
+}
+
+context.createItemWithPrice = function(id, price, stack) {
+  if (!stack) {
+    stack = 1;
+  }
+  let item = this.createItem(id, stack);
+  item.price = price;
+  return item;
 }</Script>
   </GlobalScripts>
   <GlobalDefinition>
@@ -124,6 +139,7 @@ context.getItemPrice = function(items) {
       <Event Name="onAttacked" IsIntrinsic="true" Description="Invoked when the character attacked another character in combat." />
       <Event Name="onGotHit" IsIntrinsic="true" Description="Invoked when the character got hit by another character in combat." />
       <Event Name="onTurn" IsIntrinsic="true" Description="Invoked at the end of every turn during combat." />
+      <Event Name="onHit" IsIntrinsic="false" Description="Invoked when the character hits another character." />
     </Events>
   </CharacterDefinition>
   <SkillDefinition IdentityAttribute="id">
@@ -321,8 +337,8 @@ $.winEpisode = 200;[/script][/p][p][embed value='Battle' /][/p]</Text>
     <Episode Id="178" IsMarked="true" Location="47.5;242.5">
       <Text>[p]Напускаш изоставената къща и тръгваш обратно към пристанището. Нервите ти са напрегнати и всеки звук по нощните улици те кара да трепнеш, но за щастие никой не те напада. Въздъхваш от облекчение, когато стигаш до вратата на странноприемницата.[/p][p][link target='150'](продължи)[/link][/p]</Text>
     </Episode>
-    <Episode Id="200" Location="37.5;262.5">
-      <Text>[p]Веднага след последния удар отскачаш към стената и се озърташ за другия противник, но той отдавна е изчезнал през отворената врата към улицата. Прибираш меча в ножницата и се навеждаш да претърсиш убития. След проверка на всичките му джобове, плячката ти не е кой знае каква [symbol value='ndash' /] кесия с 5 жълтици и късче пергамент, върху което е записано числото 231. Интересно[symbol value='hellip' /] Добре ще е да запомниш това число.[script]player.addItem(context.createItem('gold', 5));[/script][/p][p][script]// TODO: number 231[/script][/p][p][link target='178'](продължи)[/link][/p]</Text>
+    <Episode Id="200" IsMarked="true" Location="37.5;262.5">
+      <Text>[p]Веднага след последния удар отскачаш към стената и се озърташ за другия противник, но той отдавна е изчезнал през отворената врата към улицата. Прибираш меча в ножницата и се навеждаш да претърсиш убития. След проверка на всичките му джобове, плячката ти не е кой знае каква [symbol value='ndash' /] кесия с 5 жълтици и късче пергамент, върху което е записано числото 231. Интересно[symbol value='hellip' /] Добре ще е да запомниш това число.[script]player.addItem(context.createItem('gold', 5));[/script][/p][p][link target='178'](продължи)[/link][/p]</Text>
     </Episode>
     <Episode Id="100" IsMarked="true" Location="142.5;302.5">
       <Text>[p]Предложението ти съвпада с мнението на капитана. Без повече да се колебае, той дава заповедите си и след малко корабът се насочва към левия ръкав.[/p][p]Ненадейно откъм кърмата дотичват трима пътници с мечове в ръцете и заплашително обграждат капитана.[/p][p][symbol value='mdash' /] Корабът винаги е минавал отдясно! [symbol value='mdash' /] яростно крещи най-едрият от тях. [symbol value='mdash' /] Връщайте се назад![/p][p]Привлечен от врявата, Пано се приближава и миролюбиво посяга да потупа нападателя по рамото. Ала това е последният жест в живота му. Мечът на непознатия мъж полита напред и Пано пада, облян в кръв.[/p][p]Вече няма място за разговори. Хвърляш се напред и с рязък замах посичаш един от разбойниците. Убиецът на Пано отскача назад[symbol value='hellip' /] и се сблъсква с притичалия Борил. Сетне всичко се развива светкавично. Третият бандит забива ножа си в гърба на Борил, но веднага е повален от кинжала на капитана.[/p][p]Оставаш сам срещу убиеца на Пано. В гърдите ти кипи хладна ярост. Мечовете ви се кръстосват в борба на живот и смърт.[script]context.startBattle('bandit100');
@@ -335,7 +351,25 @@ $.winEpisode = 88;[/script][/p][p][embed value='Battle' /][/p]</Text>
 } else {
   return true;
 }[/blocker][tag]general:return "Атакувай!"[/tag][endblocker /][/p][p][script]$.opponent = $.opponents.length === 1 ? $.opponents&amp;ob;0&amp;cb; : $.opponents&amp;ob;$.selectedOpponent&amp;cb;;
-context.battlePlayerAttack();[/script][/p][p]Избраното число е [tag]info:return $.attackRoll[/tag]. Противникът е избрал числото [tag]info:return $.enemyRoll;[/tag]. Силата на твоя удар е [tag]info:return `${player.strength} + ${$.attackRoll} = ${player.strength + $.attackRoll}`;[/tag]. Ударът на противника е [tag]info:return `${$.opponent.strength} + ${$.enemyRoll} = ${$.opponent.strength + $.enemyRoll}`;[/tag]. [if]return player.strength + $.attackRoll &amp;gt; $.opponent.strength + $.enemyRoll;[/if]Атаката ти е успешна и противникът губи [tag]info:return 2;[/tag] жизнени точки.[script]$.opponent.life -= 2;[/script][else /][if]return player.strength + $.attackRoll &amp;lt; $.opponent.strength + $.enemyRoll;[/if]Противникът те удря и губиш [tag]minus:return 2;[/tag] жизнени точки.[script]return context.reducePlayerLife(2);[/script][else /]Никой не нанася щети този рунд.[endif /][endif /][/p][p][if]return $.opponent.life &amp;lt;= 0;[/if]Победил си [script]return $.opponent.name;[/script].[script]const index = $.opponents.indexOf($.opponent);
+context.battlePlayerAttack();
+$.wasPlayerHit = false;[/script][/p][p][if]return $.doubleAttack;[/if]Избраните числа са [tag]info:return $.attackRoll;[/tag] и [tag]info:return $.attackRoll2;[/tag][else /]Избраното число е [tag]info:return $.attackRoll;[/tag].[endif /] Противникът е избрал числото [tag]info:return $.enemyRoll;[/tag]. Силата на твоя удар е[script]$.playerPowerString = `${player.strength} + `;
+if ($.doubleAttack) {
+  $.playerPowerString += `max(${$.attackRoll}, ${$.attackRoll2})`;
+  $.attackRoll = Math.max($.attackRoll, $.attackRoll2);
+} else {
+  $.playerPowerString += `${$.attackRoll}`;
+}
+$.playerPowerBonus = 0;
+if (player.getItem('gauntlet')) {
+  $.playerPowerString += ' + 1 (Бойна ръкавица)';
+  $.playerPowerBonus = 1;
+}[/script] [tag]info:return `${$.playerPowerString} = ${player.strength + $.attackRoll + $.playerPowerBonus}`;[/tag]. Ударът на противника е [tag]info:return `${$.opponent.strength} + ${$.enemyRoll} = ${$.opponent.strength + $.enemyRoll}`;[/tag]. [if]return player.strength + $.attackRoll + $.playerPowerBonus &amp;gt; $.opponent.strength + $.enemyRoll;[/if]Атаката ти е успешна и противникът губи [tag]info:return 2;[/tag] жизнени точки.[script]$.opponent.life -= 2;[/script][else /][if]return player.strength + $.attackRoll + $.playerPowerBonus &amp;lt; $.opponent.strength + $.enemyRoll;[/if]Противникът те удря и губиш[script]$.damageString = '2';
+$.damage = 2;
+if (player.getItem('chainmail')) {
+  $.damageString = '2 - 1 (ризница) = 1';
+  $.damage = 1;
+}
+$.wasPlayerHit = true;[/script] [tag]minus:return $.damageString;[/tag] жизнени точки.[script]return context.reducePlayerLife($.damage);[/script][else /]Никой не нанася щети този рунд.[endif /][endif /][/p][p][if]return $.opponent.life &amp;lt;= 0;[/if]Победил си [script]return $.opponent.name;[/script].[script]const index = $.opponents.indexOf($.opponent);
 if (index !== -1) {
   $.opponents.splice(index, 1);
 }
@@ -344,7 +378,7 @@ if ($.opponents.length === 0) {
 }[/script][endif /][/p]</Text>
     </Episode>
     <Episode Id="Battle" IsMarked="true" Location="32.5;82.5">
-      <Text>[p]Започва нов боен рунд![script]$.selectedOpponent = -1;[/script][/p][p][embed value='BattleRound' /][/p][p][if]return $.outcome === 'win';[/if][script]context.endBattle();[/script][link target='script:' script='return $.winEpisode;'](продължи)[/link][else /][link target='Battle'](продължи)[/link][endif /][/p]</Text>
+      <Text>[p]Започва нов боен рунд![script]$.selectedOpponent = -1;[/script][/p][p][embed value='BattleRound' /][/p][p][if]return $.outcome === 'win';[/if][script]context.endBattle();[/script][link target='script:' script='return $.winEpisode;'](продължи)[/link][else /][if]return $.wasPlayerHit &amp;amp;&amp;amp; $.hitEpisode;[/if][link target='script:' script='return $.hitEpisode;'](продължи)[/link][else /][link target='Battle'](продължи)[/link][endif /][endif /][/p]</Text>
     </Episode>
     <Episode Id="45" IsMarked="true" Location="142.5;322.5">
       <Text>[p]Скръбно седиш край телата на Пано и Борил. Толкова рано губиш верните си спътници[symbol value='hellip' /] Какво ще правиш без тях?[/p][p]До теб оживено разговаря група моряци и пътници. Кои са били нападателите? Защо са искали да върнат кораба? Може би са съучастници на пиратите, които напоследък върлуват по реката[symbol value='hellip' /] Тези въпроси едва ли ще получат отговор.[/p][p][link target='60'](продължи)[/link][/p]</Text>
@@ -365,35 +399,35 @@ return item &amp;&amp; item.stack &gt;= 5;']Ако си готов да плат
     <Episode Id="393" IsMarked="true" Location="132.5;382.5">
       <Text>[p]Докато се разхождаш сред тълпите моряци и търговци, някой те дръпва за ръкава. Обръщаш се изненадано и виждаш нисък набит мъж, загърнат в дрипаво наметало.[/p][p][symbol value='mdash' /] Извинете, благородни господине [symbol value='mdash' /] изрича той със сипкав глас. [symbol value='mdash' /] Ако не греша, вие желаете да научите някои подробности за магьосника Агамор.[br /][symbol value='mdash' /] Да допуснем [symbol value='mdash' /] съгласяваш се ти. [symbol value='mdash' /] Какви са тези подробности?[/p][p]Непознатият вдига рамене.[/p][p][symbol value='mdash' /] Не можем да разговаряме тук. Но ако ме придружите до едно сигурно място, няма да съжалявате.[br /][symbol value='mdash' /] Къде? [symbol value='mdash' /] питаш ти.[br /][symbol value='mdash' /] Нищо повече не мога да ви кажа [symbol value='mdash' /] отсича човекът. [symbol value='mdash' /] Или идвате с мене, или не. Решавайте![/p][p][link target='338']Ако решиш да тръгнеш с непознатия[/link].[br /][link target='412']Ако откажеш[/link].[/p]</Text>
     </Episode>
-    <Episode Id="338" IsMarked="true" Location="122.5;402.5">
+    <Episode Id="338" IsMarked="true" Location="112.5;402.5">
       <Text>[p]Въпреки тъмнината непознатият уверено те води все по-напред из калните криволичещи улички. Изглежда, че наближавате покрайнините на града.[/p][p][symbol value='mdash' /] Скоро ли ще стигнем? [symbol value='mdash' /] нетърпеливо питаш ти.[br /][symbol value='mdash' /] Скоро, скоро [symbol value='mdash' /] потвърждава онзи с приглушен глас, в който сякаш долавяш насмешка.[/p][p]Цялата работа ти се нрави все по-малко. Питаш се дали е било разумно да тръгваш неизвестно накъде с този съмнителен тип. Ами ако се окаже агент на Агамор? Какво ще решиш сега?[/p][p][link target='299']Ще продължиш с непознатия[/link].[br /][link target='412']Ще откажеш да продължиш[/link].[br /][link target='324']Ще се опиташ да го плениш[/link].[/p]</Text>
     </Episode>
     <Episode Id="412" IsMarked="true" Location="142.5;402.5">
       <Text>[p][symbol value='mdash' /] Не! [symbol value='mdash' /] решително казваш ти. [symbol value='mdash' /] Предпочитам да си вървя. И с тези думи се обръщаш към пристанището.[br /][symbol value='mdash' /] Чакайте, благородни господине! [symbol value='mdash' /] възкликва странният тип. [symbol value='mdash' /] Не знаете какво губите![/p][p]Гласът му само подсилва убеждението ти, че нещо не е наред. Този човек гори от желание да те отведе на някакво неизвестно място. А там най-вероятно те чака клопка.[/p][p]С широка крачка се приближаваш към кораба. Време е да си легнеш на палубата, ако търговците вече не са заели всички удобни места.[/p][p][embed value='FateRoll' /][/p][p][if]return $.result &amp;lt;= 7;[/if][link target='402'](продължи)[/link][else /][link target='364'](продължи)[/link][endif /][/p]</Text>
     </Episode>
-    <Episode Id="299" IsMarked="true" Location="122.5;422.5">
+    <Episode Id="299" IsMarked="true" Location="92.5;422.5">
       <Text>[p]Любопитството те кара да пренебрегнеш риска и да продължиш с непознатия по тъмните улички. Ала скоро разбираш, че е било грешка да му се довериш. Изотзад върху тила ти се стоварва жесток удар и пред очите ти причернява.[/p][p]Свестяваш се бавно. Първото, което усещаш, е болката в главата и хладината на каменния под, върху който лежиш. Опитваш да се раздвижиш, но ръцете ти са здраво стегнати зад гърба с кожени ремъци.[/p][p]Предпазливо открехваш клепачи. Намираш се в прашна изоставена стая, осветена от жълтеникавото пламъче на свещ. Наблизо са захвърлени мечът и раницата ти. Край масата, на която е свещта, седят двама души. Единият обръща глава към теб и ти бързо затваряш очи.[/p][p][symbol value='mdash' /] Свестил ли се е? [symbol value='mdash' /] пита дрезгав гърлен глас.[br /][symbol value='mdash' /] Не, още лежи като труп. Няма да се събуди скоро след твоя удар.[br /][symbol value='mdash' /] Добре тогава. Аз отивам да съобщя за успеха. Голям късмет извадихме, мой човек. Нямаш представа колко щедър може да бъде Агамор, когато е доволен.[/p][p]Чуваш шум от изместени столове. Тежки стъпки, скърцане на несмазани панти. Хлопване на врата. Отваряш очи. Стаята е празна, двамата похитители са излезели. Сега е моментът да направиш нещо. Но какво?[/p][p][link target='265']Ще опиташ да срежеш ремъците с меча[/link].[br /][link target='184']Ще извадиш нещо от раницата[/link].[/p]</Text>
     </Episode>
-    <Episode Id="324" Location="142.5;422.5">
-      <Text></Text>
+    <Episode Id="324" IsMarked="true" Location="122.5;422.5">
+      <Text>[p]Как ще плениш подозрителния си спътник?[/p][p][link target='292']Ще го зашеметиш с дръжката на меча[/link].[br /][tag]item:return context.getItem('rope');[/tag] [link target='script:268' script='player.removeItem(&amp;apos;rope&amp;apos;, 1); return 268;' condition='return player.getItem(&amp;apos;rope&amp;apos;);']Ще използваш самолазещо въже[/link].[/p][p][image source='7' title='' hspace='0' vspace='0' align='center' width='410' height='171' /][/p]</Text>
     </Episode>
-    <Episode Id="265" IsMarked="true" Location="112.5;442.5">
+    <Episode Id="265" IsMarked="true" Location="92.5;442.5">
       <Text>[p]Трескаво пропълзяваш към меча, извръщаш се гърбом и започваш да триеш ремъците в острието. За щастие винаги си поддържал добре оръжието. След по-малко от минута ръцете ти са свободни. Мяташ раницата на гръб, грабваш меча и изтичваш навън от къщата.[/p][p][symbol value='mdash' /] По-полека, приятелче! [symbol value='mdash' /] раздава се глас от сенките. [symbol value='mdash' /] Закъде бързаш така?[/p][p]Пред тебе е похитителят. Какво ще предприемеш?[/p][p][link target='142']Ще го нападнеш с меча[/link].[br /][tag]item:return context.getItem('rope');[/tag] [link target='script:268' script='player.removeItem(&amp;apos;rope&amp;apos;, 1); return 268;' condition='return player.getItem(&amp;apos;rope&amp;apos;);']Ще опиташ да го плениш със самолазещо въже[/link].[/p]</Text>
     </Episode>
     <Episode Id="184" IsMarked="true" Location="152.5;442.5">
       <Text>[p]Трескаво пропълзяваш към раницата и откопчаваш ремъка със зъби. След това се извърташ гърбом към нея и започваш да ровиш вътре с вързаните си ръце. Какво ще извадиш?[/p][p][tag]item:return context.getItem('tear');[/tag] [link target='script:176' script='player.removeItem(&amp;apos;tear&amp;apos;, 1); return 176;' condition='return player.getItem(&amp;apos;tear&amp;apos;);']Скална сълза[/link].[br /][tag]item:return context.getItem('smoke');[/tag] [link target='script:25' script='player.removeItem(&amp;apos;smoke&amp;apos;, 1); return 25;' condition='return player.getItem(&amp;apos;smoke&amp;apos;);']Дим на миражите[/link].[br /][tag]item:return context.getItem('cloak');[/tag] [link target='script:72' script='player.removeItem(&amp;apos;cloak&amp;apos;, 1); return 72;' condition='return player.getItem(&amp;apos;cloak&amp;apos;);']Плащ-прикривало[/link].[br /][tag]item:return context.getItem('frog');[/tag] [link target='script:147' script='player.removeItem(&amp;apos;frog&amp;apos;, 1); return 147;' condition='return player.getItem(&amp;apos;frog&amp;apos;);']Лъжлива жаба[/link].[br /][tag]item:return context.getItem('rope');[/tag] [link target='script:191' script='player.removeItem(&amp;apos;rope&amp;apos;, 1); return 191;' condition='return player.getItem(&amp;apos;rope&amp;apos;);']Самолазещо въже[/link].[br /][link target='265']Ако нямаш нито един от изброените предмети или не желаеш да ги използваш, ще трябва да опиташ да се освободиш с меча[/link].[/p][p][image source='2' title='' hspace='0' vspace='0' align='center' width='379' height='179' /][/p]</Text>
     </Episode>
-    <Episode Id="142" IsMarked="true" Location="102.5;462.5">
+    <Episode Id="142" IsMarked="true" Location="82.5;462.5">
       <Text>[p]Похитителят рязко отскача настрани и вади меча си. Стойката му издава, че е опитен боец.[script]context.startBattle('kidnapper');
 $.winEpisode = 381;[/script][/p][p][embed value='Battle' /][/p]</Text>
     </Episode>
-    <Episode Id="268" IsMarked="true" Location="122.5;462.5">
+    <Episode Id="268" IsMarked="true" Location="102.5;462.5">
       <Text>[p]Това се казва истинско вълшебство! Още преди да си довършил мисълта си, въжето изскача от раницата и плъзва като змия по тялото на смаяния противник. Само след няколко секунди той е омотан от глава до пети и пада на земята.[/p][p][link target='413'](продължи)[/link][/p]</Text>
     </Episode>
-    <Episode Id="381" IsMarked="true" Location="102.5;482.5">
+    <Episode Id="381" IsMarked="true" Location="82.5;482.5">
       <Text>[p]Неочаквано от мрака се раздава тропот на нозе и звън на оръжие.[/p][p][symbol value='mdash' /] Стой! [symbol value='mdash' /] крещи мощен гърлен глас. [symbol value='mdash' /] В името на закона! Не мърдай![/p][p]Нощната стража! Само това ти липсва сега! Ако те хванат, ще трябва да отговаряш на куп неприятни въпроси. И тъй като не гориш от желание да беседваш със стражата, ти изоставяш проснатия противник и се втурваш към близката пресечка.[/p][p]Успешно се откъсваш от преследването и след десетина минути излизаш на пристанището. Сега най-разумното ще е да пренощуваш на кораба.[/p][p][link target='402'](продължи)[/link][/p]</Text>
     </Episode>
-    <Episode Id="364" IsMarked="true" Location="142.5;422.5">
+    <Episode Id="364" IsMarked="true" Location="152.5;422.5">
       <Text>[p]Внезапно в мрака се раздава свистене на стрела и нещо остро и хладно се впива в гърба ти.[script]$.result = context.roll(1, 12);[/script] Губиш [tag]minus:return $.result;[/tag] жизнени точки.[script]return context.reducePlayerLife($.result);[/script] Качваш се на кораба.[/p][p][link target='402'](продължи)[/link][/p]</Text>
     </Episode>
     <Episode Id="176" IsMarked="true" Location="142.5;462.5">
@@ -405,19 +439,19 @@ $.winEpisode = 381;[/script][/p][p][embed value='Battle' /][/p]</Text>
     <Episode Id="72" IsMarked="true" Location="172.5;482.5">
       <Text>[p]С неимоверни усилия успяваш да измъкнеш плаща от раницата и да се завиеш с него край стената. Едва си привършил, когато от коридора долитат стъпки. Похитителят се завръща! Чуваш скърцането на вратата, после в стаята отеква изненадан възглас и стъпките бързо се отдалечават навън. Хитростта ти е сполучлива! Явно противникът е решил, че си избягал.[/p][p]Няма време за губене! Пролазваш към меча и след няколко неуспешни опипа срязваш ремъците около китките си. Грабваш раницата и напускаш запустялата къща. Улицата е безлюдна, от похитителя няма и следа. Толкова по-добре, казваш си ти, и по най-прекия път се връщаш на кораба.[/p][p][link target='402'](продължи)[/link][/p]</Text>
     </Episode>
-    <Episode Id="147" Location="172.5;442.5">
-      <Text>[p]Едва си успял да се справиш с трудната задача, когато вратата се отваря и влиза похитителят.[/p][p][symbol value='mdash' /] Какво става тук? [symbol value='mdash' /] изненадано възкликва той[br /][symbol value='mdash' /] Ще видиш какво става! [symbol value='mdash' /] квака жабата. [symbol value='mdash' /] Абе глупак с глупак, чавка ли ти е изпила акъла? Не виждаш ли, че и моят господар е от хората на Агамор? Чакай само да съобщим, където трябва! На бавен огън ще те пекат![br /][symbol value='mdash' /] Ама аз мислех[symbol value='hellip' /][br /][symbol value='mdash' /] Млък! Ти глава имаш ли, че да мислиш? Докато се занимаваш с глупости, пратеникът на Сиян кой знае къде е отишъл. Веднага освободи господаря ми и бягай да си вършиш работата![/p][p]Окончателно объркан, похитителят те развързва, сипейки несвързани извинения.[/p][p][symbol value='mdash' /] Я стига с тия глупости! [symbol value='mdash' /] прекъсва го жабата. [symbol value='mdash' /] Казвай има ли нещо ново.[br /][symbol value='mdash' /] Ни-ни-нищо ново [symbol value='mdash' /] заеква нещастникът. [symbol value='mdash' /] Само дето тайното число е сме-сменено. Сега е 231.[script]// TODO[/script][br /][symbol value='mdash' /] Като няма нищо ново, какво ми се мотаеш тук? Бегом на работа![/p][p]Слисаният човечец хуква навън. Жабата изчезва подир него и от полумрака долита заканителното й квакане:[/p][p][symbol value='mdash' /] Само да си сбъркал пак! Главата ще ти откъсна! Дръвник с дръвник![/p][p]Когато излизаш на улицата, от двамата няма и следа. Усмихваш се и тръгваш да се върнеш на кораба.[/p][p][link target='402'](продължи)[/link][/p]</Text>
+    <Episode Id="147" IsMarked="true" Location="172.5;442.5">
+      <Text>[p]Едва си успял да се справиш с трудната задача, когато вратата се отваря и влиза похитителят.[/p][p][symbol value='mdash' /] Какво става тук? [symbol value='mdash' /] изненадано възкликва той[br /][symbol value='mdash' /] Ще видиш какво става! [symbol value='mdash' /] квака жабата. [symbol value='mdash' /] Абе глупак с глупак, чавка ли ти е изпила акъла? Не виждаш ли, че и моят господар е от хората на Агамор? Чакай само да съобщим, където трябва! На бавен огън ще те пекат![br /][symbol value='mdash' /] Ама аз мислех[symbol value='hellip' /][br /][symbol value='mdash' /] Млък! Ти глава имаш ли, че да мислиш? Докато се занимаваш с глупости, пратеникът на Сиян кой знае къде е отишъл. Веднага освободи господаря ми и бягай да си вършиш работата![/p][p]Окончателно объркан, похитителят те развързва, сипейки несвързани извинения.[/p][p][symbol value='mdash' /] Я стига с тия глупости! [symbol value='mdash' /] прекъсва го жабата. [symbol value='mdash' /] Казвай има ли нещо ново.[br /][symbol value='mdash' /] Ни-ни-нищо ново [symbol value='mdash' /] заеква нещастникът. [symbol value='mdash' /] Само дето тайното число е сме-сменено. Сега е 231.[br /][symbol value='mdash' /] Като няма нищо ново, какво ми се мотаеш тук? Бегом на работа![/p][p]Слисаният човечец хуква навън. Жабата изчезва подир него и от полумрака долита заканителното й квакане:[/p][p][symbol value='mdash' /] Само да си сбъркал пак! Главата ще ти откъсна! Дръвник с дръвник![/p][p]Когато излизаш на улицата, от двамата няма и следа. Усмихваш се и тръгваш да се върнеш на кораба.[/p][p][link target='402'](продължи)[/link][/p]</Text>
     </Episode>
     <Episode Id="191" IsMarked="true" Location="152.5;482.5">
       <Text>[p]Въжето пропълзява като змия и изчезва в процепа под вратата тъкмо в мига, когато отвън долитат забързани стъпки. Чуваш задавен вик, ругатни и глухо падане пред прага.[/p][p]Бързо се промъкваш до меча и срязваш с острието кожените ремъци около китките си. Ставаш, мяташ раницата на гръб и излизаш. На мрачната улица виждаш онова, което би могъл да предположиш [symbol value='ndash' /] похитителят лежи, омотан с въжето от глава до пети.[/p][p][link target='413'](продължи)[/link][/p]</Text>
     </Episode>
-    <Episode Id="413" IsMarked="true" Location="122.5;482.5">
+    <Episode Id="413" IsMarked="true" Location="102.5;482.5">
       <Text>[p]Навеждаш се над противника и разтърсваш рамото му.[/p][p][symbol value='mdash' /] Кой те изпраща?[/p][p]Вместо отговор от устните му излита само злобно ръмжене. Явно не ще бъде лесно да го накараш да говори.[/p][p][tag]item:return context.getItem('stone');[/tag] [link target='script:387' script='player.removeItem(&amp;apos;stone&amp;apos;, 1); return 387;' condition='return player.getItem(&amp;apos;stone&amp;apos;);']Ако имаш камък на истината и желаеш да го използваш сега[/link].[br /][link target='355']В противен случай[/link].[/p]</Text>
     </Episode>
-    <Episode Id="387" Location="112.5;502.5">
-      <Text>[p]Изваждаш вълшебния камък и го притискаш към челото на пленника. Действието е мигновено. Човекът се отпуска и с широко отворени очи се втренчва в пустотата.[/p][p][symbol value='mdash' /] Кой те изпраща? [symbol value='mdash' /] питаш ти.[/p][p]Гласът на пленника е глух и безизразен.[/p][p][symbol value='mdash' /] Праща ме[symbol value='hellip' /] Агамор[symbol value='hellip' /] Трябваше да ти попречим[symbol value='hellip' /] да стигнеш[symbol value='hellip' /] до неговата долина[symbol value='hellip' /][br /][symbol value='mdash' /] Къде е тя? [symbol value='mdash' /] прекъсваш го ти.[br /][symbol value='mdash' /] Отвъд Огнената пустиня[symbol value='hellip' /] Там, където[symbol value='hellip' /] керванският път[symbol value='hellip' /] завива в подножието на планините[symbol value='hellip' /] към Киман[symbol value='hellip' /] Има клисура сред скалите[symbol value='hellip' /] долина[symbol value='hellip' /] Там е дворецът на Агамор[symbol value='hellip' /] Влиза се с тайното число[symbol value='hellip' /] то е 231[symbol value='hellip' /] да, 231[symbol value='hellip' /][script]// TODO[/script][/p][p][link target='381'](продължи)[/link][/p]</Text>
+    <Episode Id="387" IsMarked="true" Location="82.5;502.5">
+      <Text>[p]Изваждаш вълшебния камък и го притискаш към челото на пленника. Действието е мигновено. Човекът се отпуска и с широко отворени очи се втренчва в пустотата.[/p][p][symbol value='mdash' /] Кой те изпраща? [symbol value='mdash' /] питаш ти.[/p][p]Гласът на пленника е глух и безизразен.[/p][p][symbol value='mdash' /] Праща ме[symbol value='hellip' /] Агамор[symbol value='hellip' /] Трябваше да ти попречим[symbol value='hellip' /] да стигнеш[symbol value='hellip' /] до неговата долина[symbol value='hellip' /][br /][symbol value='mdash' /] Къде е тя? [symbol value='mdash' /] прекъсваш го ти.[br /][symbol value='mdash' /] Отвъд Огнената пустиня[symbol value='hellip' /] Там, където[symbol value='hellip' /] керванският път[symbol value='hellip' /] завива в подножието на планините[symbol value='hellip' /] към Киман[symbol value='hellip' /] Има клисура сред скалите[symbol value='hellip' /] долина[symbol value='hellip' /] Там е дворецът на Агамор[symbol value='hellip' /] Влиза се с тайното число[symbol value='hellip' /] то е 231[symbol value='hellip' /] да, 231[symbol value='hellip' /][/p][p][link target='381'](продължи)[/link][/p]</Text>
     </Episode>
-    <Episode Id="355" IsMarked="true" Location="132.5;502.5">
+    <Episode Id="355" IsMarked="true" Location="102.5;502.5">
       <Text>[p]На всичките ти въпроси пленникът отговаря само с мълчание или еднообразни ругатни.[/p][p][link target='381'](продължи)[/link][/p]</Text>
     </Episode>
     <Episode Id="360" IsMarked="true" Location="192.5;462.5">
@@ -433,7 +467,7 @@ $.winEpisode = 381;[/script][/p][p][embed value='Battle' /][/p]</Text>
       <Text>[p][image source='5' title='' hspace='0' vspace='0' align='right' width='492' height='659' /]Стените на мрачната клисура те обгръщат от двете страни. Наоколо царува зловеща тишина, нарушавана сами от скърцането на камъни под стъпките на камилата. След няколко минути клисурата постепенно се разширява и отпред се разкрива просторна зелена долина. В противоположния й край се издига дворец от черен мрамор. Още от пръв поглед забелязваш в него нещо необичайно [symbol value='ndash' /] стените са гладки и плътни, без никакви отвори, освен вратата, и един-единствен прозорец на третия етаж.[/p][p]Ала сега нямаш време да разглеждаш двореца. Пътят ти е преграден от истинска армия [symbol value='ndash' /] най-малко триста бойци са се строили напряко на долината, готови за сражение. Истинско безумие е да се надяваш, че с меча си ще можеш да се пребориш срещу такава сила. Сега единственият ти шанс са вълшебните предмети. Какво ще извадиш от раницата?[/p][p][tag]item:return context.getItem('cloak');[/tag] [link target='script:418' script='player.removeItem(&amp;apos;cloak&amp;apos;, 1); return 418;' condition='return player.getItem(&amp;apos;cloak&amp;apos;);']Плащ-прикривало[/link].[br /][tag]item:return context.getItem('fire');[/tag] [link target='script:401' script='player.removeItem(&amp;apos;fire&amp;apos;, 1); return 401;' condition='return player.getItem(&amp;apos;fire&amp;apos;);']Гръцки огън[/link].[br /][tag]item:return context.getItem('smoke');[/tag] [link target='script:408' script='player.removeItem(&amp;apos;smoke&amp;apos;, 1); return 408;' condition='return player.getItem(&amp;apos;smoke&amp;apos;);']Дим на миражите[/link].[br /][tag]item:return context.getItem('frog');[/tag] [link target='script:388' script='player.removeItem(&amp;apos;frog&amp;apos;, 1); return 388;' condition='return player.getItem(&amp;apos;frog&amp;apos;);']Лъжлива жаба[/link].[br /][tag]item:return context.getItem('boots');[/tag] [link target='script:375' script='player.removeItem(&amp;apos;boots&amp;apos;, 1); return 375;' condition='return player.getItem(&amp;apos;boots&amp;apos;);']Бързоходни ботуши[/link].[br /][tag]item:return context.getItem('napkin');[/tag] [link target='script:353' script='player.removeItem(&amp;apos;napkin&amp;apos;, 1); return 353;' condition='return player.getItem(&amp;apos;napkin&amp;apos;);']Кърпичка с три възела[/link].[br /][tag]item:return context.getItem('ash');[/tag] [link target='script:357' script='player.removeItem(&amp;apos;ash&amp;apos;, 1); return 357;' condition='return player.getItem(&amp;apos;ash&amp;apos;);']Мъртва пепел[/link].[/p][p]Ако за беда нямаш нито един от тези предмети, мисията ти завършва дотук, защото само след минута ще паднеш под ударите на вражеските пълчища.[/p]</Text>
     </Episode>
     <Episode Id="162" IsMarked="true" Location="267.5;622.5">
-      <Text>[p]Тихият оазис е просторна плодородна долина, в центъра на която блестят сините води на дълбоко езеро. По бреговете му се зеленеят короните на палми и маслинови горички. Тук-там забелязваш руини от древни мраморни сгради. Но тяхното великолепие отдавна е отминало. Днешните обитатели на оазиса живеят в ниски глинени къщурки с покриви от палмови листа. Тези бедни, но сърдечни хора приветливо ти махат с ръце, докато минаваш покрай тях.[/p][p]Срещу 1 жълтица намираш подслон в дома на един добродушен камилар на име Сахим.[script]player.removeItem('gold', 1);[/script] След вечерята той дълго те разпитва как е животът по широкия свят, цъкайки учудено с език при всяка по-интересна новина. Накрая отпива от кафето си и казва:[/p][p][symbol value='mdash' /] Всичко може да има по света, но никъде няма като нашия оракул. Хората идват отдалече, за да поговорят с него.[br /][symbol value='mdash' /] Какъв оракул? [symbol value='mdash' /] питаш ти[br /][symbol value='mdash' /] Не знаеш ли? [symbol value='mdash' /] изненадва се Сахим. [symbol value='mdash' /] Мислех, че всички са чували за оракула. Той е велик мъдрец. Аллах му е дал дарбата да прозира бъдещето и да отговаря на най-трудните въпроси. Ако искаш, утре можеш да го посетиш. Лесно ще го откриеш, той живее в каменните развалини на изток от езерото.[/p][p]Когато си лягаш да спиш, ти все още мислиш за оракула. Ще го посетиш ли утре?[/p][p][link target='405']Да[/link].[br /][link target='311']Не[/link].[/p]</Text>
+      <Text>[p]Тихият оазис е просторна плодородна долина, в центъра на която блестят сините води на дълбоко езеро. По бреговете му се зеленеят короните на палми и маслинови горички. Тук-там забелязваш руини от древни мраморни сгради. Но тяхното великолепие отдавна е отминало. Днешните обитатели на оазиса живеят в ниски глинени къщурки с покриви от палмови листа. Тези бедни, но сърдечни хора приветливо ти махат с ръце, докато минаваш покрай тях.[/p][p]Срещу 1 жълтица намираш подслон в дома на един добродушен камилар на име Сахим.[script]player.removeItem('gold', 1);[/script] След вечерята той дълго те разпитва как е животът по широкия свят, цъкайки учудено с език при всяка по-интересна новина. Накрая отпива от кафето си и казва:[/p][p][symbol value='mdash' /] Всичко може да има по света, но никъде няма като нашия оракул. Хората идват отдалече, за да поговорят с него.[br /][symbol value='mdash' /] Какъв оракул? [symbol value='mdash' /] питаш ти[br /][symbol value='mdash' /] Не знаеш ли? [symbol value='mdash' /] изненадва се Сахим. [symbol value='mdash' /] Мислех, че всички са чували за оракула. Той е велик мъдрец. Аллах му е дал дарбата да прозира бъдещето и да отговаря на най-трудните въпроси. Ако искаш, утре можеш да го посетиш. Лесно ще го откриеш, той живее в каменните развалини на изток от езерото.[/p][p]Когато си лягаш да спиш, ти все още мислиш за оракула. Ще го посетиш ли утре?[script]$.knowsSahim = true;[/script][/p][p][link target='405']Да[/link].[br /][link target='311']Не[/link].[/p]</Text>
     </Episode>
     <Episode Id="405" IsMarked="true" Location="132.5;622.5">
       <Text>[p]Призори на следващия ден тръгваш пеш към източния край на оазиса. Древните мраморни развалини те посрещат с тишина и покой. Едва забележима пътечка води покрай обрасли с бръшлян колони към буренясало вътрешно дворче. Спираш и се питаш накъде да продължиш сега.[/p][p][symbol value='mdash' /] Добър ден, храбрецо [symbol value='mdash' /] стресва те нечий тих глас.[/p][p]Изненадано надигаш глава. Вдясно от тебе широки каменни стъпала се изкачват към полуразрушен портал, пред който е седнал съсухрен старец с дълга бяла брада.[/p][p][symbol value='mdash' /] Добър ден [symbol value='mdash' /] отвръщаш ти. [symbol value='mdash' /] Искам да питам[symbol value='hellip' /][/p][p]Старецът се усмихва добродушно и поклаща глава.[/p][p][symbol value='mdash' /] Знам какво искаш да питаш. Срещу опасен враг си тръгнал, млади момко. Уви, малко мога да ти разкрия. Агамор е могъщ и опитен магьосник. Той умее да хвърля над делата си непроницаемо було, през което и най-надареният ясновидец съзира само смътни сенки. Едно знам със сигурност [symbol value='ndash' /] къде ще го намериш. Там, където пътят на керваните достига подножието на Полумесечните планини и завива към Киман, се крие мрачна клисура. Отвъд нея е дворецът на Агамор.[/p][p]Гласът на стария ясновидец затихва. Решаваш, че е казал всичко, което знае, и се готвиш да тръгнеш обратно, когато той рязко се изправя.[/p][p][symbol value='mdash' /] Почакай! Виждам още нещо. Ако тръгнеш от оазиса към Перодон, скоро ще видиш разрушена крепост. Никой не смее да ходи натам, защото сред старите камъни се спотайват зли духове. Но ако влезеш в крепостта, може би ще откриеш нещо, което да ти помогне в борбата против Агамор. Това е всичко. Сбогом, храбрецо[symbol value='hellip' /] и на добър час.[/p][p]Замислено се връщаш към къщурката на Сахим. Какво ще предприемеш сега?[/p][p][link target='322']Ако решиш да тръгнеш към разрушената крепост[/link].[br /][link target='269']Ако не желаеш да я посетиш[/link].[/p]</Text>
@@ -462,8 +496,11 @@ $.winEpisode = 381;[/script][/p][p][embed value='Battle' /][/p]</Text>
     <Episode Id="297" IsMarked="true" Location="282.5;482.5">
       <Text>[p]Решително развързваш и трите възела на кърпичката. В следващия миг страхотен порив на вятъра я изтръгва от ръката ти. Керванът потъва в пясъчен облак и ревът на бурята заглушава отчаяните крясъци на търговците.[/p][p]Настанал е непрогледен мрак. Един рязък скок на подплашената камила те събаря от седлото. Полузашеметен правиш усилие да се надигнеш сред бесния пясъчен вихър.[/p][p][embed value='FateRoll' /][/p][p][if]return $.result &amp;lt;= 8;[/if][link target='272'](продължи)[/link][else /][link target='245'](продължи)[/link][endif /][/p]</Text>
     </Episode>
-    <Episode Id="272" Location="282.5;502.5">
-      <Text>[p]Оглушен от адския вой на вятъра, падаш на колене. Затрупват те купища пясък. Измъкваш се с отчаяни усилия и кашляйки се мъчиш да поемеш дъх, но наоколо сякаш няма въздух, а само прах. Не бива да губиш съзнание [symbol value='ndash' /] това е сигурна гибел! Пясъкът отново те засипва [symbol value='ndash' /] до кръста, до гърдите[symbol value='hellip' /] Сам не знаеш как успяваш да се изтръгнеш от жестоката му хватка.[/p][p]И изведнъж бурята стихва като по чудо. Безсилно се просваш по гръб и дълго почиваш след непосилната борба. Когато се опомняш, първата ти ясна мисъл е за раницата. За щастие тя все още е на раменете ти. Но под напора на стихията ремъкът се е откъснал и един от предметите е изчезнал [symbol value='ndash' /] най-горният, тоест онзи, който е на последно място в списъка.[script]// TODO: remove last item[/script][/p][p][link target='359'](продължи)[/link][/p]</Text>
+    <Episode Id="272" IsMarked="true" Location="282.5;502.5">
+      <Text>[p]Оглушен от адския вой на вятъра, падаш на колене. Затрупват те купища пясък. Измъкваш се с отчаяни усилия и кашляйки се мъчиш да поемеш дъх, но наоколо сякаш няма въздух, а само прах. Не бива да губиш съзнание [symbol value='ndash' /] това е сигурна гибел! Пясъкът отново те засипва [symbol value='ndash' /] до кръста, до гърдите[symbol value='hellip' /] Сам не знаеш как успяваш да се изтръгнеш от жестоката му хватка.[/p][p]И изведнъж бурята стихва като по чудо. Безсилно се просваш по гръб и дълго почиваш след непосилната борба. Когато се опомняш, първата ти ясна мисъл е за раницата. За щастие тя все още е на раменете ти. Но под напора на стихията ремъкът се е откъснал и един от предметите е изчезнал [symbol value='ndash' /] най-горният, тоест онзи, който е на последно място в списъка.[script]if (player.itemOrder.length &amp;gt; 0) {
+  const lastItemId = player.itemOrder&amp;ob;0&amp;cb;;
+  player.removeItem(lastItemId, 1);
+}[/script][/p][p][link target='359'](продължи)[/link][/p]</Text>
     </Episode>
     <Episode Id="245" IsMarked="true" Location="302.5;502.5">
       <Text>Напразно се бориш срещу стихията. Зашеметен, безсилен, затрупан от купища пясък, вече не можеш да дишаш и животът ти бавно изтича сред непрогледен мрак. Може би някой ден жаркият пустинен самум ще изрови побелелите ти кости[symbol value='hellip' /]</Text>
@@ -583,8 +620,8 @@ $.winEpisode = 359;[/script][/p][p][embed value='Battle' /][/p]</Text>
     <Episode Id="275" IsMarked="true" Location="102.5;682.5">
       <Text>[p]Бавно се спускаш по стръмните каменни стъпала и попадаш в дълъг подземен коридор. Наоколо цари мрак, само далеч напред едва мъждука бледа светлина. Предпазливо тръгваш натам, но изведнъж спираш. Някаква масивна фигура е заслонила светлината в дъното на тунела. До ушите ти долитат страховити звуци [symbol value='ndash' /] фучене, плясък, злобно ръмжене. Що за чудовище се задава към теб? И какво ще предприемеш сега?[/p][p][link target='242']Ще се приготвиш за бой[/link].[br /][link target='219']Ще бягаш към изхода[/link].[br /][tag]item:return context.getItem('cloak');[/tag] [link target='script:267' script='player.removeItem(&amp;apos;cloak&amp;apos;, 1); return 267;' condition='return player.getItem(&amp;apos;cloak&amp;apos;);']Ще използваш плащ-прикривало[/link].[/p]</Text>
     </Episode>
-    <Episode Id="186" Location="142.5;682.5">
-      <Text>[p]Продължаваш напред през пустинята. Скоро старата крепостна кула остава далече зад теб. След около половин час от върха на една дюна забелязваш пред себе си зеленина и блясък на вода.[/p][p][script]// TODO[/script] [link target='269']Ако познаваш Сахим[/link].[br /][link target='162']Ако не си чувал това име[/link].[/p]</Text>
+    <Episode Id="186" IsMarked="true" Location="142.5;682.5">
+      <Text>[p]Продължаваш напред през пустинята. Скоро старата крепостна кула остава далече зад теб. След около половин час от върха на една дюна забелязваш пред себе си зеленина и блясък на вода.[/p][p][link target='269' condition='return $.knowsSahim;']Ако познаваш Сахим[/link].[br /][link target='162' condition='return !$.knowsSahim;']Ако не си чувал това име[/link].[/p]</Text>
     </Episode>
     <Episode Id="242" IsMarked="true" Location="67.5;702.5">
       <Text>[p]В полумрака срещу тебе връхлита огромен джин с люспесто тяло и разперени ципести криле. Дългите му нокти са остри като кинжали, а от устата му стърчат грамадни криви зъби. Как ще се биеш против това чудовище?[/p][p][tag]item:return context.getItem('sword');[/tag] [link target='193']С меча[/link].[br /][tag]item:return context.getItem('dagger');[/tag] [link target='script:12' script='player.removeItem(&amp;apos;dagger&amp;apos;, 1); return 12;' condition='return player.getItem(&amp;apos;dagger&amp;apos;);']Със сребърен кинжал[/link].[/p]</Text>
@@ -642,14 +679,18 @@ $.winEpisode = 159;[/script][/p][p][embed value='Battle' /][/p]</Text>
     <Episode Id="46" IsMarked="true" Location="272.5;122.5">
       <Text>[p]След малко Пано се връща широко усмихнат. Намерил е керван, който на следващата сутрин потегля към Тихия оазис. Срещу три жълтици на човек водачът се е съгласил да ви вземе и дори да ви осигури камили.[script]player.removeItem('gold', 9);[/script][/p][p]Нарамвате багажа и тръгвате след Пано към покрайнините на Перодон, където е лагерът на кервана. От тълпата хора и камили насреща ви излиза водачът [symbol value='ndash' /] мършав старец с дълга бяла брада, облечен в раиран халат. Докато му плащаш уговорените 9 жълтици, той замислено те оглежда и накрая въздъхва:[/p][p][symbol value='mdash' /] Много грижи са изписани по лицето ти, пътниче. Дано Аллах ти помогне да се пребориш с тях.[/p][p]Последните часове на деня преминават в обучение по езда. За пръв път се качваш на камила и макар че са ти подбрали най- послушното животно, в края на тренировката се чувстваш изтощен до смърт. Когато се спуска мрак и първите огньове пламват из лагера, имаш само едно желание [symbol value='ndash' /] да се наспиш. Отказваш дори да вечеряш. Изпиваш само чаша тръпчив зелен чай и лягаш край един бодлив храст.[/p][p][embed value='FateRoll' /][/p][p][if]return $.result &amp;lt;= 3;[/if][link target='34'](продължи)[/link][else /][if]return $.result &amp;lt;= 6;[/if][link target='270'](продължи)[/link][else /][link target='326'](продължи)[/link][endif /][endif /][/p]</Text>
     </Episode>
-    <Episode Id="83" Location="252.5;102.5">
-      <Text>[p]Този път схватката ще бъде с голи ръце — излишно е да вадиш меча за толкова дребно скарване. Правилата на боя са същите, както е посочено в началото на книгата. Има само една разлика — при успешен удар се отнема една точка вместо две. Ще се биете, докато един от двамата загуби 3 точки.[script]context.startBattle('bully');[/script][/p][p]ПОБОЙНИК[br /]СИЛА — 7, ЖИВОТ — 11[br /]Ако победиш, мини на #145.[br /]Ако загубиш, попадаш на #4.[/p]</Text>
+    <Episode Id="83" IsMarked="true" Location="252.5;102.5">
+      <Text>[p]Този път схватката ще бъде с голи ръце — излишно е да вадиш меча за толкова дребно скарване. Правилата на боя са същите, както е посочено в началото на книгата. Има само една разлика — при успешен удар се отнема една точка вместо две. Ще се биете, докато един от двамата загуби 3 точки.[script]context.startBattle('bully');
+$.playerStartLife = player.life;
+$.opponentStartLife = $.opponents&amp;ob;0&amp;cb;.life;[/script][/p][p][embed value='83a' /][/p]</Text>
     </Episode>
     <Episode Id="4" IsMarked="true" Location="272.5;82.5">
       <Text>[p]Докато е траяла свадата ви, циганката е изчезнала в някоя от тесните улички. Ядосаният здравеняк отново размахва юмрук срещу теб, но в това време Борил се приближава с ръка върху дръжката на меча. Виждайки, че работата става дебела, скандалджията губи кураж и бързо се отдалечава.[/p][p]Връщате се при багажа, сядате върху раниците и чакате да се върне Пано.[/p][p][link target='46'](продължи)[/link][/p]</Text>
     </Episode>
-    <Episode Id="145" Location="252.5;122.5">
-      <Text>[p]След като е опитал силата на юмруците ти, побойникът бързо губи нахалството си и унило се оттегля от полесражението.[/p][p][symbol value='mdash' /] Жив да си, благородни господине! [symbol value='mdash' /] възкликва старата циганка. [symbol value='mdash' /] Оня проклетник щеше да ми потроши кокалите. Жив да си! Искаш ли да ти гледам? Без пари. Дай си ръката![/p][p]Преди да отговориш, тя вече е сграбчила ръката ти и съсредоточено се взира в линиите по дланта.[/p][p][symbol value='mdash' /] Много си силен, господине! И много си смел! Само не се сърди, ама тежък път те чака. Лош човек лоши работи ти крои! Накъдето да погледнеш, все заплахи те дебнат. Обаче ще победиш! Виждам го тука, твоя е победата. И още нещо виждам. Магическо число. Много важно число, животът ти зависи от него. Със страшна магия е скрито, та никой да го не знае. Ама аз виждам, че е от три цифри и има тройка в средата. Добре го запомни! А пък онзи човек ще ти прави лоши магии, затуй ти трябва талисман. Искаш ли да ти продам талисман? Евтин е, само една жълтица струва.[script]// TODO[/script][/p][p]След това се връщаш при Борил.[/p][p][link target='46'](продължи)[/link][/p]</Text>
+    <Episode Id="145" IsMarked="true" Location="252.5;122.5">
+      <Text>[p]След като е опитал силата на юмруците ти, побойникът бързо губи нахалството си и унило се оттегля от полесражението.[/p][p][symbol value='mdash' /] Жив да си, благородни господине! [symbol value='mdash' /] възкликва старата циганка. [symbol value='mdash' /] Оня проклетник щеше да ми потроши кокалите. Жив да си! Искаш ли да ти гледам? Без пари. Дай си ръката![/p][p]Преди да отговориш, тя вече е сграбчила ръката ти и съсредоточено се взира в линиите по дланта.[/p][p][symbol value='mdash' /] Много си силен, господине! И много си смел! Само не се сърди, ама тежък път те чака. Лош човек лоши работи ти крои! Накъдето да погледнеш, все заплахи те дебнат. Обаче ще победиш! Виждам го тука, твоя е победата. И още нещо виждам. Магическо число. Много важно число, животът ти зависи от него. Със страшна магия е скрито, та никой да го не знае. Ама аз виждам, че е от три цифри и има тройка в средата. Добре го запомни! А пък онзи човек ще ти прави лоши магии, затуй ти трябва талисман. Искаш ли да ти продам талисман? Евтин е, само една жълтица струва.[script]$.items = &amp;ob;&amp;cb;;
+$.items.push(context.createItemWithPrice('charm', 1, 1));
+$.infinite = false;[/script][/p][p][embed value='Shop' /][/p][p]След това се връщаш при Борил.[/p][p][link target='46'](продължи)[/link][/p]</Text>
     </Episode>
     <Episode Id="34" IsMarked="true" Location="252.5;142.5">
       <Text>[p]Когато се събуждаш на сутринта, с ужас установяваш, че раницата ти е изчезнала. Останали са ти само кесията и мечът. Какво нещастие! Приключението едва е започнало, а вече успехът изглежда недостижим.[script]const gold = player.getItem('gold');
@@ -661,8 +702,8 @@ player.addItem(sword);[/script][/p][p]Продължаваш напред с к�
     <Episode Id="270" IsMarked="true" Location="272.5;142.5">
       <Text>[p]Посред нощ внезапно се събуждаш и откриваш, че някой се опитва да измъкне раницата изпод главата ти. Поразително нахалство! Скачаш и хващаш крадеца за ръката, но той се изтръгва и хуква като заек през трънливите храсталаци около бивака. Докато се разсъниш окончателно, той вече е изчезнал в мрака. Лягаш си и отново заспиваш.[/p][p][link target='253'](продължи)[/link][/p]</Text>
     </Episode>
-    <Episode Id="326" Location="292.5;142.5">
-      <Text>[p]Внезапно се събуждаш с чувството, че нещо не е наред. В първия миг съненото ти съзнание напразно се мъчи да разбере от къде идва тревогата. Като че нещо липсва, нещо е изчезнало[symbol value='hellip' /] Какво?[script]// todo: remove the items?[/script][/p][p]Раницата! Изчезнала е раницата с всичките ти вълшебни предмети! Скачаш на крака, грабваш меча и се оглеждаш. За щастие луната още не е залязла. В синкавите й лъчи забелязваш сред трънливия пущинак прегърбен силует, който тичешком се отдалечава от лагера. В ръцете му се полюшва някакъв заоблен товар. Това не може да бъде нищо друго, освен откраднатата раница. Бързо решавай какво ще предприемеш.[/p][p][link target='309']Нападаш грабителя[/link].[br /][link target='301']Ще го проследиш[/link].[/p]</Text>
+    <Episode Id="326" IsMarked="true" Location="292.5;142.5">
+      <Text>[p]Внезапно се събуждаш с чувството, че нещо не е наред. В първия миг съненото ти съзнание напразно се мъчи да разбере от къде идва тревогата. Като че нещо липсва, нещо е изчезнало[symbol value='hellip' /] Какво?[/p][p]Раницата! Изчезнала е раницата с всичките ти вълшебни предмети! Скачаш на крака, грабваш меча и се оглеждаш. За щастие луната още не е залязла. В синкавите й лъчи забелязваш сред трънливия пущинак прегърбен силует, който тичешком се отдалечава от лагера. В ръцете му се полюшва някакъв заоблен товар. Това не може да бъде нищо друго, освен откраднатата раница. Бързо решавай какво ще предприемеш.[/p][p][link target='309']Нападаш грабителя[/link].[br /][link target='301']Ще го проследиш[/link].[/p]</Text>
     </Episode>
     <Episode Id="55" IsMarked="true" Location="252.5;262.5">
       <Text>[p]Докато керванът се изнизва покрай последните къщи на града, забелязваш над едно схлупено магазинче голям надпис: „ВЪЛШЕБНИ ПРЕДМЕТИ“. Ще спреш ли, за да надникнеш вътре?[/p][p][link target='97']Да[/link].[br /][link target='6']Не[/link].[/p]</Text>
@@ -674,11 +715,12 @@ player.addItem(sword);[/script][/p][p]Продължаваш напред с к�
       <Text>[p]С няколко скока догонваш грабителя. Усещайки преследването, той се обръща и замахва към гърдите ти с грамаден крив кинжал. Отбягваш удара и изтегляш меча от ножницата.[script]context.startBattle('thief');
 $.winEpisode = 264;[/script][/p][p][embed value='Battle' /][/p]</Text>
     </Episode>
-    <Episode Id="301" Location="312.5;162.5">
-      <Text>[p]Промъкваш се след грабителя, като се прикриваш зад сухите трънаци из пущинака. След няколко минути разбираш, че човекът се насочва към някаква полуразрушена гробница, в която потрепва червеникава светлинка. Когато той влиза вътре, ти предпазливо пристъпваш към входа и надникваш.[/p][p]Край малък огън седят трима души. Единият от тях тържествено потупва раницата.[/p][p][symbol value='mdash' /] Готово! [symbol value='mdash' /] гордо съобщава той. [symbol value='mdash' /] Всичко мина като по масло. Агамор ще бъде доволен.[br /][symbol value='mdash' /] Не бързай толкова [symbol value='mdash' /] прекъсва го един от съучастниците му.[br /][symbol value='mdash' /] Тепърва предстои най-важното. Трябва да му попречим да стигне до оазиса.[/p][p]Разговорът започва да става интересен. Толкова интересен, че се подпираш на каменната стена, за да слушаш по-отблизо. И това е грешката ти. Под натиска един разхлабен камък се изкъртва от зида. Губиш равновесие и падаш напред, но веднага скачаш на крака.[/p][p]Без да се колебаят нито секунда, тримата разбойници вадят мечовете си и връхлитат срещу теб.[/p][p]ПЪРВИ РАЗБОЙНИК[br /]СИЛА — 8, ЖИВОТ — 9[br /]ВТОРИ РАЗБОЙНИК[br /]СИЛА — 7, ЖИВОТ — 10[br /]ТРЕТИ РАЗБОЙНИК[br /]СИЛА — 6, ЖИВОТ — 12[/p][p]В тази схватка и тримата ще ти нанасят удари по ред, преди да[br /]отвърнеш с един удар. Ако успееш да повалиш двама от разбойниците,[br /]премини на #239.[/p]</Text>
+    <Episode Id="301" IsMarked="true" Location="312.5;162.5">
+      <Text>[p]Промъкваш се след грабителя, като се прикриваш зад сухите трънаци из пущинака. След няколко минути разбираш, че човекът се насочва към някаква полуразрушена гробница, в която потрепва червеникава светлинка. Когато той влиза вътре, ти предпазливо пристъпваш към входа и надникваш.[/p][p]Край малък огън седят трима души. Единият от тях тържествено потупва раницата.[/p][p][symbol value='mdash' /] Готово! [symbol value='mdash' /] гордо съобщава той. [symbol value='mdash' /] Всичко мина като по масло. Агамор ще бъде доволен.[br /][symbol value='mdash' /] Не бързай толкова [symbol value='mdash' /] прекъсва го един от съучастниците му.[br /][symbol value='mdash' /] Тепърва предстои най-важното. Трябва да му попречим да стигне до оазиса.[/p][p]Разговорът започва да става интересен. Толкова интересен, че се подпираш на каменната стена, за да слушаш по-отблизо. И това е грешката ти. Под натиска един разхлабен камък се изкъртва от зида. Губиш равновесие и падаш напред, но веднага скачаш на крака.[/p][p]Без да се колебаят нито секунда, тримата разбойници вадят мечовете си и връхлитат срещу теб.[script]context.startBattle('firstBandit', 'secondBandit', 'thirdBandit');
+$.winEpisode = 239;[/script][/p][p][embed value='Battle' /][/p]</Text>
     </Episode>
-    <Episode Id="264" Location="292.5;182.5">
-      <Text>[p]Грабителят пада мъртъв. Вдигаш раницата и се връщаш в лагера. Въпреки умората, дълго време не можеш да заспиш. Струва ти се, че зад всичко това стои Агамор. Какво ли те чака утре?[script]//TODO:[/script][/p][p][link target='253'](продължи)[/link][/p]</Text>
+    <Episode Id="264" IsMarked="true" Location="292.5;182.5">
+      <Text>[p]Грабителят пада мъртъв. Вдигаш раницата и се връщаш в лагера. Въпреки умората, дълго време не можеш да заспиш. Струва ти се, че зад всичко това стои Агамор. Какво ли те чака утре?[/p][p][link target='253'](продължи)[/link][/p]</Text>
     </Episode>
     <Episode Id="239" IsMarked="true" Location="312.5;182.5">
       <Text>[p]Виждайки печалната съдба на двамата си съучастници, третият грабител хуква да бяга през пущинака. Каниш се с го подгониш, когато погледът ти се спира върху отворената раница. Имаш ли в нея бумеранг?[/p][p][tag]item:return context.getItem('boomerang');[/tag] [link target='script:211' script='player.removeItem(&amp;apos;boomerang&amp;apos;, 1); return 211;' condition='return player.getItem(&amp;apos;boomerang&amp;apos;);']Ако имаш и искаш да го използваш сега[/link].[br /][link target='38']Ако предпочиташ да гониш противника, който вече има значителна преднина[/link].[/p]</Text>
@@ -696,57 +738,17 @@ $.winEpisode = 264;[/script][/p][p][embed value='Battle' /][/p]</Text>
       <Text>[p]Прибързаното ти хвърляне е неточно. Бумерангът профучава край главата на бягащия враг и пада нейде из бодливите храсти.[/p][p][link target='38'](продължи)[/link][/p]</Text>
     </Episode>
     <Episode Id="97" IsMarked="true" Location="242.5;282.5">
-      <Text>[p]Скачаш от камилата и влизаш в тясното дюкянче. От всички страни те обграждат лавици, отрупани с прашни вехтории. Престарял търговец с огромна чалма се надига от рогозката, на която е седнал, и любезно се покланя.[/p][p][symbol value='mdash' /] Добре дошъл, благородни господине. Тук ще намерите най- изумителните вълшебства. Да, да, виждам, че бързате и няма да ви бавя. Ето, вземете този списък. Можете да направите избора си от него.[/p][p]С нов поклон продавачът ти подава късче пожълтял пергамент. Отдръпваш се на светло до вратата и четеш:[/p][p][script]// TODO:
-player.addItem(context.createItem('gold', 40));[/script][/p][p][tag]item:return context.getItem('flask');[/tag] [symbol value='ndash' /] 5 жълтици[br /][tag]item:return context.getItem('cloak');[/tag] [symbol value='ndash' /] 3 жълтици[br /][tag]item:return context.getItem('rope');[/tag] [symbol value='ndash' /] 2 жълтици[br /][tag]item:return context.getItem('dagger');[/tag] [symbol value='ndash' /] 4 жълтици[br /][tag]item:return context.getItem('herb');[/tag] [symbol value='ndash' /] 3 жълтици[br /][tag]item:return context.getItem('elixirLife');[/tag] [symbol value='ndash' /] 6 жълтици[br /][tag]item:return context.getItem('tear');[/tag] [symbol value='ndash' /] 2 жълтици[br /][tag]item:return context.getItem('mittens');[/tag] [symbol value='ndash' /] 3 жълтици[br /][tag]item:return context.getItem('elixirStrength');[/tag] [symbol value='ndash' /] 3 жълтици[script]$.itemsSelected = false;
-$.items = &amp;ob;&amp;cb;;
-$.selectedItems = &amp;ob;&amp;cb;;
-let item = context.createItem('flask'); item.price = 5;
-$.items.push(item);
-item = context.createItem('cloak'); item.price = 3;
-$.items.push(item);
-item = context.createItem('rope'); item.price = 2;
-$.items.push(item);
-item = context.createItem('dagger'); item.price = 4;
-$.items.push(item);
-item = context.createItem('herb'); item.price = 3;
-$.items.push(item);
-item = context.createItem('elixirLife'); item.price = 6;
-$.items.push(item);
-item = context.createItem('tear'); item.price = 2;
-$.items.push(item);
-item = context.createItem('mittens'); item.price = 3;
-$.items.push(item);
-item = context.createItem('elixirStrength'); item.price = 3;
-$.items.push(item);[/script][/p][p]Избери каквото ти е необходимо, но не забравяй, че жълтиците могат да ти потрябват и по-късно. А след като направиш покупките, побързай да догониш кервана.[/p][p][clicker]if (!$.itemsSelected) {
-  context.showItemTransferDialog($.selectedItems, $.items, 'Инвентар', 'Предмети', `Обща сума: ${context.getItemPrice($.selectedItems)}`, 'Магазин',
-    function(result) {
-      if (result) {
-        $.selectedItems = result.leftItems;
-      }
-    },
-    function(payload) {
-      return `Обща сума: ${context.getItemPrice(payload.leftItems)}`;
-    },
-    {
-      infinite: true,
-      tag: 'price',
-      tagTemplate: '%sж'
-    });
-}
-return true;[/clicker][tag]general:return 'Пазарувай';[/tag][endclicker /][/p][p][blocker]const gold = player.getItem('gold');
-if (gold) {
-  gold = gold.stack;
-} else {
-  gold = 0;
-}
-if (context.getItemPrice($.selectedItems) &amp;gt; gold) {
-  context.showPopupMessage(`Не можеш да платиш избраните предмети. Имаш ${gold} злато.`);
-  return false;
-}
-$.itemsSelected = true;
-return true;[/blocker][tag]general:return 'Продължи';[/tag][endblocker /][script]for (let i = 0; i &amp;lt; $.selectedItems.length; i++) {
-  player.addItem($.selectedItems&amp;ob;i&amp;cb;);
-}[/script][/p][p][link target='6'](продължи)[/link][/p]</Text>
+      <Text>[p]Скачаш от камилата и влизаш в тясното дюкянче. От всички страни те обграждат лавици, отрупани с прашни вехтории. Престарял търговец с огромна чалма се надига от рогозката, на която е седнал, и любезно се покланя.[/p][p][symbol value='mdash' /] Добре дошъл, благородни господине. Тук ще намерите най-изумителните вълшебства. Да, да, виждам, че бързате и няма да ви бавя. Ето, вземете този списък. Можете да направите избора си от него.[/p][p]С нов поклон продавачът ти подава късче пожълтял пергамент. Отдръпваш се на светло до вратата и четеш:[/p][p][tag]item:return context.getItem('flask');[/tag] [symbol value='ndash' /] 5 жълтици[br /][tag]item:return context.getItem('cloak');[/tag] [symbol value='ndash' /] 3 жълтици[br /][tag]item:return context.getItem('rope');[/tag] [symbol value='ndash' /] 2 жълтици[br /][tag]item:return context.getItem('dagger');[/tag] [symbol value='ndash' /] 4 жълтици[br /][tag]item:return context.getItem('herb');[/tag] [symbol value='ndash' /] 3 жълтици[br /][tag]item:return context.getItem('elixirLife');[/tag] [symbol value='ndash' /] 6 жълтици[br /][tag]item:return context.getItem('tear');[/tag] [symbol value='ndash' /] 2 жълтици[br /][tag]item:return context.getItem('mittens');[/tag] [symbol value='ndash' /] 3 жълтици[br /][tag]item:return context.getItem('elixirStrength');[/tag] [symbol value='ndash' /] 3 жълтици[/p][p]Избери каквото ти е необходимо, но не забравяй, че жълтиците могат да ти потрябват и по-късно. А след като направиш покупките, побързай да догониш кервана.[script]$.items = &amp;ob;&amp;cb;;
+$.items.push(context.createItemWithPrice('flask', 5));
+$.items.push(context.createItemWithPrice('cloak', 3));
+$.items.push(context.createItemWithPrice('rope', 2));
+$.items.push(context.createItemWithPrice('dagger', 4));
+$.items.push(context.createItemWithPrice('herb', 3));
+$.items.push(context.createItemWithPrice('elixirLife', 6));
+$.items.push(context.createItemWithPrice('tear', 2));
+$.items.push(context.createItemWithPrice('mittens', 3));
+$.items.push(context.createItemWithPrice('elixirStrength', 3));
+$.infinite = true;[/script][/p][p][embed value='Shop' /][/p][p][link target='6'](продължи)[/link][/p]</Text>
     </Episode>
     <Episode Id="6" IsMarked="true" Location="262.5;282.5">
       <Text>[p][image source='11' title='' hspace='0' vspace='0' align='right' width='483' height='656' /]Скоро кулите и стените на Перодон изчезват зад трептящия хоризонт. Наоколо се разстилат пясъците на пустинята, сред които само опитният водач открива пътя по някакви неизвестни за теб признаци. Горещият ден се влачи непоносимо бавно, а наоколо нищо не се променя, сякаш керванът стои на едно място.[/p][p][symbol value='mdash' /] Трябваше да тръгнем по реката [symbol value='mdash' /] въздиша от време на време Борил. [symbol value='mdash' /] В тая пустош ще си оставим костите.[/p][p]Ти самият не си далече от подобна мисъл. Оскъдните глътки вода не утоляват жаждата ти. Когато започва да се свечерява, имаш чувството, че си полуопечен. Едва дочакваш сигнала за спиране и безсилно се смъкваш от камилата.[/p][p]Пустинната нощ се спуска изведнъж. Скоро облекчаващата прохлада се превръща в истински студ. Опитните керванджии са събрали куп стъбла от редките бодливи храсти [symbol value='ndash' /] единственото гориво сред този пущинак. Насядали край огъня, те пият чай и разказват страшни истории за свирепите племена на усук-баасите. Разговорът е интересен, но скоро главата ти започва да клюма. Оттегляш се настрани, увиваш се в дебела завивка и заспиваш.[/p][p]Призори Пано те събужда и ти помага да се подготвиш за път. Почивката ти е дала нови сили, тъй че поне първият час минава сравнително леко. Местността наоколо е все същата [symbol value='ndash' /] пясъчни дюни и сухи трънаци. Само отпред в далечината се мержелее нещо по- тъмно.[/p][p][symbol value='mdash' /] Каменните стълбове [symbol value='mdash' /] обяснява опитният Пано. [symbol value='mdash' /] Изминали сме две трети от пътя.[/p][p]Високите червеникави скали наистина приличат на стълбове, но са изваяни от ветровете, а не от човешка ръка. Вече почти сте в подножието им, когато над кервана се разнасят викове на ужас. Отдясно налита огромен отряд от въоръжени бойци. Камилите им се носят към вас с невероятна бързина, вятърът развява бурнусите на ездачите и слънчевите лъчи блестят по остриетата на кривите им ятагани.[/p][p][tag]item:return context.getItem('stone');[/tag] [link target='script:332' script='player.removeItem(&amp;apos;stone&amp;apos;, 1); return 332;' condition='return player.getItem(&amp;apos;stone&amp;apos;);']Ако имаш камък на истината и желаеш да го използваш[/link].[br /][link target='368']Ако нямаш или не желаеш да го използваш[/link].[/p]</Text>
@@ -933,8 +935,11 @@ $.winEpisode = 66;[/script][/p][p][embed value='Battle' /][/p]</Text>
     <Episode Id="190" IsMarked="true" Location="557.5;402.5">
       <Text>[p]Въпреки ранния час пазарът е оживен. Засега търговците са повече от купувачите, затова бързо уреждате сделката. Само срещу 6 жълтици се сдобивате с три чудесни коня и скоро напускате града по пътя за Меанор.[script]player.removeItem('gold', 6);[/script][/p][p][link target='212'](продължи)[/link][/p]</Text>
     </Episode>
-    <Episode Id="221" Location="587.5;282.5">
-      <Text>[p]Изведнъж цялата прогорена стена рухва навън. Политаш през пламъците и тежко падаш на калдъръма пред странноприемницата. До тебе скачат Пано и Борил. Надигаш се и изохкваш от болка [symbol value='mdash' /] кракът ти е навехнат при падането. Губиш [tag]minus:return 2;[/tag] жизнени точки.[script]return context.reducePlayerLife(2);[/script][/p][p]Отдалечавате се от пожара. Когато спираш, за да наместиш раницата си, откриваш, че най-горният предмет (последният от списъка) е изчезнал.[script]// TODO:[/script][/p][p][link target='50'](продължи)[/link][/p]</Text>
+    <Episode Id="221" IsMarked="true" Location="587.5;282.5">
+      <Text>[p]Изведнъж цялата прогорена стена рухва навън. Политаш през пламъците и тежко падаш на калдъръма пред странноприемницата. До тебе скачат Пано и Борил. Надигаш се и изохкваш от болка [symbol value='mdash' /] кракът ти е навехнат при падането. Губиш [tag]minus:return 2;[/tag] жизнени точки.[script]return context.reducePlayerLife(2);[/script][/p][p]Отдалечавате се от пожара. Когато спираш, за да наместиш раницата си, откриваш, че най-горният предмет (последният от списъка) е изчезнал.[script]if (player.itemOrder.length &amp;gt; 0) {
+  const lastItemId = player.itemOrder&amp;ob;0&amp;cb;;
+  player.removeItem(lastItemId, 1);
+}[/script][/p][p][link target='50'](продължи)[/link][/p]</Text>
     </Episode>
     <Episode Id="42" IsMarked="true" Location="567.5;262.5">
       <Text>[p]Внезапно почернялото дюшеме под краката ти се пропуква. Сред дъжд от въглени и горящи греди попадаш в огнения ад. Нужни ли са повече описания на мъчителната ти гибел?[/p][p]Приключението завършва дотук заедно със собствения ти живот.[/p]</Text>
@@ -963,8 +968,10 @@ $.winEpisode = 66;[/script][/p][p][embed value='Battle' /][/p]</Text>
     <Episode Id="212" IsMarked="true" Location="557.5;422.5">
       <Text>[p]Недалеч от градските порти виждаш край пътя да седи гърбаво парцаливо човече с преметната през врата табла на амбулантен търговец. Щом ви забелязва, то започва енергично да маха с ръка.[/p][p][link target='218']Ако решиш да спреш[/link].[br /][link target='237']Ако не искаш да си губиш времето[/link].[/p]</Text>
     </Episode>
-    <Episode Id="218" Location="537.5;442.5">
-      <Text>[p]Щом вижда, че спираш, човечето започва да жестикулира още по-усилено.[/p][p]— Купете си талисман, благородни господине! — дрезгаво те подканва то. — С моите талисмани ще се спасите от всякакви магии! Повярвайте, хората се избиват да ги купят. Ето, вижте, останали са ми само два. И не е скъпо. За един талисман искам само две жълтици. Купете, няма да съжалявате![script]// TODO:[/script][/p][p]Можеш да купиш двата талисмана или само един, а може и да се въздържиш от покупката.[/p][p][link target='237'](продължи)[/link][/p]</Text>
+    <Episode Id="218" IsMarked="true" Location="537.5;432.5">
+      <Text>[p]Щом вижда, че спираш, човечето започва да жестикулира още по-усилено.[/p][p][symbol value='mdash' /] Купете си талисман, благородни господине! [symbol value='mdash' /] дрезгаво те подканва то. [symbol value='mdash' /] С моите талисмани ще се спасите от всякакви магии! Повярвайте, хората се избиват да ги купят. Ето, вижте, останали са ми само два. И не е скъпо. За един талисман искам само две жълтици. Купете, няма да съжалявате![/p][p]Можеш да купиш двата талисмана или само един, а може и да се въздържиш от покупката.[script]$.items = &amp;ob;&amp;cb;;
+$.items.push(context.createItemWithPrice('charm', 2, 2));
+$.infinite = false;[/script][/p][p][embed value='Shop' /][/p][p][link target='237'](продължи)[/link][/p]</Text>
     </Episode>
     <Episode Id="237" IsMarked="true" Location="557.5;442.5">
       <Text>[p]Засега пътуването към Меанор е спокойно. По пладне спирате да похапнете и да отпочинете от ездата. Усещаш как силите ти се възстановяват и ако имаш загубени точки живот, можеш да възстановиш две от тях.[script]context.increasePlayerLife(2);[/script][/p][p]Когато отново потегляте, настроението ти е отлично. Но човек никога не знае съдбата си. Внезапно иззад един завой на пътя се появява белобрад старец, облечен в дълъг халат със сребърни звезди и полумесеци по него. Щом ви вижда, той вдига ръце и от дланите му излитат два оранжеви лъча. Светлините улучват челата на Пано и Борил. Като по сигнал двамата ти спътници обръщат конете и бясно препускат назад към Аспар.[/p][p]Какво ще предприемеш сега?[br /][link target='32']Препускаш подир Пано и Борил[/link].[br /][link target='53']Нападаш стареца[/link].[br /][link target='108']Опитваш се да го успокоиш с миролюбиви жестове[/link].[br /][link target='129']Укриваш се в крайпътната гора[/link].[/p]</Text>
@@ -990,8 +997,8 @@ $.winEpisode = 66;[/script][/p][p][embed value='Battle' /][/p]</Text>
     <Episode Id="111" IsMarked="true" Location="607.5;462.5">
       <Text>[p]С всичка сила дърпаш юздите и изненаданият кон спира на място, като едва не те събаря на пътя. Остра болка пронизва сърцето ти. Хващаш главата си с две ръце и от устните ти излита задавено ридание. Какво търсиш тук? Защо си тръгнал да пътуваш? Нима Старата гора не е най-красивото кътче на света?[/p][p]Разбира се, това е магия, но ти нямаш сили да се бориш с нея. Изпълва те само един неудържим копнеж [symbol value='ndash' /] да се прибереш в родната колиба и вече никога да не я напускаш. Навярно същата магия е прогонила Пано и Борил.[/p][p]Обръщаш коня и препускаш назад. Мисията ти ще остане неизпълнена, ала това не те вълнува. Жалко[symbol value='hellip' /] Всичко бе започнало толкова добре.[/p]</Text>
     </Episode>
-    <Episode Id="124" Location="567.5;482.5">
-      <Text>[p]Този старец явно е вълшебник, но мекият израз на лицето му ти вдъхва доверие. След кратко колебание му разказваш за мисията си. Той слуша внимателно и когато привършваш, тъжно поклаща глава.[/p][p][symbol value='mdash' /] Значи самият Сиян те изпраша? Извинявай, момко! Аз съм едно старо магаре. Помислих ви за разбойници от Зелената банда. Сигурно си чувал за тях. Върлуват по този път и грабят, когото срещнат. Ех, пусто да остане даже не съобразих, че не сте облечени в зелени дрехи като тях.[br /][symbol value='mdash' /] Какво ще стане с моите спътници? [symbol value='mdash' /] тревожно питаш ти.[br /][symbol value='mdash' /] Не се безпокой [symbol value='mdash' /] махва с ръка старецът [symbol value='mdash' /] Магията е безвредна, нарича се „носталгичен зов“. Сега нищо не може да ги спре, докато не се приберат по родните си места. Извинявай още веднъж. За компенсация вземи поне това. Талисман против магии. Може да ти потрябва някои ден… ето и още нещо! Бойна ръкавица. Тя ще увеличава силата ти в сраженията с [tag]plus:return 1;[/tag] точка всеки път, когато я носиш.[script]// TODO: add gauntlet[/script][/p][p]Отбелязваш новите си придобивки в дневника, после сърдечно се сбогуваш с вълшебника и продължаваш към Меанор.[/p][p][link target='86'](продължи)[/link][/p]</Text>
+    <Episode Id="124" IsMarked="true" Location="567.5;482.5">
+      <Text>[p]Този старец явно е вълшебник, но мекият израз на лицето му ти вдъхва доверие. След кратко колебание му разказваш за мисията си. Той слуша внимателно и когато привършваш, тъжно поклаща глава.[/p][p][symbol value='mdash' /] Значи самият Сиян те изпраша? Извинявай, момко! Аз съм едно старо магаре. Помислих ви за разбойници от Зелената банда. Сигурно си чувал за тях. Върлуват по този път и грабят, когото срещнат. Ех, пусто да остане даже не съобразих, че не сте облечени в зелени дрехи като тях.[br /][symbol value='mdash' /] Какво ще стане с моите спътници? [symbol value='mdash' /] тревожно питаш ти.[br /][symbol value='mdash' /] Не се безпокой [symbol value='mdash' /] махва с ръка старецът [symbol value='mdash' /] Магията е безвредна, нарича се „носталгичен зов“. Сега нищо не може да ги спре, докато не се приберат по родните си места. Извинявай още веднъж. За компенсация вземи поне това. Талисман против магии. Може да ти потрябва някои ден[symbol value='hellip' /] ето и още нещо! Бойна ръкавица. Тя ще увеличава силата ти в сраженията с [tag]plus:return 1;[/tag] точка всеки път, когато я носиш.[script]player.addItem(context.createItem('gauntlet', 1));[/script][/p][p]Отбелязваш новите си придобивки в дневника, после сърдечно се сбогуваш с вълшебника и продължаваш към Меанор.[/p][p][link target='86'](продължи)[/link][/p]</Text>
     </Episode>
     <Episode Id="116" IsMarked="true" Location="587.5;502.5">
       <Text>[p]Този стар магьосник не ти внушава доверие, затова набързо измисляш някаква заплетена история за търговия и проучване на пазара в Меанор. Старецът явно не вярва на нито една твоя дума, но те изслушва мълчаливо. Накрая кимва и казва с безразличен глас:[/p][p][symbol value='mdash' /] Е. извинявай, че действах толкова прибързано, но по тия пътища човек никога не знае кого ще срещне. Колкото до двамата ти другари[symbol value='hellip' /] безполезно ще е да ги дириш. Направих им една безвредна магия, наречена „носталгичен зов“. Сега нищо не може да ги спре, докато не се приберат по родните си места.[/p][p]Без повече приказки магьосникът ти махва с ръка и се упътва към Аспар. Няколко секунди гледаш подир него, после се обръщаш и вдигаш рамене. Няма как, ще трябва да изпълниш мисията си без помощта на Борил и Пано.[/p][p][link target='86'](продължи)[/link][/p][p][image source='4' title='' hspace='0' vspace='0' align='center' width='390' height='195' /][/p]</Text>
@@ -1196,9 +1203,8 @@ return $.result;[/script] монети.[/p][p]Подът се разтърсв
       <Text>[p]Мечът ти със звън се стоварва върху каменните гърди на статуята и по белия мрамор пробягва тънка пукнатина.[script]context.startBattle('statue');
 $.winEpisode = 334;[/script][/p][p][embed value='Battle' /][/p]</Text>
     </Episode>
-    <Episode Id="334" Location="622.5;842.5">
-      <Text>[p]Вратата се отваря с лекота още при първото докосване. Пристъпваш напред и попадаш в тясна стаичка, изсечена в скалата. Върху нисък каменен подиум лежи грижливо сгъната златна ризница. Докато се взираш в нейните блестящи брънки, в паметта ти изплуват древните легенди. Тази ризница е благословена от бога на доблестта Амулабес. Когато я облечеш, ударите на врага губят част от своята сила. И тъй като смяташ да я носиш през цялото време, отбележи в дневника, че отсега нататък при успешен удар на врага животът ти ще намалява само с по една точка.[script]player.addItem(context.createItem('chainmail'));
-// TODO: add effect[/script][/p][p]Прибираш безценната находка и по същия път се връщаш на превала.[/p][p][link target='302'](продължи)[/link][/p]</Text>
+    <Episode Id="334" IsMarked="true" Location="622.5;842.5">
+      <Text>[p]Вратата се отваря с лекота още при първото докосване. Пристъпваш напред и попадаш в тясна стаичка, изсечена в скалата. Върху нисък каменен подиум лежи грижливо сгъната златна ризница. Докато се взираш в нейните блестящи брънки, в паметта ти изплуват древните легенди. Тази ризница е благословена от бога на доблестта Амулабес. Когато я облечеш, ударите на врага губят част от своята сила. И тъй като смяташ да я носиш през цялото време, отбележи в дневника, че отсега нататък при успешен удар на врага животът ти ще намалява само с по една точка.[script]player.addItem(context.createItem('chainmail'));[/script][/p][p]Прибираш безценната находка и по същия път се връщаш на превала.[/p][p][link target='302'](продължи)[/link][/p]</Text>
     </Episode>
     <Episode Id="416" IsMarked="true" Location="622.5;862.5">
       <Text>[p]С първите лъчи на утрото възсядаш коня и потегляш надолу по стръмния планински път. След два часа вече си в подножието, където се гуши малко селце. Близостта на пустинята не е много благоприятна за земеделие, затова местните жители си изкарват хляба преди всичко с обслужване на пътниците. Тук можеш да се нахраниш, да пренощуваш и да замениш коня си с камила. От нощувката се отказваш, защото е рано и бързаш да стигнеш до Тихия оазис. Но за сметка на това си спечелваш безплатен обяд [symbol value='ndash' /] селянинът, от когото взимаш камила за една жълтица, е толкова доволен, че не иска и да чуе за тръгване, преди да си почел трапезата му.[/p][p]Малко след пладне камилата те понася през пустинята. Според указанията на любезния домакин няма да е трудно да откриеш оазиса, като се ориентираш по слънцето. По-сериозна е друга заплаха. Напоследък са зачестили вестите за разбойнически нападения на дивите племена на усук-баасите. Затова през целия ден се оглеждаш, очаквайки с тревога да зърнеш на хоризонта развети бели бурнуси. Но всичко минава спокойно. Спокойна е и нощувката в подножието на една висока скала.[/p][p]Вторият ден се оказва по-тежък. Скоро след тръгването попадаш в пясъчна буря и се налага да изчакаш утихването й, преди да продължиш напред. И тъй като бедата никога не идва сама, скоро откриваш, че вихърът е откъснал от седлото ти кожения мех с вода. А оазисът все още не се появява пред очите ти. Вече започваш да мислиш, че си се заблудил, когато най-сетне забелязваш в далечината блясък на вода. Устремяваш се напред, но макар че очите ти са впити в оазиса, успяваш да видиш и още нещо. Недалече сред пясъците са затънали развалините на древна крепост. Стените от червен пясъчник са полуразрушени, но централната кула все още се издига горделиво над пустинята.[/p][p][link target='307']Ако желаеш да разгледаш крепостта по-отблизо[/link].[br /][link target='162']Ако продължиш към оазиса[/link].[/p]</Text>
@@ -1219,7 +1225,12 @@ $.winEpisode = 334;[/script][/p][p][embed value='Battle' /][/p]</Text>
       <Text>[p]За бягството може да ти помогне само скална сълза или билка отвори-вратичка. Кое ще избереш?[/p][p][tag]item:return context.getItem('herb');[/tag] [link target='script:310' script='player.removeItem(&amp;apos;herb&amp;apos;, 1); return 310;' condition='return player.getItem(&amp;apos;herb&amp;apos;);']Билка отвори-вратичка[/link].[br /][tag]item:return context.getItem('tear');[/tag] [link target='script:346' script='player.removeItem(&amp;apos;tear&amp;apos;, 1); return 346;' condition='return player.getItem(&amp;apos;tear&amp;apos;);']Скална сълза[/link].[br /][link target='341']Ако нямаш нито едното, нито другото[/link].[/p]</Text>
     </Episode>
     <Episode Id="341" IsMarked="true" Location="537.5;862.5">
-      <Text>[p][image source='16' title='' hspace='0' vspace='0' align='right' width='485' height='649' /]Философски решаваш, че трябва да се примириш с неизбежното. Така или иначе, утре те чака тежък ден, значи най-добре ще е да отпочинеш, както се полага. И без повече разсъждения се просваш на нара, като подлагаш раницата под главата си.[/p][p]На разсъмване се събуждаш бодър и отпочинал. Ако имаш нужда, можеш да си възстановиш [tag]plus:return 3;[/tag] жизнени точки.[script]context.increasePlayerLife(3);[/script][/p][p]Метален звън те кара да надигнеш глава. Един надзирател е отключил решетката към тунела и нетърпеливо ти маха с ръка.[/p][p]— Хей, ставай! Не си губи времето в сън, и без това ти остават броени минути живот.[/p][p]След тези думи той се отдръпва и изчезва през една малка вратичка в стената на тунела.[/p][p]Ставаш, препасваш меча, взимаш раницата и минаваш отвъд решетката. Мимоходом натискаш вратичката, през която е изчезнал пазача, но тя е заключена. Не ти остава нищо друго, освен да тръгнеш към края на тунела. Излизаш навън и спираш за момент, заслепен от ярката слънчева светлина. Посреща те рев на многохилядна тълпа. Оглеждаш се през премрежени клепки и виждаш, че се намираш на широка кръгла арена, посипана с дебел слой пясък. Обкръжават я високи гладки стени, в които зеят отворите на още няколко тунела. Над тях са препълнените зрителски трибуни.[/p][p]Централната трибуна е украсена с килими и гоблени. На нея се изправя един застаряващ мъж, облечен в разкошни дрехи от кадифе, коприна и сърма.[/p][p][symbol value='mdash' /] Привет, чужденецо! [symbol value='mdash' /] високо изрича той. [symbol value='mdash' /] Приготви се да избереш съдбата си.[/p][p]Пристъпваш към трибуната. Човекът горе се навежда и хвърля пред тебе черна кожена торбичка.[/p][p][symbol value='mdash' /] В тази торбичка има пет костени плочки [symbol value='mdash' /] продължава той.[br /][symbol value='mdash' /] На четири от тях са изписани имената на противниците, с които ще можеш да се сражаваш. Петата е празна. Ако изтеглиш нея, ще трябва да се биеш и с четиримата. Хайде, направи своя избор.[/p][p]Вдигаш торбичката и колебливо пъхаш ръка в нея. Опипваш костените плочки, ала не усещаш никаква разлика. Да става каквото ще! Решително хващаш една от тях, изваждаш и я поглеждаш. Плочката е чиста![/p][p][symbol value='mdash' /] Съдбата реши! [symbol value='mdash' /] раздава се над тебе гласът на богато облечения старец. [symbol value='mdash' /] Пуснете противниците![/p][p]Ядно захвърляш проклетата плочка и обръщаш гръб на трибуната. От тунелите бавно излизат четиримата ти противници. Най-отпред със скърцане крачи трол [symbol value='ndash' /] каменен великан висок три човешки ръста. След него тромаво върви грамаден люспест дракон, от чиято полуотворена паст излитат дим и пламъци. Третият противник е дълга отровна змия. И на последно място се появява странно същество с тяло на петел, змийска опашка и криле на прилеп. Това е легендарният василиск, който може да вкаменява с поглед! Дъхът ти спира пред тази страховита четворка. Боят наистина ще бъде на живот и смърт. Не забравяй, че ако имаш бързоходни ботуши, с тяхна помощ ще можеш да нанасяш по два удара за всеки удар на врага. А сега избери срещу кого ще се биеш най-напред.[script]// TODO: boots[/script][/p][p][link target='308']Срещу трола[/link].[br /][link target='260']Срещу змията[/link].[br /][link target='317']Срещу дракона[/link].[br /][link target='92']Срещу василиска[/link].[br /][tag]item:return context.getItem('smoke');[/tag] [link target='script:372' script='player.removeItem(&amp;apos;smoke&amp;apos;, 1); return 372;' condition='return player.getItem(&amp;apos;smoke&amp;apos;);']Ако искаш да използваш дим на миражите[/link].[/p]</Text>
+      <Text>[p][image source='16' title='' hspace='0' vspace='0' align='right' width='485' height='649' /]Философски решаваш, че трябва да се примириш с неизбежното. Така или иначе, утре те чака тежък ден, значи най-добре ще е да отпочинеш, както се полага. И без повече разсъждения се просваш на нара, като подлагаш раницата под главата си.[/p][p]На разсъмване се събуждаш бодър и отпочинал. Ако имаш нужда, можеш да си възстановиш [tag]plus:return 3;[/tag] жизнени точки.[script]context.increasePlayerLife(3);[/script][/p][p]Метален звън те кара да надигнеш глава. Един надзирател е отключил решетката към тунела и нетърпеливо ти маха с ръка.[/p][p]— Хей, ставай! Не си губи времето в сън, и без това ти остават броени минути живот.[/p][p]След тези думи той се отдръпва и изчезва през една малка вратичка в стената на тунела.[/p][p]Ставаш, препасваш меча, взимаш раницата и минаваш отвъд решетката. Мимоходом натискаш вратичката, през която е изчезнал пазача, но тя е заключена. Не ти остава нищо друго, освен да тръгнеш към края на тунела. Излизаш навън и спираш за момент, заслепен от ярката слънчева светлина. Посреща те рев на многохилядна тълпа. Оглеждаш се през премрежени клепки и виждаш, че се намираш на широка кръгла арена, посипана с дебел слой пясък. Обкръжават я високи гладки стени, в които зеят отворите на още няколко тунела. Над тях са препълнените зрителски трибуни.[/p][p]Централната трибуна е украсена с килими и гоблени. На нея се изправя един застаряващ мъж, облечен в разкошни дрехи от кадифе, коприна и сърма.[/p][p][symbol value='mdash' /] Привет, чужденецо! [symbol value='mdash' /] високо изрича той. [symbol value='mdash' /] Приготви се да избереш съдбата си.[/p][p]Пристъпваш към трибуната. Човекът горе се навежда и хвърля пред тебе черна кожена торбичка.[/p][p][symbol value='mdash' /] В тази торбичка има пет костени плочки [symbol value='mdash' /] продължава той.[br /][symbol value='mdash' /] На четири от тях са изписани имената на противниците, с които ще можеш да се сражаваш. Петата е празна. Ако изтеглиш нея, ще трябва да се биеш и с четиримата. Хайде, направи своя избор.[/p][p]Вдигаш торбичката и колебливо пъхаш ръка в нея. Опипваш костените плочки, ала не усещаш никаква разлика. Да става каквото ще! Решително хващаш една от тях, изваждаш и я поглеждаш. Плочката е чиста![/p][p][symbol value='mdash' /] Съдбата реши! [symbol value='mdash' /] раздава се над тебе гласът на богато облечения старец. [symbol value='mdash' /] Пуснете противниците![/p][p]Ядно захвърляш проклетата плочка и обръщаш гръб на трибуната. От тунелите бавно излизат четиримата ти противници. Най-отпред със скърцане крачи трол [symbol value='ndash' /] каменен великан висок три човешки ръста. След него тромаво върви грамаден люспест дракон, от чиято полуотворена паст излитат дим и пламъци. Третият противник е дълга отровна змия. И на последно място се появява странно същество с тяло на петел, змийска опашка и криле на прилеп. Това е легендарният василиск, който може да вкаменява с поглед! Дъхът ти спира пред тази страховита четворка. Боят наистина ще бъде на живот и смърт. Не забравяй, че ако имаш бързоходни ботуши, с тяхна помощ ще можеш да нанасяш по два удара за всеки удар на врага. А сега избери срещу кого ще се биеш най-напред.[if]return player.getItem('boots');[/if][script]$.doubleAttack = false;[/script] [clicker]if ($.doubleAttack) {
+  context.showPopupMessage('Вече използваш бързоходните ботуши');
+} else {
+  context.showPopupMessage('Обуваш бързоходните ботуши');
+  $.doubleAttack = true;
+}[/clicker][tag]general:return 'Използвай ботуши';[/tag][endclicker /][endif /][/p][p][link target='308']Срещу трола[/link].[br /][link target='260']Срещу змията[/link].[br /][link target='317']Срещу дракона[/link].[br /][link target='92']Срещу василиска[/link].[br /][tag]item:return context.getItem('smoke');[/tag] [link target='script:372' script='player.removeItem(&amp;apos;smoke&amp;apos;, 1); return 372;' condition='return player.getItem(&amp;apos;smoke&amp;apos;);']Ако искаш да използваш дим на миражите[/link].[/p]</Text>
     </Episode>
     <Episode Id="303" IsMarked="true" Location="487.5;762.5">
       <Text>[p]Мигновено войниците те заобикалят от всички страни с насочени мечове, арбалети и копия. По мрачните им лица разбираш, че не биха се поколебали да те пронижат при първото подозрително движение.[/p][p][symbol value='mdash' /] Така си и мислех! [symbol value='mdash' /] възкликва офицерът. [symbol value='mdash' /] Чужденец! Слизай от коня![/p][p]Подчиняваш се и въпреки протестите ти, след минута си здраво омотан с въжета. Няколко чифта яки ръце те хвърлят в една раздрънкана каруца.[/p][p][symbol value='mdash' /] Какво става в този проклет град? [symbol value='mdash' /] крещиш ти, докато каруцата потегля по улицата.[br /][symbol value='mdash' /] Утре започват Игрите [symbol value='mdash' /] добродушно пояснява кочияшът. [symbol value='mdash' /] Всеки чужденец, заловен в Меанор, е длъжен да вземе участие в гладиаторските боеве на Арената.[br /][symbol value='mdash' /] Нямате право! [symbol value='mdash' /] възкликваш ти.[/p][p]Кочияшът се разсмива гръмогласно.[/p][p][symbol value='mdash' /] Нямаме право ли? Човече, та това е обичай от векове. Всички го знаят. Затуй напоследък става все по-трудно да осигурим участници. Наближи ли празникът, чужденците обикалят града отдалече.[/p][p]След няколко минути каруцата спира пред Арената. Двама въоръжени пазачи те свалят на земята и освобождават краката ти. Повеждат те по стъпалата към трибуните, оттам влизате в дълъг коридор с множество железни врати от едната страна. Последната врата е отворена. Пазачите те въвеждат в полумрачна килия, смъкват въжетата и се отдръпват назад. Единият хвърля раницата ти на пода, сетне вратата се захлопва с тежък метален звън. Оставаш сам.[/p][p]Все още не можеш да повярваш, че те е сполетяла такава беда. За щастие не са ти отнели раницата. Оглеждаш се. Килията е тясна и в нея има само грубо скован нар и делва за вода. Вратите са две. Вече познаваш тази, през която са те довели, затова оглеждаш другата [symbol value='mdash' /] дебела стоманена решетка със солидна ключалка и яки панти. Зад нея започва мрачен тунел с лек наклон надолу, откъдето долита неясна дневна светлина.[/p][p]Следобедът отминава бавно. Най-сетне се спуска вечерта. Ще се опиташ ли да избягаш?[/p][p][link target='252']Да[/link].[br /][link target='341']Не[/link].[/p]</Text>
@@ -1255,7 +1266,13 @@ return gold &amp;&amp; gold.stack &gt;= 6;']Онова, което не знае
 return gold &amp;&amp; gold.stack &gt;= 6;']Ако си готов да платиш още шест жълтици за онова, което не знаеш, че търсиш[/link].[br /][link target='96']Ако вече го знаеш или не искаш да даваш толкова пари[/link].[/p][p][image source='9' title='' hspace='0' vspace='0' align='center' width='421' height='215' /][/p]</Text>
     </Episode>
     <Episode Id="250" IsMarked="true" Location="457.5;842.5">
-      <Text>[p]Подхвърляш на масата шест жълтици. Ясновидецът се усмихва и ги прибира в чекмеджето, после вдига глава.[/p][p]— Е. добре. Това, което не знаеш, че търсиш, е числото 231.[script]// TODO:[/script][br /]— Какво? — изумено възкликваш ти. — Едно нищо и никакво число? И за това сведение платих цели шест жълтици![br /]— Понякога едно число може да спаси живота ти — поклаща глава ясновидецът. — Запомни го добре, числото е 231. Но аз не съм мошеник. Готов съм да ти върна жълтиците, ако дадеш тържествена клетва, че няма да отидеш на 231, когато се наложи да правиш избор. Решавай![script]// TODO:[/script][/p][p]Ръката му потъва в чекмеджето. Сега трябва да направиш твоя избор и да го отбележиш в дневника. А след това, ако искаш, можеш да дадеш още 3 жълтици, за да узнаеш онова, което търсиш.[/p][p][link target='script:287' script='player.removeItem(&amp;apos;gold&amp;apos;, 3); return 287;' condition='const gold = player.getItem(&amp;apos;gold&amp;apos;);
+      <Text>[p]Подхвърляш на масата шест жълтици. Ясновидецът се усмихва и ги прибира в чекмеджето, после вдига глава.[/p][p][symbol value='mdash' /] Е. добре. Това, което не знаеш, че търсиш, е числото 231.[br /][symbol value='mdash' /] Какво? [symbol value='mdash' /] изумено възкликваш ти. [symbol value='mdash' /] Едно нищо и никакво число? И за това сведение платих цели шест жълтици![br /][symbol value='mdash' /] Понякога едно число може да спаси живота ти [symbol value='mdash' /] поклаща глава ясновидецът. [symbol value='mdash' /] Запомни го добре, числото е 231. Но аз не съм мошеник. Готов съм да ти върна жълтиците, ако дадеш тържествена клетва, че няма да отидеш на 231, когато се наложи да правиш избор. Решавай![/p][p][script]$.backoffSoothsayer = false;[/script][clicker]if ($.backoffSoothsayer) {
+  context.showPopupMessage('Вече си взел парите');
+} else {
+  context.showPopupMessage('Взимаш си парите и се заклеваш да не отиваш на 231');
+  player.addItem(context.createItem('gold', 6));
+  $.backoffSoothsayer = true;
+}[/clicker][tag]general:return 'Вземи си парите обратно';[/tag][endclicker /][/p][p]Ръката му потъва в чекмеджето. Сега трябва да направиш твоя избор и да го отбележиш в дневника. А след това, ако искаш, можеш да дадеш още 3 жълтици, за да узнаеш онова, което търсиш.[/p][p][link target='script:287' script='player.removeItem(&amp;apos;gold&amp;apos;, 3); return 287;' condition='const gold = player.getItem(&amp;apos;gold&amp;apos;);
 return gold &amp;&amp; gold.stack &gt;= 3;']За да го разбереш[/link].[br /][link target='96']Ако вече го знаеш или не желаеш да даваш повече пари[/link].[/p]</Text>
     </Episode>
     <Episode Id="310" IsMarked="true" Location="527.5;802.5">
@@ -1286,18 +1303,20 @@ $.winEpisode = 280;[/script][/p][p][image source='7' title='' hspace='0' vspace=
     <Episode Id="308" IsMarked="true" Location="477.5;882.5">
       <Text>[p]Изтегляш меча от ножницата и бавно тръгваш срещу каменния великан. Тълпата на трибуните е затаила дъх. Тролът надава оглушителен рев и размахва тежки гранитни юмруци. Как ще се биеш с него?[/p][p][link target='274']С меча[/link].[br /][tag]item:return context.getItem('tear');[/tag] [link target='script:289' script='player.removeItem(&amp;apos;tear&amp;apos;, 1); return 289;' condition='return player.getItem(&amp;apos;tear&amp;apos;);']Ако имаш в раницата си скална сълза и се надяваш чрез нея да унищожиш опасния противник[/link].[/p]</Text>
     </Episode>
-    <Episode Id="260" Location="507.5;882.5">
+    <Episode Id="260" IsMarked="true" Location="507.5;882.5">
       <Text>[p]Решаваш, че все пак змията е най-безопасна и тръгваш към нея с високо вдигнат меч. Само не се заблуждавай. Едно нейно ухапване е достатъчно, за да те лиши от живот.[script]context.startBattle('snake2');
-$.winEpisode = 227;[/script][/p][p][embed value='Battle' /][/p][p]ЗМИЯ[br /]СИЛА — 5, ЖИВОТ — 7[br /]Ако в хода на двубоя змията успее да те засегне, макар и само[br /]веднъж, прехвърли се веднага на #188.[br /]Ако победиш, без да загубиш точка, продължи на #227.[/p]</Text>
+$.hitEpisode = 188;
+$.winEpisode = 227;[/script][/p][p][embed value='Battle' /][/p]</Text>
     </Episode>
     <Episode Id="317" IsMarked="true" Location="567.5;882.5">
       <Text>[p][image source='23' title='' hspace='0' vspace='0' align='right' width='476' height='630' /]Въздишка на изумление се разнася над тълпата по трибуните, когато се отправяш към най-опасния противник. Драконът те оглежда с малките си злобни очички и изведнъж от устата му излита дълга струя червени пламъци.[/p][p][link target='285']Ако решиш да се биеш срещу него с меча[/link].[br /][tag]item:return context.getItem('flask');[/tag] [link target='script:298' script='player.removeItem(&amp;apos;flask&amp;apos;, 1); return 298;' condition='return player.getItem(&amp;apos;flask&amp;apos;);']Ако имаш в раницата си бездънна манерка и искаш да провериш дали тя няма да изгаси огнената паст на чудовището[/link].[/p]</Text>
     </Episode>
-    <Episode Id="92" Location="597.5;882.5">
+    <Episode Id="92" IsMarked="true" Location="647.5;882.5">
       <Text>[p]Василискът пълзи към теб. Горе на трибуните тълпата е затаила дъх. Отскачаш настрани, защото знаеш, че не бива да позволиш на зловещия поглед да те докосне. После надигаш меча.[script]context.startBattle('basikisk2');
-$.winEpisode = 2;[/script][/p][p][embed value='Battle' /][br /]ВАСИЛИСК[br /]СИЛА — 4, ЖИВОТ — 7[br /]Ако по време на двубоя загубиш точка, прехвърли се незабавно[br /]на #68.[br /]Ако победиш без загуба на точка, мини на #2.[/p]</Text>
+$.hitEpisode = 68;
+$.winEpisode = 2;[/script][/p][p][embed value='Battle' /][/p]</Text>
     </Episode>
-    <Episode Id="372" IsMarked="true" Location="617.5;882.5">
+    <Episode Id="372" IsMarked="true" Location="597.5;882.5">
       <Text>[p]Трескаво изваждаш стъкленицата и дръпваш запушалката. Над арената се надига облак синкав дим, из който танцуват безброй ярки искрици. Невидими сили разкъсват пушека на отделни вихри и те се плъзват над пясъка, подскачат пред чудовищата, подмамват ги с незнайни видения.[/p][p]Драконът пръв се поддава на магията. С един страхотен удар на опашката той поваля трола и се обръща да търси нов враг. Но в този момент го посреща от упор погледът на василиска. По тялото на дракона стремително пробягва сива вълна и той застива неподвижно, превърнат в каменна статуя с широко разтворена паст.[/p][p]Само след няколко секунди и змията споделя печалната му участ. Димът на миражите започва да се разсейва и ти с ужас забелязваш, че василискът се опомня от унеса. Главата му бавно се обръща към тебе… и изведнъж върху нея се стоварва грамаден каменен юмрук. Тролът е бил само зашеметен и сега яростно търси на кого да си отмъсти. Явно не му е достатъчно да смаже василиска на пихтия. Макар и тежко контузен, той е готов да се бие до смърт.[/p][p][link target='241'](продължи)[/link][/p]</Text>
     </Episode>
     <Episode Id="274" IsMarked="true" Location="457.5;902.5">
@@ -1310,9 +1329,10 @@ $.winEpisode = 251;[/script][/p][p][embed value='Battle' /][/p]</Text>
     <Episode Id="251" IsMarked="true" Location="477.5;922.5">
       <Text>[p]Откъсваш поглед от тленните останки на трола и надаваш радостен вик. Противниците ти вече са само двама. Драконът е смазал василиска и сега настъпва срещу змията. Но гласът ти привлича вниманието на чудовищата и те прекратяват схватката си, за да се запътят към тебе. С кого ще се биеш по-напред?[/p][p][link target='149']Със змията[/link].[br /][link target='82']С дракона[/link].[/p]</Text>
     </Episode>
-    <Episode Id="149" Location="457.5;942.5">
+    <Episode Id="149" IsMarked="true" Location="457.5;942.5">
       <Text>[p]Змията е засегната от пламъците на дракона. Изглежда изтощена и движенията й са съвсем бавни, но не бива да се заблуждаваш. Едно ухапване е достатъчно, за да те лиши от живот.[script]context.startBattle('snake');
-$.winEpisode = 128;[/script][/p][p][embed value='Battle' /][/p][p]ЗМИЯ[br /]СИЛА — 5, ЖИВОТ — 4[br /]Ако победиш, без да загубиш точки, премини на #128.[br /]Ако змията те засегне, макар и само веднъж, прехвърли се[br /]веднага на #102.[/p]</Text>
+$.hitEpisode = 102;
+$.winEpisode = 128;[/script][/p][p][embed value='Battle' /][/p]</Text>
     </Episode>
     <Episode Id="82" IsMarked="true" Location="477.5;942.5">
       <Text>[p]Драконът изглежда изтощен от схватката с предишния противник, но въпреки това надава яростен рев и от гърлото му излита дълъг червен пламък. Как ще се биеш с него?[/p][p][link target='61']С меча[/link].[br /][tag]item:return context.getItem('flask');[/tag] [link target='script:74' script='player.removeItem(&amp;apos;flask&amp;apos;, 1); return 74;' condition='return player.getItem(&amp;apos;flask&amp;apos;);']Ако имаш вълшебна манерка и се надяваш с нея да изгасиш пламъка[/link].[/p]</Text>
@@ -1337,11 +1357,12 @@ $.winEpisode = 57;[/script][/p][p][embed value='Battle' /][/p]</Text>
     <Episode Id="74" IsMarked="true" Location="457.5;962.5">
       <Text>[p]С трескава бързина изваждаш манерката и я хвърляш право в зейналата огнена паст. Изненаданият дракон спира за момент и стиска челюсти, опитвайки да сдъвче неочакваната плячка. Знаеш какво ще последва, затова отскачаш към стената и се просваш по очи върху пясъка на арената.[/p][p]Раздава се страхотен взрив. Над гърба ти прелита вълна от нажежена пара. Когато събираш смелост да надигнеш очи, виждаш, че хитрината ти е успяла. Драконът се е пръснал от налягането на парата и сега разкъсаното му тяло се гърчи в последна агония.[/p][p][link target='57'](продължи)[/link][/p]</Text>
     </Episode>
-    <Episode Id="57" Location="477.5;982.5">
+    <Episode Id="57" IsMarked="true" Location="477.5;982.5">
       <Text>[p]Последна схватка! Змията изглежда изтощена, движенията й са съвсем бавни, но не бива да се заблуждаваш. Едно ухапване е достатъчно, за да те лиши от живот.[script]context.startBattle('snake');
-$.winEpisode = 347;[/script][/p][p]ЗМИЯ[br /]СИЛА — 5, ЖИВОТ — 4[br /]Ако победиш, без да загубиш точки, премини на #347.[br /]Ако змията те засегне, макар и само веднъж, прехвърли се[br /]веднага на #98.[/p]</Text>
+$.hitEpisode = 98;
+$.winEpisode = 347;[/script][/p][p][embed value='Battle' /][/p]</Text>
     </Episode>
-    <Episode Id="241" IsMarked="true" Location="617.5;902.5">
+    <Episode Id="241" IsMarked="true" Location="597.5;902.5">
       <Text>[p]С решителни крачки тръгваш по скърцащия пясък. Тролът се полюшва от умора и тъпо се взира в теб. Как ще се биеш сега?[/p][p][link target='175']С меча[/link].[br /][tag]item:return context.getItem('tear');[/tag] [link target='script:146' script='player.removeItem(&amp;apos;tear&amp;apos;, 1); return 146;' condition='return player.getItem(&amp;apos;tear&amp;apos;);']Със скална сълза от раницата[/link].[/p][p][image source='7' title='' hspace='0' vspace='0' align='center' width='410' height='171' /][/p]</Text>
     </Episode>
     <Episode Id="227" IsMarked="true" Location="532.5;902.5">
@@ -1373,9 +1394,10 @@ $.winEpisode = 244;[/script][/p][p][embed value='Battle' /][/p]</Text>
     <Episode Id="232" IsMarked="true" Location="577.5;942.5">
       <Text>[p]С решителни крачки тръгваш по скърцащия пясък. Тролът стиска юмруци и тъпо се втренчва в тебе. Как ще се биеш сега?[/p][p][link target='185']С меча[/link].[br /][tag]item:return context.getItem('tear');[/tag] [link target='script:148' script='player.removeItem(&amp;apos;tear&amp;apos;, 1); return 148;' condition='return player.getItem(&amp;apos;tear&amp;apos;);']Ще се опиташ да унищожиш трола със скална сълза[/link].[/p]</Text>
     </Episode>
-    <Episode Id="197" Location="597.5;942.5">
+    <Episode Id="197" IsMarked="true" Location="597.5;942.5">
       <Text>[p]Василискът пълзи към теб и бавно върти глава. Отскачаш настрани, защото знаеш, че не бива да позволиш на зловещия поглед да те докосне. После надигаш меча.[script]context.startBattle('basilisk');
-$.winEpisode = 241;[/script][/p][p][embed value='Battle' /][/p][p]ВАСИЛИСК[br /]СИЛА — 4, ЖИВОТ — 6[br /]Ако го победиш без загуба на точки, премини на #241.[br /]Ако василискът те засегне, прехвърли се веднага на #70.[/p]</Text>
+$.hitEpisode = 70;
+$.winEpisode = 241;[/script][/p][p][embed value='Battle' /][/p]</Text>
     </Episode>
     <Episode Id="185" IsMarked="true" Location="577.5;962.5">
       <Text>[p]Тролът замахва срещу теб с огромния си юмрук, но умората е забавила реакцията му. Ловко отскачаш и нападаш отляво.[script]context.startBattle('troll2');
@@ -1384,9 +1406,10 @@ $.winEpisode = 17;[/script][/p][p][embed value='Battle' /][/p]</Text>
     <Episode Id="148" IsMarked="true" Location="597.5;962.5">
       <Text>[p]Вадиш шишенцето от раницата и с всичка сила го запокитваш напред. Стъклото се разбива в каменните гърди на трола и бистрата течност плъзва надолу на тънки струйки. Над нея се издига странен зеленикав дим. Тролът надава ужасен вик и се опитва да избърше скалната сълза с длани, ала това само влошава положението. Гъста мрежа от тънки пукнатини пробягва по ръцете и гърдите му. За броени секунди каменният великан се разпада на ситни късчета.[/p][p][link target='17'](продължи)[/link][/p]</Text>
     </Episode>
-    <Episode Id="17" Location="597.5;982.5">
+    <Episode Id="17" IsMarked="true" Location="597.5;982.5">
       <Text>[p]Мечът в ръката ти тежи непоносимо, но все още ти предстои да се справиш с последния противник [symbol value='ndash' /] василиска.[script]context.startBattle('basilisk3');
-$.winEpisode = 347;[/script][/p][p][image source='6' title='' hspace='0' vspace='0' align='center' width='403' height='218' /][/p][p][embed value='Battle' /][br /]ВАСИЛИСК[br /]СИЛА — 4, ЖИВОТ — 4[br /]Ако успееш да победиш, без да загубиш нито една точка,[br /]продължи на #347.[br /]Ако висилискът те засегне, макар и само веднъж, мини на #243.[/p][p][/p]</Text>
+$.hitEpisode = 243;
+$.winEpisode = 347;[/script][/p][p][image source='6' title='' hspace='0' vspace='0' align='center' width='403' height='218' /][/p][p][embed value='Battle' /][/p]</Text>
     </Episode>
     <Episode Id="2" IsMarked="true" Location="507.5;902.5">
       <Text>[p]С мощен удар на меча си поваляш василиска. Докато чудовището се гърчи в предсмъртна агония, ти си поемаш дъх и бързо се отглеждаш. За твоя радост противниците са намалели [symbol value='ndash' /] тролът е убил змията и сега се е вчепкал с дракона. Но когато те забелязват, двамата прекратяват схватката и заплашително тръгват насреща ти. С кого ще се биеш най-напред?[/p][p][link target='344']С трола[/link].[br /][link target='306']С дракона[/link].[/p]</Text>
@@ -1398,11 +1421,11 @@ $.winEpisode = 241;[/script][/p][p][embed value='Battle' /][/p]</Text>
     <Episode Id="18" IsMarked="true" Location="517.5;942.5">
       <Text>[p]С трескава бързина изваждаш манерката и я хвърляш право в зейналата огнена паст. Изненаданият дракон спира за момент и стиска челюсти, опитвайки се да сдъвче неочакваната плячка. Знаеш какво ще последва, затова отскачаш към стената и се просваш по очи върху пясъка на арената.[/p][p]Раздава се страхотен взрив. Над гърба ти прелита вълна от нажежена пара. Когато събираш смелост да надигнеш очи, виждаш, че хитрината ти е успяла. Драконът се е пръснал от налягането на парата и сега разкъсаното му тяло се гърчи в последна агония.[/p][p][link target='241'](продължи)[/link][/p]</Text>
     </Episode>
-    <Episode Id="175" IsMarked="true" Location="617.5;922.5">
+    <Episode Id="175" IsMarked="true" Location="597.5;922.5">
       <Text>[p]Тролът замахва с огромния си юмрук, но умората е забавила движенията му. Ловко се изплъзваш от удара и нападаш отстрани.[script]context.startBattle('troll3');
 $.winEpisode = 347;[/script][/p][p][embed value='Battle' /][/p]</Text>
     </Episode>
-    <Episode Id="146" IsMarked="true" Location="637.5;922.5">
+    <Episode Id="146" IsMarked="true" Location="617.5;922.5">
       <Text>[p]Вадиш шишенцето от раницата и с всичка сила го запокитваш напред. Стъклото се разбива в каменните гърди на трола и бистрата течност плъзва надолу на тънки струйки. Над нея се издига странен зеленикав дим. Тролът надава ужасен рев и се опитва да избърше скалната сълза с длани, ала това само влошава положението. Гъста мрежа от тънки пукнатини пробягва по ръцете и гърдите му. За броени секунди каменния великан се разпада на ситни късчета.[/p][p][link target='347'](продължи)[/link][/p]</Text>
     </Episode>
     <Episode Id="418" IsMarked="true" Location="162.5;862.5">
@@ -1427,7 +1450,7 @@ $.winEpisode = 347;[/script][/p][p][embed value='Battle' /][/p]</Text>
       <Text>[p]Отваряш стъкленицата и с всичка сила хвърляш нагоре отровния прах. Лекият ветрец понася облачето навътре в долината и скоро се разсейва. За момент ти се струва, че опитът е неуспешен. Изваждаш меча, готов да продадеш скъпо живота си. Но внезапно първите редици на вражеската войска започват да падат като покосени от невидима ръка.[/p][p]Искаш да нададеш възторжен вик[symbol value='hellip' /] и с ужас усещаш, че не можеш да си поемеш дъх. Сякаш железен обръч стяга гърдите ти. Станал си жертва на собствената си отрова! Сега може да те спаси само змийски камък.[/p][p][tag]item:return context.getItem('snake');[/tag] [link target='script:398' script='player.removeItem(&amp;apos;snake&amp;apos;, 1); return 398;' condition='return player.getItem(&amp;apos;snake&amp;apos;);']Ако си бил достатъчно предвидлив, за да се запасиш с тази ценна противоотрова[/link].[br /]А ако нямаш змийски камък, след кратка агония животът ти ще завърши тук и мисията ще остане неизпълнена.[/p]</Text>
     </Episode>
     <Episode Id="331" IsMarked="true" Location="222.5;902.5">
-      <Text>[p]Дворецът е безмълвен. Нито звук не издава присъствието на хора в него. А и няма откъде да долети този звук. В черните мраморни стени има само един-единствен прозорец, нейде на височината на третия етаж.[/p][p]Широката каменна врата е плътно затворена. Върху нея забелязваш три кръгли бутона с цифрите 1, 2 и 3. Очевидно отварянето става чрез натискането им в определен порядък. Мислено изброяваш шестте възможни комбинации: [link target='123']123[/link], [link target='132']132[/link], [link target='213']213[/link], [link target='231']231[/link], [link target='312']312[/link], [link target='321']321[/link]. За да влезеш в двореца, ще трябва да избереш една от тях и да преминеш на епизода с този номер.[/p][p]Ако се колебаеш и не ти се иска да пробваш наслука, остават ти две възможности.[/p][p][tag]item:return context.getItem('herb');[/tag] [link target='script:342' script='player.removeItem(&amp;apos;herb&amp;apos;, 1); return 342;' condition='return player.getItem(&amp;apos;herb&amp;apos;);']Можеш да опиташ да проникнеш в двореца с помощта на билка отвори-вратичка[/link].[br /]Другата възможност е да се изкачиш към прозореца с помощта на [tag]item:return context.getItem('mittens');[/tag] [link target='script:395' script='player.removeItem(&amp;apos;mittens&amp;apos;, 1); return 395;' condition='return player.getItem(&amp;apos;mittens&amp;apos;);']лепнещи ръкавици[/link] или [tag]item:return context.getItem('rope');[/tag] [link target='script:395' script='player.removeItem(&amp;apos;rope&amp;apos;, 1); return 395;' condition='return player.getItem(&amp;apos;rope&amp;apos;);']самолазещо въже[/link].[/p]</Text>
+      <Text>[p]Дворецът е безмълвен. Нито звук не издава присъствието на хора в него. А и няма откъде да долети този звук. В черните мраморни стени има само един-единствен прозорец, нейде на височината на третия етаж.[/p][p]Широката каменна врата е плътно затворена. Върху нея забелязваш три кръгли бутона с цифрите 1, 2 и 3. Очевидно отварянето става чрез натискането им в определен порядък. Мислено изброяваш шестте възможни комбинации: [link target='123']123[/link], [link target='132']132[/link], [link target='213']213[/link], [link target='231' condition='return !$.backoffSoothsayer;']231[/link], [link target='312']312[/link], [link target='321']321[/link]. За да влезеш в двореца, ще трябва да избереш една от тях и да преминеш на епизода с този номер.[/p][p]Ако се колебаеш и не ти се иска да пробваш наслука, остават ти две възможности.[/p][p][tag]item:return context.getItem('herb');[/tag] [link target='script:342' script='player.removeItem(&amp;apos;herb&amp;apos;, 1); return 342;' condition='return player.getItem(&amp;apos;herb&amp;apos;);']Можеш да опиташ да проникнеш в двореца с помощта на билка отвори-вратичка[/link].[br /]Другата възможност е да се изкачиш към прозореца с помощта на [tag]item:return context.getItem('mittens');[/tag] [link target='script:395' script='player.removeItem(&amp;apos;mittens&amp;apos;, 1); return 395;' condition='return player.getItem(&amp;apos;mittens&amp;apos;);']лепнещи ръкавици[/link] или [tag]item:return context.getItem('rope');[/tag] [link target='script:395' script='player.removeItem(&amp;apos;rope&amp;apos;, 1); return 395;' condition='return player.getItem(&amp;apos;rope&amp;apos;);']самолазещо въже[/link].[/p]</Text>
     </Episode>
     <Episode Id="152" IsMarked="true" Location="262.5;882.5">
       <Text>[p]Предпазливо развързваш един възел, ала не се случва нищо[symbol value='hellip' /] или почти нищо. Само слаб ветрец подухва из долината. Отеква рязка команда и войската заплашително тръгва срещу теб.[/p][p][link target='394'](продължи)[/link][/p]</Text>
@@ -1485,7 +1508,10 @@ $.winEpisode = 420;[/script][/p][p][embed value='Battle' /][/p]</Text>
       <Text>Преди да успееш да реагираш, камъкът се стоварва върху тебе и ти политаш с разбита глава към плочките пред двореца. Уви! Приключението ти завършва може би броени минути преди решителната схватка.</Text>
     </Episode>
     <Episode Id="409" IsMarked="true" Location="232.5;942.5">
-      <Text>[p]Притискаш се към стената и успяваш да се удържиш, макар че камъкът удря раницата ти. С крайчеца на окото си забелязваш как отвътре изхвръква най-горкият вълшебен предмет [symbol value='ndash' /] онзи, който е на последно място в списъка.[script]// TODO:[/script][/p][p]С удвоена решителност продължаваш изкачването и след малко се прехвърляш през отворения прозорец. Озоваваш се в просторна мрачна зала. Пред тебе се издига сложна плетеница от стъклени тръби и съдове, из които танцуват безброй пулсиращи светлинки. В мигането им има нещо хипнотично. През мозъка ти прелита внезапна догадка [symbol value='ndash' /] сънищата! Това трябва да са откраднатите сънища.[/p][p]Пред огромното стъклено съоръжение е застанал висок мършав мъж, облечен в дълга черна роба с широки ръкави. Макар че се приближаваш безшумно, той усеща присъствието ти и обръща глава. Лицето му би могло да се нарече красиво [symbol value='ndash' /] високо бледо чело, дълга черна коса, орлов нос и изящни тънки устни. Но злото е оставило своя отпечатък в тъмните очи, изпълнени с омраза.[/p][p][link target='230'](продължи)[/link][/p]</Text>
+      <Text>[p]Притискаш се към стената и успяваш да се удържиш, макар че камъкът удря раницата ти. С крайчеца на окото си забелязваш как отвътре изхвръква най-горкият вълшебен предмет [symbol value='ndash' /] онзи, който е на последно място в списъка.[script]if (player.itemOrder.length &amp;gt; 0) {
+  const lastItemId = player.itemOrder&amp;ob;0&amp;cb;;
+  player.removeItem(lastItemId, 1);
+}[/script][/p][p]С удвоена решителност продължаваш изкачването и след малко се прехвърляш през отворения прозорец. Озоваваш се в просторна мрачна зала. Пред тебе се издига сложна плетеница от стъклени тръби и съдове, из които танцуват безброй пулсиращи светлинки. В мигането им има нещо хипнотично. През мозъка ти прелита внезапна догадка [symbol value='ndash' /] сънищата! Това трябва да са откраднатите сънища.[/p][p]Пред огромното стъклено съоръжение е застанал висок мършав мъж, облечен в дълга черна роба с широки ръкави. Макар че се приближаваш безшумно, той усеща присъствието ти и обръща глава. Лицето му би могло да се нарече красиво [symbol value='ndash' /] високо бледо чело, дълга черна коса, орлов нос и изящни тънки устни. Но злото е оставило своя отпечатък в тъмните очи, изпълнени с омраза.[/p][p][link target='230'](продължи)[/link][/p]</Text>
     </Episode>
     <Episode Id="397" IsMarked="true" Location="192.5;1002.5">
       <Text>[p]Щом отваряш раницата, въжето излита отвътре като живо и светкавично омотава магьосника. Но още е рано да тържествуваш. Агамор изрича с повелителен глас някакво заклинание и въжето се разпада на прах.[/p][p][link target='400'](продължи)[/link][/p]</Text>
@@ -1499,8 +1525,8 @@ $.winEpisode = 420;[/script][/p][p][embed value='Battle' /][/p]</Text>
     <Episode Id="369" IsMarked="true" Location="212.5;1002.5">
       <Text>[p]Изваждаш стъкленицата и я захвърляш пред нозете на Агамор. Тя се разбива с трясък и пред смаяния магьосник се издига облак гъст синкав дим, из който играят безброй ярки искрици. Постепенно облакът се разделя на шест части. Те се изтеглят, променят цвета си[symbol value='hellip' /] и след минута пред Агамор стоят шест човешки фигури, копиращи твоя облик до най-малка подробност. Нещо повече, те се раздвижват и като живи започват да тичат насам-натам из залата.[/p][p]Магьосникът напразно се мъчи да разбере къде е истинският му противник. Накрая, почервенял от гняв, той вдига ръце и с повелителен глас изрича някакво заклинание. Двойниците застиват на място, полюшват се и мигновено се разпадат на купчинки синкав прах.[/p][p][link target='400'](продължи)[/link][/p][p][image source='4' title='' hspace='0' vspace='0' align='center' width='390' height='195' /][/p]</Text>
     </Episode>
-    <Episode Id="363" Location="232.5;1002.5">
-      <Text>[p]Още щом отваряш раницата, ботушите излитат от нея и сами се надяват на нозете ти. Благодарение на тяхната бързина, сега можеш да нанасяш по два удара срещу всеки удар на Агамор.[script]// TODO:[/script][/p][p][link target='278'](продължи)[/link][/p]</Text>
+    <Episode Id="363" IsMarked="true" Location="232.5;1002.5">
+      <Text>[p]Още щом отваряш раницата, ботушите излитат от нея и сами се надяват на нозете ти. Благодарение на тяхната бързина, сега можеш да нанасяш по два удара срещу всеки удар на Агамор.[script]$.doubleAttack = true;[/script][/p][p][link target='278'](продължи)[/link][/p]</Text>
     </Episode>
     <Episode Id="316" IsMarked="true" Location="252.5;1002.5">
       <Text>[p]Без да се колебаеш нито секунда, ти изваждаш ковчежето, вдигаш капака и насочваш отвора към Агамор. За момент стъписаният вълшебник застива на място. Сетне от устата му излита ужасен рев и той полита напред. Тялото му стремително се смалява [symbol value='ndash' /] като кукла, като мишка, като мушица[symbol value='hellip' /] Ковчежето го поглъща и черният капак се захлопва над злобния магьосник, който желаеше да всели злото в душите на хората.[/p][p][link target='420'](продължи)[/link][/p]</Text>
@@ -1558,6 +1584,90 @@ $.winEpisode = 78;[/script][/p][p][embed value='Battle' /][/p]</Text>
     <Episode Id="78" IsMarked="true" Location="122.5;322.5">
       <Text>[p]Облян в кръв, гигантът прави крачка назад и тежко рухва на палубата. Пиратите наоколо са вцепенени от изненада и ти използваш момента, за да се прехвърлиш с един скок обратно на търговския кораб.[/p][p]Това всъщност е краят на сражението. Обзети от паника, пиратите прекратяват атаката и скоро техният кораб изостава назад.[/p][p][link target='113'](продължи)[/link][/p]</Text>
     </Episode>
+    <Episode Id="102" IsMarked="true" Location="427.5;942.5">
+      <Text>[p]Змията се стрелва напред като пружина и зъбите й се впиват в китката ти. Имаш ли в раницата си змийски камък?[/p][p][tag]item:return context.getItem('snake');[/tag] [link target='script:64' script='player.removeItem(&amp;apos;snake&amp;apos;, 1); return 64;' condition='return player.getItem(&amp;apos;snake&amp;apos;);']Да[/link].[br /][link target='24']Не[/link].[/p]</Text>
+    </Episode>
+    <Episode Id="64" IsMarked="true" Location="437.5;962.5">
+      <Text>[p]Бързо вадиш от раницата си змийския камък и го притискаш към раничката. Ефектът е незабавен. Болката отслабва и напълно изчезва, докато камъкът се разпада на прах.[/p][p][embed value='Battle' /][/p]</Text>
+    </Episode>
+    <Episode Id="24" IsMarked="true" Location="417.5;962.5">
+      <Text>Змийската отрова действа светкавично. Арената се замъглява пред очите ти. Облива те непоносим студ и вцепенените мускули на краката вече не могат да те удържат. Рухваш на пясъка с една последна ясна мисъл [symbol value='ndash' /] че това е краят и мисията ти ще остане неизпълнена.</Text>
+    </Episode>
+    <Episode Id="Shop" IsMarked="true" Location="52.5;62.5">
+      <Text>[p][script]$.itemsSelected = false;
+$.selectedItems = &amp;ob;&amp;cb;;[/script][/p][p][clicker]if (!$.itemsSelected) {
+  context.showItemTransferDialog($.selectedItems, $.items, 'Инвентар', 'Предмети', `Обща сума: ${context.getItemPrice($.selectedItems)}`, 'Магазин',
+    function(result) {
+      if (result) {
+        $.selectedItems = result.leftItems;
+      }
+    },
+    function(payload) {
+      return `Обща сума: ${context.getItemPrice(payload.leftItems)}`;
+    },
+    {
+      infinite: $.infinite,
+      tag: 'price',
+      tagTemplate: '%sж'
+    });
+}
+return true;[/clicker][tag]general:return 'Пазарувай';[/tag][endclicker /][/p][p][blocker]let gold = player.getItem('gold');
+if (gold) {
+  gold = gold.stack;
+} else {
+  gold = 0;
+}
+if (context.getItemPrice($.selectedItems) &amp;gt; gold) {
+  context.showPopupMessage(`Не можеш да платиш избраните предмети. Имаш ${gold} злато.`);
+  return false;
+}
+$.itemsSelected = true;
+return true;[/blocker][tag]general:return 'Продължи';[/tag][endblocker /][script]for (let i = 0; i &amp;lt; $.selectedItems.length; i++) {
+  player.addItem($.selectedItems&amp;ob;i&amp;cb;);
+}[/script][/p]</Text>
+    </Episode>
+    <Episode Id="98" IsMarked="true" Location="452.5;982.5">
+      <Text>[p]Змията се стрелва напред като пружина и зъбите й се впиват в китката ти. Имаш ли в раницата си змийски камък?[/p][p][tag]item:return context.getItem('snake');[/tag] [link target='script:22' script='player.removeItem(&amp;apos;snake&amp;apos;, 1); return 22;' condition='return player.getItem(&amp;apos;snake&amp;apos;);']Да[/link].[br /][link target='24']Не[/link].[/p]</Text>
+    </Episode>
+    <Episode Id="22" IsMarked="true" Location="452.5;1002.5">
+      <Text>[p]По-бързо! Няма време![/p][p]С треперещи ръце вадиш от раницата змийския камък и го притискаш към ухапаното място. Усещаш как болката намалява. Скоро камъкът се разпада на прах и отровата в тялото ти е неутрализирана.[/p][p][embed value='Battle' /][/p]</Text>
+    </Episode>
+    <Episode Id="188" IsMarked="true" Location="527.5;882.5">
+      <Text>[p]Змията се стрелва напред като пружина и зъбите й се впиват в китката ти. Имаш ли в раницата си змийски камък?[/p][p][tag]item:return context.getItem('snake');[/tag] [link target='script:235' script='player.removeItem(&amp;apos;snake&amp;apos;, 1); return 235;' condition='return player.getItem(&amp;apos;snake&amp;apos;);']Да[/link].[br /][link target='24']Не[/link].[/p]</Text>
+    </Episode>
+    <Episode Id="235" IsMarked="true" Location="547.5;882.5">
+      <Text>[p]Бързо вадиш от раницата си змийския камък и го притискаш към ухапаното място. Ефектът е незабавен. Болката отслабва и напълно изчезва, докато камъкът се разпада на прах.[/p][p][embed value='Battle' /][/p]</Text>
+    </Episode>
+    <Episode Id="68" IsMarked="true" Location="647.5;902.5">
+      <Text>[p]Катастрофа! Смъртоносният поглед на василиска те е докоснал! С ужас усещаш как по тялото ти се разлива хладна тежест. Започваш да се вкаменяваш. Имаш ли талисман?[/p][p][tag]item:return context.getItem('charm');[/tag] [link target='script:9' script='player.removeItem(&amp;apos;charm&amp;apos;, 1); return 9;' condition='return player.getItem(&amp;apos;charm&amp;apos;);']Да[/link].[br /][link target='44']Не[/link].[/p]</Text>
+    </Episode>
+    <Episode Id="9" IsMarked="true" Location="637.5;922.5">
+      <Text>[p]С тихо шумолене талисманът се разпада на прах, но вцепенението в тялото ти изчезва.[/p][p][embed value='Battle' /][/p]</Text>
+    </Episode>
+    <Episode Id="44" IsMarked="true" Location="657.5;922.5">
+      <Text>Какво да се прави, явно не ти е било писано да завършиш приключението си с успех. Вкамененото ти тяло ще бъде използвано като статуя за украса на арената. Дано някой ден да се намери вълшебник, който да те върне към живота[symbol value='hellip' /]</Text>
+    </Episode>
+    <Episode Id="70" IsMarked="true" Location="617.5;942.5">
+      <Text>[p]Катастрофа! Смъртоносният поглед на василиска те е докоснал! С ужас усещаш как по тялото ти се разлива непоносима хладна тежест. Започваш да се вкаменяваш. Имаш ли талисман?[/p][p][tag]item:return context.getItem('charm');[/tag] [link target='script:121' script='player.removeItem(&amp;apos;charm&amp;apos;, 1); return 121;' condition='return player.getItem(&amp;apos;charm&amp;apos;);']Да[/link].[br /][link target='44']Не[/link].[/p]</Text>
+    </Episode>
+    <Episode Id="121" IsMarked="true" Location="617.5;962.5">
+      <Text>[p]С тихо шумолене талисманът се разпада на прах, вцепенението в тялото ти изчезва.[/p][p][embed value='Battle' /][/p]</Text>
+    </Episode>
+    <Episode Id="243" IsMarked="true" Location="617.5;982.5">
+      <Text>[p]Катастрофа! Смъртоносният поглед на василиска те е докоснал! С ужас усещаш как по тялото ти започва да се разлива непоносима хладна тежест. Скоро ще се вкамениш. Имаш ли талисман?[/p][p][tag]item:return context.getItem('charm');[/tag] [link target='script:136' script='player.removeItem(&amp;apos;charm&amp;apos;, 1); return 136;' condition='return player.getItem(&amp;apos;charm&amp;apos;);']Да[/link].[br /][link target='44']Не[/link].[/p]</Text>
+    </Episode>
+    <Episode Id="136" IsMarked="true" Location="617.5;1002.5">
+      <Text>[p]С тихо шумолене талисманът се разпада на прах, но вцепенението в тялото ти изчезва.[/p][p][embed value='Battle' /][/p]</Text>
+    </Episode>
+    <Episode Id="292" IsMarked="true" Location="122.5;442.5">
+      <Text>[p]Леко забавяш крачка, за да изостанеш. Маневрата ти е успешна. Сега всичко е лесно — вадиш меча от ножницата и замахваш с дръжката към тила на човека.[/p][p][embed value='FateRoll' /][/p][p][if]return $.result &amp;lt;= 8;[/if][link target='30'](продължи)[/link][else /][link target='142'](продължи)[/link][endif /][/p]</Text>
+    </Episode>
+    <Episode Id="30" IsMarked="true" Location="122.5;462.5">
+      <Text>[p]Ударът ти е тежък и точен. Човекът изохква и се свлича като чувал. Веднага го връзваш със собствения му пояс и го издърпваш до близката стена. Сега трябва да изчакаш, докато се свести. След няколко минути пленникът започва да стене и отваря очи.[/p][p][link target='413'](продължи)[/link][/p]</Text>
+    </Episode>
+    <Episode Id="83a" IsMarked="true" Location="227.5;102.5">
+      <Text>[p]Започва нов боен рунд![script]$.selectedOpponent = -1;[/script][/p][p][embed value='BattleRound' /][/p][p][if]return $.playerStartLife - player.life &amp;gt;= 3;[/if]Губиш повече от 3 жизнени точки.[/p][p][link target='4'](продължи)[/link][else /][if]return $.opponentStartLife - $.opponent.life &amp;gt;= 3[/if]Опонентът губи повече от 3 жизнени точки.[/p][p][link target='145'](продължи)[/link][else /][link target='83a'](продължи)[/link][endif /][endif /][/p]</Text>
+    </Episode>
   </Episodes>
   <Transitions>
     <Transition From="Intro" To="Intro2" />
@@ -1610,7 +1720,6 @@ $.winEpisode = 78;[/script][/p][p][embed value='Battle' /][/p]</Text>
     <Transition From="178" To="150" />
     <Transition From="133" To="100" />
     <Transition From="Battles" To="Equipment" />
-    <Transition From="Battle" To="Battle" />
     <Transition From="91" To="100" />
     <Transition From="45" To="60" />
     <Transition From="60" To="374" />
@@ -1632,10 +1741,8 @@ $.winEpisode = 78;[/script][/p][p][embed value='Battle' /][/p]</Text>
     <Transition From="413" To="355" />
     <Transition From="25" To="402" />
     <Transition From="72" To="402" />
-    <Transition From="147" To="402" />
     <Transition From="191" To="413" />
     <Transition From="381" To="402" />
-    <Transition From="387" To="381" />
     <Transition From="355" To="381" />
     <Transition From="402" To="360" />
     <Transition From="402" To="383" />
@@ -1643,8 +1750,6 @@ $.winEpisode = 78;[/script][/p][p][embed value='Battle' /][/p]</Text>
     <Transition From="360" To="396" />
     <Transition From="383" To="360" />
     <Transition From="27" To="162" />
-    <Transition From="162" To="405" />
-    <Transition From="162" To="311" />
     <Transition From="313" To="407" />
     <Transition From="313" To="336" />
     <Transition From="313" To="414" />
@@ -1656,7 +1761,6 @@ $.winEpisode = 78;[/script][/p][p][embed value='Battle' /][/p]</Text>
     <Transition From="349" To="276" />
     <Transition From="297" To="272" />
     <Transition From="297" To="245" />
-    <Transition From="272" To="359" />
     <Transition From="359" To="411" />
     <Transition From="359" To="305" />
     <Transition From="359" To="291" />
@@ -1726,8 +1830,6 @@ $.winEpisode = 78;[/script][/p][p][embed value='Battle' /][/p]</Text>
     <Transition From="140" To="105" />
     <Transition From="140" To="154" />
     <Transition From="154" To="120" />
-    <Transition From="186" To="269" />
-    <Transition From="186" To="162" />
     <Transition From="269" To="311" />
     <Transition From="69" To="186" />
     <Transition From="69" To="159" />
@@ -1752,8 +1854,6 @@ $.winEpisode = 78;[/script][/p][p][embed value='Battle' /][/p]</Text>
     <Transition From="46" To="326" />
     <Transition From="34" To="55" />
     <Transition From="270" To="253" />
-    <Transition From="326" To="309" />
-    <Transition From="326" To="301" />
     <Transition From="239" To="211" />
     <Transition From="239" To="38" />
     <Transition From="211" To="169" />
@@ -1854,7 +1954,6 @@ $.winEpisode = 78;[/script][/p][p][embed value='Battle' /][/p]</Text>
     <Transition From="26" To="13" />
     <Transition From="26" To="84" />
     <Transition From="225" To="134" />
-    <Transition From="221" To="50" />
     <Transition From="39" To="107" />
     <Transition From="50" To="190" />
     <Transition From="84" To="134" />
@@ -1864,7 +1963,6 @@ $.winEpisode = 78;[/script][/p][p][embed value='Battle' /][/p]</Text>
     <Transition From="190" To="212" />
     <Transition From="212" To="218" />
     <Transition From="212" To="237" />
-    <Transition From="218" To="237" />
     <Transition From="237" To="32" />
     <Transition From="237" To="53" />
     <Transition From="237" To="108" />
@@ -1874,7 +1972,6 @@ $.winEpisode = 78;[/script][/p][p][embed value='Battle' /][/p]</Text>
     <Transition From="53" To="111" />
     <Transition From="108" To="124" />
     <Transition From="108" To="116" />
-    <Transition From="124" To="86" />
     <Transition From="86" To="104" />
     <Transition From="86" To="143" />
     <Transition From="62" To="124" />
@@ -1973,7 +2070,6 @@ $.winEpisode = 78;[/script][/p][p][embed value='Battle' /][/p]</Text>
     <Transition From="180" To="334" />
     <Transition From="180" To="302" />
     <Transition From="226" To="334" />
-    <Transition From="334" To="302" />
     <Transition From="302" To="416" />
     <Transition From="416" To="307" />
     <Transition From="416" To="162" />
@@ -2008,7 +2104,6 @@ $.winEpisode = 78;[/script][/p][p][embed value='Battle' /][/p]</Text>
     <Transition From="Life" To="Battles" />
     <Transition From="Equipment" To="Items" />
     <Transition From="Items" To="Intro3" />
-    <Transition From="97" To="6" />
     <Transition From="330" To="314" />
     <Transition From="330" To="96" />
     <Transition From="287" To="250" />
@@ -2016,8 +2111,6 @@ $.winEpisode = 78;[/script][/p][p][embed value='Battle' /][/p]</Text>
     <Transition From="314" To="96" />
     <Transition From="314" To="287" />
     <Transition From="314" To="250" />
-    <Transition From="250" To="287" />
-    <Transition From="250" To="96" />
     <Transition From="96" To="246" />
     <Transition From="96" To="351" />
     <Transition From="252" To="310" />
@@ -2036,11 +2129,6 @@ $.winEpisode = 78;[/script][/p][p][embed value='Battle' /][/p]</Text>
     <Transition From="262" To="11" />
     <Transition From="262" To="90" />
     <Transition From="11" To="280" />
-    <Transition From="341" To="308" />
-    <Transition From="341" To="260" />
-    <Transition From="341" To="317" />
-    <Transition From="341" To="92" />
-    <Transition From="341" To="372" />
     <Transition From="308" To="274" />
     <Transition From="308" To="289" />
     <Transition From="251" To="149" />
@@ -2117,19 +2205,9 @@ $.winEpisode = 78;[/script][/p][p][embed value='Battle' /][/p]</Text>
     <Transition From="231" To="230" />
     <Transition From="230" To="278" />
     <Transition From="230" To="294" />
-    <Transition From="331" To="123" />
-    <Transition From="331" To="132" />
-    <Transition From="331" To="213" />
-    <Transition From="331" To="231" />
-    <Transition From="331" To="312" />
-    <Transition From="331" To="321" />
-    <Transition From="331" To="342" />
-    <Transition From="331" To="395" />
-    <Transition From="331" To="395" />
     <Transition From="342" To="231" />
     <Transition From="395" To="366" />
     <Transition From="395" To="409" />
-    <Transition From="409" To="230" />
     <Transition From="397" To="400" />
     <Transition From="384" To="404" />
     <Transition From="384" To="392" />
@@ -2137,7 +2215,6 @@ $.winEpisode = 78;[/script][/p][p][embed value='Battle' /][/p]</Text>
     <Transition From="392" To="325" />
     <Transition From="325" To="400" />
     <Transition From="369" To="400" />
-    <Transition From="363" To="278" />
     <Transition From="294" To="397" />
     <Transition From="294" To="384" />
     <Transition From="294" To="378" />
@@ -2172,9 +2249,62 @@ $.winEpisode = 78;[/script][/p][p][embed value='Battle' /][/p]</Text>
     <Transition From="289" To="251" />
     <Transition From="317" To="285" />
     <Transition From="317" To="298" />
-    <Transition From="200" To="178" />
+    <Transition From="272" To="359" />
+    <Transition From="162" To="405" />
+    <Transition From="162" To="311" />
+    <Transition From="186" To="269" />
+    <Transition From="186" To="162" />
     <Transition From="264" To="253" />
+    <Transition From="326" To="309" />
+    <Transition From="326" To="301" />
+    <Transition From="221" To="50" />
+    <Transition From="124" To="86" />
+    <Transition From="334" To="302" />
+    <Transition From="147" To="402" />
+    <Transition From="387" To="381" />
+    <Transition From="200" To="178" />
+    <Transition From="363" To="278" />
+    <Transition From="97" To="6" />
     <Transition From="145" To="46" />
+    <Transition From="218" To="237" />
+    <Transition From="Battle" To="Battle" />
+    <Transition From="102" To="64" />
+    <Transition From="102" To="24" />
+    <Transition From="98" To="22" />
+    <Transition From="98" To="24" />
+    <Transition From="188" To="235" />
+    <Transition From="188" To="24" />
+    <Transition From="68" To="9" />
+    <Transition From="68" To="44" />
+    <Transition From="70" To="121" />
+    <Transition From="70" To="44" />
+    <Transition From="243" To="136" />
+    <Transition From="243" To="44" />
+    <Transition From="324" To="292" />
+    <Transition From="324" To="268" />
+    <Transition From="292" To="30" />
+    <Transition From="292" To="142" />
+    <Transition From="30" To="413" />
+    <Transition From="341" To="308" />
+    <Transition From="341" To="260" />
+    <Transition From="341" To="317" />
+    <Transition From="341" To="92" />
+    <Transition From="341" To="372" />
+    <Transition From="83a" To="4" />
+    <Transition From="83a" To="145" />
+    <Transition From="83a" To="83a" />
+    <Transition From="331" To="123" />
+    <Transition From="331" To="132" />
+    <Transition From="331" To="213" />
+    <Transition From="331" To="231" />
+    <Transition From="331" To="312" />
+    <Transition From="331" To="321" />
+    <Transition From="331" To="342" />
+    <Transition From="331" To="395" />
+    <Transition From="331" To="395" />
+    <Transition From="250" To="287" />
+    <Transition From="250" To="96" />
+    <Transition From="409" To="230" />
   </Transitions>
   <Groups />
   <Global>
@@ -2367,6 +2497,14 @@ $.winEpisode = 78;[/script][/p][p][embed value='Battle' /][/p]</Text>
         <Attribute Id="id">pouch</Attribute>
         <Attribute Id="name">Кесия с 10 жълтици</Attribute>
         <Attribute Id="description">Дарът не е вълшебен, но парите никога не са излишни.</Attribute>
+      </Attributes>
+      <Events />
+    </Item>
+    <Item>
+      <Attributes>
+        <Attribute Id="id">gauntlet</Attribute>
+        <Attribute Id="name">Бойна ръкавица</Attribute>
+        <Attribute Id="description">Увеличава силата ти в сраженията с 1 точка.</Attribute>
       </Attributes>
       <Events />
     </Item>
@@ -2665,6 +2803,33 @@ $.winEpisode = 78;[/script][/p][p][embed value='Battle' /][/p]</Text>
       </Attributes>
       <Events />
     </Character>
+    <Character>
+      <Attributes>
+        <Attribute Id="id">firstBandit</Attribute>
+        <Attribute Id="name">Първи разбойник</Attribute>
+        <Attribute Id="strength">8</Attribute>
+        <Attribute Id="life">9</Attribute>
+      </Attributes>
+      <Events />
+    </Character>
+    <Character>
+      <Attributes>
+        <Attribute Id="id">secondBandit</Attribute>
+        <Attribute Id="name">Втори разбойник</Attribute>
+        <Attribute Id="strength">7</Attribute>
+        <Attribute Id="life">10</Attribute>
+      </Attributes>
+      <Events />
+    </Character>
+    <Character>
+      <Attributes>
+        <Attribute Id="id">thirdBandit</Attribute>
+        <Attribute Id="name">Трети разбойник</Attribute>
+        <Attribute Id="strength">6</Attribute>
+        <Attribute Id="life">12</Attribute>
+      </Attributes>
+      <Events />
+    </Character>
   </Characters>
   <Skills />
   <Battles />
@@ -2770,9 +2935,9 @@ $.winEpisode = 78;[/script][/p][p][embed value='Battle' /][/p]</Text>
   </Images>
   <View>
     <ScrollX>0</ScrollX>
-    <ScrollY>114.043427</ScrollY>
+    <ScrollY>0</ScrollY>
     <Zoom>47</Zoom>
     <Width>800</Width>
-    <Height>1069.5</Height>
+    <Height>1081.5</Height>
   </View>
 </Scenario>
