@@ -25,7 +25,7 @@ context.removeNewItem = function(itemId, stack) {
   if (!stack) {
     stack = 1;
   }
-  this.removeItem(player, itemId, stack);
+  this.removeItem(this.player, itemId, stack);
   const item = this.player.getItem(itemId);
   if (item) {
     this.showPopupMessage(`Остават ${item.stack}`);
@@ -2391,7 +2391,7 @@ return item &amp;&amp; item.stack &gt;= 5;']Ако искаш да играеш 
       <Attributes>
         <Attribute Id="id">sword</Attribute>
         <Attribute Id="name">Меч</Attribute>
-        <Attribute Id="description">[p]Дълъг стоманен меч.[/p]</Attribute>
+        <Attribute Id="description">Дълъг стоманен меч.</Attribute>
       </Attributes>
       <Events />
     </Item>
