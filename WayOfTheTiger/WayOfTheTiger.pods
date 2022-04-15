@@ -17512,7 +17512,15 @@ return 1;'](continue)[/link][/p]</Text>
         <Attribute Id="name">Healing potion (+5)</Attribute>
         <Attribute Id="description">You may drink this at any time to restore up to [tag]plus:return 5;[/tag] points of lost Endurance.</Attribute>
       </Attributes>
-      <Events />
+      <Events>
+        <Event Name="onUsed">[p][script]if ($.inBattle) {
+  context.showPopupMessage('You cannot use that during combat.');
+} else {
+  context.increasePlayerEndurance(5);
+  context.player.removeItem('healingPotion5', 1);
+  context.showPopupMessage('You restore 5 Endurance.');
+}[/script][/p]</Event>
+      </Events>
     </Item>
     <Item>
       <Attributes>
