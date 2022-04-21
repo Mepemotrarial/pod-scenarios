@@ -93,41 +93,38 @@ context.createItemWithPrice = function(id, price, stack) {
   </GlobalScripts>
   <GlobalDefinition>
     <Attributes />
-    <Events>
-      <Event Name="canTransition" IsIntrinsic="true" Description="Invoked every time a player attempts to follow a link in order to verify whether this is possible. Individual (direct) transitions contain a condition script as well, which is used with higher priority." />
-      <Event Name="canPickup" IsIntrinsic="true" Description="Invoked to verify that a character can pick up an item." />
-      <Event Name="canDrop" IsIntrinsic="true" Description="Invoked to verify that a character can drop an item." />
-      <Event Name="canEquip" IsIntrinsic="true" Description="Invoked to verify that a character can equip a specific item in a specific inventory slot." />
-      <Event Name="canUnequip" IsIntrinsic="true" Description="Invoked to verify that a character can equip a specific item." />
-      <Event Name="canUse" IsIntrinsic="true" Description="Invoked to verify that a character can use a specific item and the possible usage types." />
-      <Event Name="canAttack" IsIntrinsic="true" Description="Invoked to verify that a character can attacks another character in combat." />
-      <Event Name="onAttack" IsIntrinsic="true" Description="Invoked when a character attacks another character in combat." />
-      <Event Name="onTurn" IsIntrinsic="true" Description="Invoked at the end of every turn during combat." />
-      <Event Name="onCharacterAttributeChanged" IsIntrinsic="true" Description="Invoked when an attribute of a character is changed." />
-      <Event Name="onItemAttributeChanged" IsIntrinsic="true" Description="Invoked when an attribute of an item is changed." />
-    </Events>
+    <Events />
+    <Hooks>
+      <Hook Name="canStackItems" IsIntrinsic="true" Description="Invoked to check whether two item instances can be stacked together." />
+      <Hook Name="stackItems" IsIntrinsic="true" Description="Invoked in order to stack two item instances together." />
+    </Hooks>
   </GlobalDefinition>
-  <ItemDefinition IdentityAttribute="id">
+  <JournalEntryDefinition>
+    <Attributes>
+      <Attribute Id="id" Name="Id" IsIntrinsic="true" IsMandatory="true" IsUnique="true" Type="String" Description="A unique item identifier." />
+      <Attribute Id="name" Name="Name" IsIntrinsic="true" IsMandatory="true" IsUnique="false" Type="String" Description="A human readable name." />
+      <Attribute Id="description" Name="Description" IsIntrinsic="true" IsMandatory="false" IsUnique="false" Type="Description" Description="A description of the journal entry." />
+      <Attribute Id="visible" Name="Visible" IsIntrinsic="true" IsMandatory="true" IsUnique="false" Type="Boolean" DefaultValue="True" Description="Specifies whether to show this entry in the journal." />
+      <Attribute Id="canDelete" Name="CanDelete" IsIntrinsic="true" IsMandatory="true" IsUnique="false" Type="Boolean" DefaultValue="True" Description="Specifies whether this entry can be deleted by the user." />
+    </Attributes>
+    <Events />
+    <Hooks>
+      <Hook Name="onRead" IsIntrinsic="True" Description="Invoked when the entry is read." />
+    </Hooks>
+  </JournalEntryDefinition>
+  <ItemDefinition>
     <Attributes>
       <Attribute Id="id" Name="Id" IsIntrinsic="true" IsMandatory="true" IsUnique="true" Type="String" Description="A unique item identifier." />
       <Attribute Id="name" Name="Name" IsIntrinsic="true" IsMandatory="true" IsUnique="false" Type="String" Description="A human readable name." />
       <Attribute Id="description" Name="Description" IsIntrinsic="false" IsMandatory="false" IsUnique="false" Type="Description" DefaultValue="" Category="" />
     </Attributes>
-    <Events>
-      <Event Name="onInit" IsIntrinsic="true" Description="Invoked when the item is created." />
-      <Event Name="onAttacked" IsIntrinsic="true" Description="Invoked when the character wielding the item attacked another character in combat." />
-      <Event Name="onHit" IsIntrinsic="true" Description="Invoked when the character wielding the item hit another character in combat." />
-      <Event Name="onMissed" IsIntrinsic="true" Description="Invoked when the character wielding the item missed another character in combat." />
-      <Event Name="onGotHit" IsIntrinsic="true" Description="Invoked when the character wielding the item got hit by another character in combat." />
-      <Event Name="onPicked" IsIntrinsic="true" Description="Invoked when the item was picked up." />
-      <Event Name="onDropped" IsIntrinsic="true" Description="Invoked when the item was dropped." />
-      <Event Name="onEquipped" IsIntrinsic="true" Description="Invoked when the item was equipped in an inventory slot." />
-      <Event Name="onUnequipped" IsIntrinsic="true" Description="Invoked when the item was unequipped." />
-      <Event Name="onUsed" IsIntrinsic="true" Description="Invoked when the item was used." />
-      <Event Name="onTurn" IsIntrinsic="true" Description="Invoked at the end of every turn during combat." />
-    </Events>
+    <Events />
+    <Hooks>
+      <Hook Name="onInit" IsIntrinsic="true" Description="Invoked when an item instance is created." />
+      <Hook Name="onUsed" IsIntrinsic="true" Description="Invoked when the item is used." />
+    </Hooks>
   </ItemDefinition>
-  <CharacterDefinition IdentityAttribute="id">
+  <CharacterDefinition>
     <Attributes>
       <Attribute Id="id" Name="Id" IsIntrinsic="true" IsMandatory="true" IsUnique="true" Type="String" Description="A unique item identifier." />
       <Attribute Id="name" Name="Name" IsIntrinsic="true" IsMandatory="true" IsUnique="false" Type="String" Description="A human readable name." />
@@ -135,25 +132,19 @@ context.createItemWithPrice = function(id, price, stack) {
       <Attribute Id="life" Name="Живот" IsIntrinsic="false" IsMandatory="false" IsUnique="false" Type="Integer" DefaultValue="20" Category="Атрибути" />
       <Attribute Id="maxLife" Name="Max life" IsIntrinsic="false" IsMandatory="false" IsUnique="false" Type="Integer" DefaultValue="20" Category="" />
     </Attributes>
-    <Events>
-      <Event Name="onInit" IsIntrinsic="true" Description="Invoked when the character is created." />
-      <Event Name="onAttacked" IsIntrinsic="true" Description="Invoked when the character attacked another character in combat." />
-      <Event Name="onGotHit" IsIntrinsic="true" Description="Invoked when the character got hit by another character in combat." />
-      <Event Name="onTurn" IsIntrinsic="true" Description="Invoked at the end of every turn during combat." />
-      <Event Name="onHit" IsIntrinsic="false" Description="Invoked when the character hits another character." />
-    </Events>
+    <Events />
+    <Hooks>
+      <Hook Name="onInit" IsIntrinsic="true" Description="Invoked when a character instance is created." />
+    </Hooks>
   </CharacterDefinition>
-  <SkillDefinition IdentityAttribute="id">
+  <SkillDefinition>
     <Attributes>
       <Attribute Id="id" Name="Id" IsIntrinsic="true" IsMandatory="true" IsUnique="true" Type="String" Description="A unique skill identifier." />
       <Attribute Id="name" Name="Name" IsIntrinsic="true" IsMandatory="true" IsUnique="false" Type="String" Description="A human readable name." />
       <Attribute Id="passive" Name="Passive" IsIntrinsic="true" IsMandatory="false" IsUnique="false" Type="Boolean" DefaultValue="False" Description="Indicates whether the skill is passive or can be explicitly activated." />
     </Attributes>
-    <Events>
-      <Event Name="canUse" IsIntrinsic="true" Description="Invoked to verify that the skill can be used." />
-      <Event Name="onUse" IsIntrinsic="true" Description="Invoked when the skill is used." />
-      <Event Name="onTurn" IsIntrinsic="true" Description="Invoked at the end of every turn during combat." />
-    </Events>
+    <Events />
+    <Hooks />
   </SkillDefinition>
   <Episodes>
     <Episode Id="Intro" IsMarked="true" Location="32.5;22.5">
@@ -678,7 +669,7 @@ $.winEpisode = 159;[/script][/p][p][embed value='Battle' /][/p]</Text>
       <Text>[p]Отваряш шишенцето и изсипваш бистрата течност върху ключалката и пантите. Надига се странен зеленикав дим, по камъка пробягват пукнатини и след малко засегнатите места се разпадат на ситни късчета. Здраво подхващаш тежкия капак, напрягаш мускули и го събаряш на пода.[/p][p][link target='140'](продължи)[/link][/p]</Text>
     </Episode>
     <Episode Id="Map" IsMarked="true" Location="32.5;42.5">
-      <Text>[image source='10' title='' hspace='0' vspace='0' align='center' width='591' height='849' /]</Text>
+      <Text>[p][image source='10' title='' hspace='0' vspace='0' align='center' width='591' height='849' /][/p][p][link target=':return'](затвори)[/link][/p]</Text>
     </Episode>
     <Episode Id="118" IsMarked="true" Location="252.5;82.5">
       <Text>[p]Скачаш от мястото си, изтичваш и дръпваш грубиянина за дрехата, тъкмо когато е повалил циганката и се готви да я ритне. Той се обръща и яростно се втренчва в теб.[/p][p][symbol value='mdash' /] Не се меси, чужденецо[symbol value='hellip' /] освен ако искаш да те напердаша. Тая дърта вещица ми взе цяла жълтица за гадаене, а пък ми предсказва само неприятности. Хайде, изчезвай![/p][p]Продължаваш да стоиш на място. Побойникът те измерва с поглед от глава до пети и ръмжи:[/p][p][symbol value='mdash' /] Ама ти наистина си търсиш белята! Май ще трябва да ти поизтупам праха.[/p][p]Ще се биеш ли с него?[/p][p][link target='83']Да[/link].[br /][link target='4']Не[/link].[/p]</Text>
@@ -2318,7 +2309,20 @@ context.removeItem(player, 'gold', context.getItemPrice($.selectedItems));[/scri
   <Global>
     <Attributes />
     <Events />
+    <Hooks />
   </Global>
+  <Journal>
+    <JournalEntry>
+      <Attributes>
+        <Attribute Id="id">map</Attribute>
+        <Attribute Id="name">Карта</Attribute>
+      </Attributes>
+      <Events />
+      <Hooks>
+        <Hook Name="onRead">context.visitEpisode('Map');</Hook>
+      </Hooks>
+    </JournalEntry>
+  </Journal>
   <Items>
     <Item>
       <Attributes>
@@ -2327,6 +2331,7 @@ context.removeItem(player, 'gold', context.getItemPrice($.selectedItems));[/scri
         <Attribute Id="description">На вид тя изглежда съвсем обикновена, но в нея може да се побере цяло езеро. Изключително полезен предмет за човек, който се кани да прекоси Огнената пустиня.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -2335,6 +2340,7 @@ context.removeItem(player, 'gold', context.getItemPrice($.selectedItems));[/scri
         <Attribute Id="description">Този плащ непрекъснато мени цвета си и се слива с околните багри. Ако застанеш неподвижно и се наметнеш с него, за противника би било почти невъзможно да те открие.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -2343,6 +2349,7 @@ context.removeItem(player, 'gold', context.getItemPrice($.selectedItems));[/scri
         <Attribute Id="description">Дарът не е вълшебен, но парите никога не са излишни. Особено когато знаеш, че те чака дълъг път.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -2351,6 +2358,7 @@ context.removeItem(player, 'gold', context.getItemPrice($.selectedItems));[/scri
         <Attribute Id="description">Кожена кесийка с мигновено действащ отровен прах. Може да се разпръсква из въздуха или да се сипва в храна и питие. Резултатът е един и същ [symbol value='ndash' /] незабавна гибел на врага.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -2359,6 +2367,7 @@ context.removeItem(player, 'gold', context.getItemPrice($.selectedItems));[/scri
         <Attribute Id="description">По твоя заповед това въже може да пропълзи като живо и да омотае здраво противника или да ти помогне в катеренето по непристъпни скали и стени.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -2367,6 +2376,7 @@ context.removeItem(player, 'gold', context.getItemPrice($.selectedItems));[/scri
         <Attribute Id="description">Сигурно оръжие в борбата със зли духове.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -2375,6 +2385,7 @@ context.removeItem(player, 'gold', context.getItemPrice($.selectedItems));[/scri
         <Attribute Id="description">Стъкленица, пълна до половината с кафяв прах. На вид изглежда безвредна, но не се заблуждавай. При най-малък допир с въздуха кафявият прах лумва със страшни пламъци.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -2383,6 +2394,7 @@ context.removeItem(player, 'gold', context.getItemPrice($.selectedItems));[/scri
         <Attribute Id="description">Сложиш ли ги на ръцете си, не ще срещнеш никаква трудност в катеренето по гладки стени.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -2391,6 +2403,7 @@ context.removeItem(player, 'gold', context.getItemPrice($.selectedItems));[/scri
         <Attribute Id="description">Вълшебен и изключително рядко срещан минерал. Допреш ли го до челото на някого, той ще бъде заставен да отговори на въпросите ти.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -2399,6 +2412,7 @@ context.removeItem(player, 'gold', context.getItemPrice($.selectedItems));[/scri
         <Attribute Id="description">Авантюристите и разбойниците отдавна познават вълшебството на това странно растение. Достатъчно е да докоснеш каквато и да било ключалка с листенцата на билката, за да си осигуриш незабавно отваряне на вратата.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -2407,6 +2421,7 @@ context.removeItem(player, 'gold', context.getItemPrice($.selectedItems));[/scri
         <Attribute Id="description">Забавно и твърде полезно животинче. Не само умее да говори, но и знае с каква лъжа да те измъкне от трудно положение.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -2415,6 +2430,7 @@ context.removeItem(player, 'gold', context.getItemPrice($.selectedItems));[/scri
         <Attribute Id="description">Стъкленица, пълна със синкав дим. Когато се разсее из въздуха, този дим поражда в съзнанието на противника измамни видения и отклонява вниманието му.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -2422,15 +2438,16 @@ context.removeItem(player, 'gold', context.getItemPrice($.selectedItems));[/scri
         <Attribute Id="name">Еликсир на сила</Attribute>
         <Attribute Id="description">Ако го изпиеш, той временно увеличава силата ти с 2 точки над определената стойност. Действието му трае само в течение на една битка.</Attribute>
       </Attributes>
-      <Events>
-        <Event Name="onUsed">[script]if (!$.bonusStrength) {
+      <Events />
+      <Hooks>
+        <Hook Name="onUsed">if (!$.bonusStrength) {
   $.bonusStrength = 2;
 } else {
   $.bonusStrength += 2;
 }
 context.removeItem(player, 'elixirStrength', 1);
-context.showPopupMessage('Силата ти нараства с 2 до края на следващото сражение');[/script]</Event>
-      </Events>
+context.showPopupMessage('Силата ти нараства с 2 до края на следващото сражение');</Hook>
+      </Hooks>
     </Item>
     <Item>
       <Attributes>
@@ -2438,11 +2455,12 @@ context.showPopupMessage('Силата ти нараства с 2 до края 
         <Attribute Id="name">Еликсир на живота</Attribute>
         <Attribute Id="description">Когато го изпиеш, той ще възстанови жизнените ти точки до първоначалната им стойност.</Attribute>
       </Attributes>
-      <Events>
-        <Event Name="onUsed">[script]player.life = player.maxLife;
+      <Events />
+      <Hooks>
+        <Hook Name="onUsed">player.life = player.maxLife;
 context.removeItem(player, 'elixirLife', 1);
-context.showPopupMessage('Възстановяваш жизнените си точки');[/script]</Event>
-      </Events>
+context.showPopupMessage('Възстановяваш жизнените си точки');</Hook>
+      </Hooks>
     </Item>
     <Item>
       <Attributes>
@@ -2451,6 +2469,7 @@ context.showPopupMessage('Възстановяваш жизнените си т�
         <Attribute Id="description">Мощна противоотрова. Действа през кожата. При отравяне е достатъчно да го допреш до тялото си или просто да го стиснеш в ръка.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -2459,6 +2478,7 @@ context.showPopupMessage('Възстановяваш жизнените си т�
         <Attribute Id="description">Названието им говори само за себе си. Щом ги обуеш, ще можеш да тичаш по-бързо и от най-буйния жребец.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -2467,6 +2487,7 @@ context.showPopupMessage('Възстановяваш жизнените си т�
         <Attribute Id="description">Малко шишенце с бистра прозрачна течност. Няколко капки от нея са достатъчни, за да превърнат на пясък и най-здравия камък.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -2475,6 +2496,7 @@ context.showPopupMessage('Възстановяваш жизнените си т�
         <Attribute Id="description">Не е вълшебно, но е отлично оръжие за бой от разстояние.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -2482,6 +2504,7 @@ context.showPopupMessage('Възстановяваш жизнените си т�
         <Attribute Id="name">Кърпичка с три възела</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -2489,6 +2512,7 @@ context.showPopupMessage('Възстановяваш жизнените си т�
         <Attribute Id="name">Меч</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -2496,6 +2520,7 @@ context.showPopupMessage('Възстановяваш жизнените си т�
         <Attribute Id="name">Абаносово ковчеже</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -2503,6 +2528,7 @@ context.showPopupMessage('Възстановяваш жизнените си т�
         <Attribute Id="name">Талисман</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -2511,6 +2537,7 @@ context.showPopupMessage('Възстановяваш жизнените си т�
         <Attribute Id="description">Докато носиш ризницата при успешен удар на врага животът ти ще намалява само с по една точка.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -2519,6 +2546,7 @@ context.showPopupMessage('Възстановяваш жизнените си т�
         <Attribute Id="description">Дарът не е вълшебен, но парите никога не са излишни.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -2527,6 +2555,7 @@ context.showPopupMessage('Възстановяваш жизнените си т�
         <Attribute Id="description">Увеличава силата ти в сраженията с 1 точка.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
   </Items>
   <Characters>
@@ -2536,6 +2565,7 @@ context.showPopupMessage('Възстановяваш жизнените си т�
         <Attribute Id="name">Ти</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -2545,6 +2575,7 @@ context.showPopupMessage('Възстановяваш жизнените си т�
         <Attribute Id="life">12</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -2554,6 +2585,7 @@ context.showPopupMessage('Възстановяваш жизнените си т�
         <Attribute Id="life">10</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -2563,6 +2595,7 @@ context.showPopupMessage('Възстановяваш жизнените си т�
         <Attribute Id="life">8</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -2572,6 +2605,7 @@ context.showPopupMessage('Възстановяваш жизнените си т�
         <Attribute Id="life">10</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -2581,6 +2615,7 @@ context.showPopupMessage('Възстановяваш жизнените си т�
         <Attribute Id="life">8</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -2590,6 +2625,7 @@ context.showPopupMessage('Възстановяваш жизнените си т�
         <Attribute Id="life">14</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -2598,6 +2634,7 @@ context.showPopupMessage('Възстановяваш жизнените си т�
         <Attribute Id="life">12</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -2607,6 +2644,7 @@ context.showPopupMessage('Възстановяваш жизнените си т�
         <Attribute Id="life">8</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -2616,6 +2654,7 @@ context.showPopupMessage('Възстановяваш жизнените си т�
         <Attribute Id="life">11</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -2625,6 +2664,7 @@ context.showPopupMessage('Възстановяваш жизнените си т�
         <Attribute Id="life">9</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -2634,6 +2674,7 @@ context.showPopupMessage('Възстановяваш жизнените си т�
         <Attribute Id="life">12</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -2643,6 +2684,7 @@ context.showPopupMessage('Възстановяваш жизнените си т�
         <Attribute Id="life">9</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -2652,6 +2694,7 @@ context.showPopupMessage('Възстановяваш жизнените си т�
         <Attribute Id="life">11</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -2661,6 +2704,7 @@ context.showPopupMessage('Възстановяваш жизнените си т�
         <Attribute Id="life">10</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -2670,6 +2714,7 @@ context.showPopupMessage('Възстановяваш жизнените си т�
         <Attribute Id="life">12</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -2679,6 +2724,7 @@ context.showPopupMessage('Възстановяваш жизнените си т�
         <Attribute Id="life">12</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -2688,6 +2734,7 @@ context.showPopupMessage('Възстановяваш жизнените си т�
         <Attribute Id="life">6</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -2697,6 +2744,7 @@ context.showPopupMessage('Възстановяваш жизнените си т�
         <Attribute Id="life">12</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -2706,6 +2754,7 @@ context.showPopupMessage('Възстановяваш жизнените си т�
         <Attribute Id="life">11</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -2715,6 +2764,7 @@ context.showPopupMessage('Възстановяваш жизнените си т�
         <Attribute Id="life">4</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -2724,6 +2774,7 @@ context.showPopupMessage('Възстановяваш жизнените си т�
         <Attribute Id="life">8</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -2733,6 +2784,7 @@ context.showPopupMessage('Възстановяваш жизнените си т�
         <Attribute Id="life">10</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -2742,6 +2794,7 @@ context.showPopupMessage('Възстановяваш жизнените си т�
         <Attribute Id="life">7</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -2751,6 +2804,7 @@ context.showPopupMessage('Възстановяваш жизнените си т�
         <Attribute Id="life">9</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -2760,6 +2814,7 @@ context.showPopupMessage('Възстановяваш жизнените си т�
         <Attribute Id="life">12</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -2769,6 +2824,7 @@ context.showPopupMessage('Възстановяваш жизнените си т�
         <Attribute Id="life">6</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -2778,6 +2834,7 @@ context.showPopupMessage('Възстановяваш жизнените си т�
         <Attribute Id="life">7</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -2787,6 +2844,7 @@ context.showPopupMessage('Възстановяваш жизнените си т�
         <Attribute Id="life">4</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -2796,6 +2854,7 @@ context.showPopupMessage('Възстановяваш жизнените си т�
         <Attribute Id="life">8</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -2805,6 +2864,7 @@ context.showPopupMessage('Възстановяваш жизнените си т�
         <Attribute Id="life">16</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -2814,6 +2874,7 @@ context.showPopupMessage('Възстановяваш жизнените си т�
         <Attribute Id="life">10</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -2822,6 +2883,7 @@ context.showPopupMessage('Възстановяваш жизнените си т�
         <Attribute Id="life">12</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -2831,6 +2893,7 @@ context.showPopupMessage('Възстановяваш жизнените си т�
         <Attribute Id="life">9</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -2840,6 +2903,7 @@ context.showPopupMessage('Възстановяваш жизнените си т�
         <Attribute Id="life">10</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -2849,6 +2913,7 @@ context.showPopupMessage('Възстановяваш жизнените си т�
         <Attribute Id="life">12</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
   </Characters>
   <Skills />

@@ -467,15 +467,15 @@ context.addOrRemoveCouncillor = function(councillor) {
     }
   }
 }</Script>
-    <Script Name="skills">context.addOrRemoveExtraSkill = function(skillIdentity) {
+    <Script Name="skills">context.addOrRemoveExtraSkill = function(skillId) {
   const $ = this.state;
   if ($.skillsSelected) {
     context.showPopupMessage(`You can no longer change your choice.`);
     return false;
   }
-  let skill = this.player.getSkill(skillIdentity);
+  let skill = this.player.getSkill(skillId);
   if (skill) {
-    this.player.removeSkill(skillIdentity);
+    this.player.removeSkill(skillId);
     context.showPopupMessage(`You have deselected ${skill.name}.`);
     return false;
   } else {
@@ -483,7 +483,7 @@ context.addOrRemoveCouncillor = function(councillor) {
       context.showPopupMessage(`You can only select one skill.`);
       return false;
     } else {
-      skill = context.getSkill(skillIdentity);
+      skill = context.getSkill(skillId);
       this.player.addSkill(skill);
       context.showPopupMessage(`You have selected ${skill.name}.`);
       return true;
@@ -491,15 +491,15 @@ context.addOrRemoveCouncillor = function(councillor) {
   }
 }
 
-context.addOrRemoveSkill = function(skillIdentity) {
+context.addOrRemoveSkill = function(skillId) {
   const $ = this.state;
   if ($.skillsSelected) {
     context.showPopupMessage(`You can no longer change your skills.`);
     return false;
   }
-  let skill = this.player.getSkill(skillIdentity);
+  let skill = this.player.getSkill(skillId);
   if (skill) {
-    this.player.removeSkill(skillIdentity);
+    this.player.removeSkill(skillId);
     context.showPopupMessage(`You have deselected ${skill.name}. Remaining: ${context.MAX_SKILL_COUNT - this.player.getSkillCount()}`);
     return false;
   } else {
@@ -507,7 +507,7 @@ context.addOrRemoveSkill = function(skillIdentity) {
       context.showPopupMessage(`You have already selected ${context.MAX_SKILL_COUNT} skills.`);
       return false;
     } else {
-      skill = context.getSkill(skillIdentity);
+      skill = context.getSkill(skillId);
       this.player.addSkill(skill);
       context.showPopupMessage(`You have selected ${skill.name}. Remaining: ${context.MAX_SKILL_COUNT - this.player.getSkillCount()}`);
       return true;
@@ -518,38 +518,39 @@ context.addOrRemoveSkill = function(skillIdentity) {
   <GlobalDefinition>
     <Attributes />
     <Events>
-      <Event Name="canPickup" IsIntrinsic="true" Description="Invoked to verify that a character can pick up an item." />
-      <Event Name="canDrop" IsIntrinsic="true" Description="Invoked to verify that a character can drop an item." />
-      <Event Name="canEquip" IsIntrinsic="true" Description="Invoked to verify that a character can equip a specific item in a specific inventory slot." />
-      <Event Name="canUnequip" IsIntrinsic="true" Description="Invoked to verify that a character can equip a specific item." />
-      <Event Name="canUse" IsIntrinsic="true" Description="Invoked to verify that a character can use a specific item and the possible usage types." />
-      <Event Name="canAttack" IsIntrinsic="true" Description="Invoked to verify that a character can attacks another character in combat." />
-      <Event Name="onAttack" IsIntrinsic="true" Description="Invoked when a character attacks another character in combat." />
-      <Event Name="onTurn" IsIntrinsic="true" Description="Invoked at the end of every turn during combat." />
-      <Event Name="onCharacterAttributeChanged" IsIntrinsic="true" Description="Invoked when an attribute of a character is changed." />
-      <Event Name="onItemAttributeChanged" IsIntrinsic="true" Description="Invoked when an attribute of an item is changed." />
+      <Event Name="onTurn" IsIntrinsic="false" Description="Invoked at the end of each turn." />
     </Events>
+    <Hooks>
+      <Hook Name="canStackItems" IsIntrinsic="true" Description="Invoked to check whether two item instances can be stacked together." />
+      <Hook Name="stackItems" IsIntrinsic="true" Description="Invoked in order to stack two item instances together." />
+    </Hooks>
   </GlobalDefinition>
-  <ItemDefinition IdentityAttribute="id">
+  <JournalEntryDefinition>
+    <Attributes>
+      <Attribute Id="id" Name="Id" IsIntrinsic="true" IsMandatory="true" IsUnique="true" Type="String" Description="A unique item identifier." />
+      <Attribute Id="name" Name="Name" IsIntrinsic="true" IsMandatory="true" IsUnique="false" Type="String" Description="A human readable name." />
+      <Attribute Id="description" Name="Description" IsIntrinsic="true" IsMandatory="false" IsUnique="false" Type="Description" Description="A description of the journal entry." />
+      <Attribute Id="visible" Name="Visible" IsIntrinsic="true" IsMandatory="true" IsUnique="false" Type="Boolean" DefaultValue="True" Description="Specifies whether to show this entry in the journal." />
+      <Attribute Id="canDelete" Name="CanDelete" IsIntrinsic="true" IsMandatory="true" IsUnique="false" Type="Boolean" DefaultValue="True" Description="Specifies whether this entry can be deleted by the user." />
+    </Attributes>
+    <Events />
+    <Hooks>
+      <Hook Name="onRead" IsIntrinsic="True" Description="Invoked when the entry is read." />
+    </Hooks>
+  </JournalEntryDefinition>
+  <ItemDefinition>
     <Attributes>
       <Attribute Id="id" Name="Id" IsIntrinsic="true" IsMandatory="true" IsUnique="true" Type="String" Description="A unique item identifier." />
       <Attribute Id="name" Name="Name" IsIntrinsic="true" IsMandatory="true" IsUnique="false" Type="String" Description="A human readable name." />
       <Attribute Id="description" Name="Description" IsIntrinsic="false" IsMandatory="false" IsUnique="false" Type="Description" DefaultValue="" />
     </Attributes>
-    <Events>
-      <Event Name="onAttacked" IsIntrinsic="true" Description="Invoked when the character wielding the item attacked another character in combat." />
-      <Event Name="onHit" IsIntrinsic="true" Description="Invoked when the character wielding the item hit another character in combat." />
-      <Event Name="onMissed" IsIntrinsic="true" Description="Invoked when the character wielding the item missed another character in combat." />
-      <Event Name="onGotHit" IsIntrinsic="true" Description="Invoked when the character wielding the item got hit by another character in combat." />
-      <Event Name="onPicked" IsIntrinsic="true" Description="Invoked when the item was picked up." />
-      <Event Name="onDropped" IsIntrinsic="true" Description="Invoked when the item was dropped." />
-      <Event Name="onEquipped" IsIntrinsic="true" Description="Invoked when the item was equipped in an inventory slot." />
-      <Event Name="onUnequipped" IsIntrinsic="true" Description="Invoked when the item was unequipped." />
-      <Event Name="onUsed" IsIntrinsic="true" Description="Invoked when the item was used." />
-      <Event Name="onTurn" IsIntrinsic="true" Description="Invoked at the end of every turn during combat." />
-    </Events>
+    <Events />
+    <Hooks>
+      <Hook Name="onInit" IsIntrinsic="true" Description="Invoked when an item instance is created." />
+      <Hook Name="onUsed" IsIntrinsic="true" Description="Invoked when the item is used." />
+    </Hooks>
   </ItemDefinition>
-  <CharacterDefinition IdentityAttribute="id">
+  <CharacterDefinition>
     <Attributes>
       <Attribute Id="id" Name="Id" IsIntrinsic="true" IsMandatory="true" IsUnique="true" Type="String" Description="A unique item identifier." />
       <Attribute Id="name" Name="Name" IsIntrinsic="true" IsMandatory="true" IsUnique="false" Type="String" Description="A human readable name." />
@@ -589,28 +590,27 @@ context.addOrRemoveSkill = function(skillIdentity) {
       <Attribute Id="defenceSceptre" Name="Defence against Sceptre" IsIntrinsic="false" IsMandatory="false" IsUnique="false" Type="Integer" DefaultValue="7" Category="" />
     </Attributes>
     <Events>
-      <Event Name="onAttacked" IsIntrinsic="true" Description="Invoked when the character attacked another character in combat." />
-      <Event Name="onGotHit" IsIntrinsic="true" Description="Invoked when the character got hit by another character in combat, but before damage is calculated. This is a good place to apply damage modifiers." />
-      <Event Name="onTurn" IsIntrinsic="true" Description="Invoked at the end of every turn during combat." />
-      <Event Name="onHit" IsIntrinsic="false" Description="Invoked when the character hits another character in combat." />
-      <Event Name="onDefeat" IsIntrinsic="false" Description="Invoked when the character is defeated in combat." />
-      <Event Name="onInit" IsIntrinsic="false" Description="Invoked when the character is created." />
-      <Event Name="onGotDamage" IsIntrinsic="false" Description="Invoked when the character is about to receive damage from another character in combat." />
-      <Event Name="onGotMissed" IsIntrinsic="false" Description="Invoked when the character dodged an attack in combat." />
+      <Event Name="onGotHit" IsIntrinsic="False" Description="Invoked when the character is hit in battle." />
+      <Event Name="onHit" IsIntrinsic="False" Description="Invoked when the character hits another character in battle." />
+      <Event Name="onDefeat" IsIntrinsic="False" Description="Invoked when the character is defeated in battle." />
+      <Event Name="onAttacked" IsIntrinsic="False" Description="Invoked when the character attacks another character in battle." />
+      <Event Name="onTurn" IsIntrinsic="False" Description="Invoked at the end of each battle round." />
+      <Event Name="onGotDamage" IsIntrinsic="False" Description="Invoked when the character is damaged in battle." />
+      <Event Name="onGotMissed" IsIntrinsic="False" Description="Invoked when the character was missed in battle." />
     </Events>
+    <Hooks>
+      <Hook Name="onInit" IsIntrinsic="true" Description="Invoked when a character instance is created." />
+    </Hooks>
   </CharacterDefinition>
-  <SkillDefinition IdentityAttribute="id">
+  <SkillDefinition>
     <Attributes>
       <Attribute Id="id" Name="Id" IsIntrinsic="true" IsMandatory="true" IsUnique="true" Type="String" Description="A unique skill identifier." />
       <Attribute Id="name" Name="Name" IsIntrinsic="true" IsMandatory="true" IsUnique="false" Type="String" Description="A human readable name." />
       <Attribute Id="passive" Name="Passive" IsIntrinsic="true" IsMandatory="false" IsUnique="false" Type="Boolean" DefaultValue="False" Description="Indicates whether the skill is passive or can be explicitly activated." />
       <Attribute Id="description" Name="Description" IsIntrinsic="false" IsMandatory="false" IsUnique="false" Type="Description" DefaultValue="" />
     </Attributes>
-    <Events>
-      <Event Name="canUse" IsIntrinsic="true" Description="Invoked to verify that the skill can be used." />
-      <Event Name="onUse" IsIntrinsic="true" Description="Invoked when the skill is used." />
-      <Event Name="onTurn" IsIntrinsic="true" Description="Invoked at the end of every turn during combat." />
-    </Events>
+    <Events />
+    <Hooks />
   </SkillDefinition>
   <Episodes>
     <Episode Id="1" IsMarked="true" Location="142.5;17.5">
@@ -17135,6 +17135,7 @@ return 1;'](continue)[/link][/p]</Text>
   }
 }[/script][/p]</Event>
     </Events>
+    <Hooks />
   </Global>
   <Items>
     <Item>
@@ -17144,6 +17145,7 @@ return 1;'](continue)[/link][/p]</Text>
         <Attribute Id="description">This includes your ninja costume, breathing tube, garotte, and flint and tinder, as well as the cat's claws if you selected the climbing skill.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -17152,6 +17154,7 @@ return 1;'](continue)[/link][/p]</Text>
         <Attribute Id="description">Sewn into the sleeves of your costume, are four thin strips of iron, the length of your forearm. These allow you to parry or block blows from swords and other cutting weapons.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -17160,6 +17163,7 @@ return 1;'](continue)[/link][/p]</Text>
         <Attribute Id="description">This powder, when thrown in any source of flame, causes a blinding flash. You have enough for one use only.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -17168,6 +17172,7 @@ return 1;'](continue)[/link][/p]</Text>
         <Attribute Id="description">Salted and cured, this highly venomous fish is used as a source for the deadly poison used in conjunction with the Poison Needles skill, and as a useful way of removing any guardian beasts.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -17176,6 +17181,7 @@ return 1;'](continue)[/link][/p]</Text>
         <Attribute Id="description">The most virulent poison known on Orb. This venom is extremely difficult and very dangerous to collect for it is taken from the barb of a scorpion son of the God, Nil, Mouth of the Void.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -17184,6 +17190,7 @@ return 1;'](continue)[/link][/p]</Text>
         <Attribute Id="description">A small, razor sharp star shaped disk of metal. Can be thrown to a range of about 30 feet.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -17192,6 +17199,7 @@ return 1;'](continue)[/link][/p]</Text>
         <Attribute Id="description">A gold piece.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -17200,6 +17208,7 @@ return 1;'](continue)[/link][/p]</Text>
         <Attribute Id="description">A small ring with an incrusted opal.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -17207,9 +17216,8 @@ return 1;'](continue)[/link][/p]</Text>
         <Attribute Id="name">Gauntlet of striking</Attribute>
         <Attribute Id="description">Increases Punch Modifier by [tag]plus:return '+1';[/tag] or [bold][color value='#008040']+1[/color][/bold].</Attribute>
       </Attributes>
-      <Events>
-        <Event Name="onDropped">[p][script]context.target.punchModifier -= 1;[/script][/p]</Event>
-      </Events>
+      <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -17218,6 +17226,7 @@ return 1;'](continue)[/link][/p]</Text>
         <Attribute Id="description">‘My bearer can withstand the Finger of Death.’</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -17233,15 +17242,16 @@ return 1;'](continue)[/link][/p]</Text>
         <Attribute Id="name">Bag of herbs</Attribute>
         <Attribute Id="description">[p]Can be taken outside of combat to restore up to 8 points of lost Endurance.[/p]</Attribute>
       </Attributes>
-      <Events>
-        <Event Name="onUsed">[p][script]if ($.inBattle) {
+      <Events />
+      <Hooks>
+        <Hook Name="onUsed">if ($.inBattle) {
   context.showPopupMessage('You cannot use that during combat.');
 } else {
   context.increasePlayerEndurance(8);
   context.removeItem(context.player, 'bagOfHerbs', 1);
   context.showPopupMessage('You restore 8 Endurance.');
-}[/script][/p]</Event>
-      </Events>
+}</Hook>
+      </Hooks>
     </Item>
     <Item>
       <Attributes>
@@ -17249,15 +17259,16 @@ return 1;'](continue)[/link][/p]</Text>
         <Attribute Id="name">Healing potion (+10)</Attribute>
         <Attribute Id="description">[p]A small flask containing a clear blue liquid. You may use it once, at any time when you are not in combat, to restore up to 10 lost Endurance points.[/p]</Attribute>
       </Attributes>
-      <Events>
-        <Event Name="onUsed">[p][script]if ($.inBattle) {
+      <Events />
+      <Hooks>
+        <Hook Name="onUsed">if ($.inBattle) {
   context.showPopupMessage('You cannot use that during combat.');
 } else {
   context.increasePlayerEndurance(10);
   context.removeItem(context.player, 'healingPotion', 1);
   context.showPopupMessage('You restore 10 Endurance.');
-}[/script][/p]</Event>
-      </Events>
+}</Hook>
+      </Hooks>
     </Item>
     <Item>
       <Attributes>
@@ -17266,6 +17277,7 @@ return 1;'](continue)[/link][/p]</Text>
         <Attribute Id="description">A magical rune is etched upon this shuriken. When used, it inflicts 1 additional damage.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -17274,6 +17286,7 @@ return 1;'](continue)[/link][/p]</Text>
         <Attribute Id="description">A crystal gem containing water. Smashing it will release an elemental from the plane of seas.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -17282,6 +17295,7 @@ return 1;'](continue)[/link][/p]</Text>
         <Attribute Id="description">A fan-shaped piece of white coral, which is deadly poisonous.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -17289,6 +17303,7 @@ return 1;'](continue)[/link][/p]</Text>
         <Attribute Id="name">Brass signet ring</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -17296,6 +17311,7 @@ return 1;'](continue)[/link][/p]</Text>
         <Attribute Id="name">Sun-star ring</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -17304,6 +17320,7 @@ return 1;'](continue)[/link][/p]</Text>
         <Attribute Id="description">A large sword, clearly not of goblin origin, which you looted from the Goblin king.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -17312,6 +17329,7 @@ return 1;'](continue)[/link][/p]</Text>
         <Attribute Id="description">[p]A tablet containing the following orders:[/p][p]“To scour the borderlands between Dwarrowhame, in the lands of the dwarves and Harith-si-the-Crow and to capture or kill any Ninja found there.“[/p]</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -17320,6 +17338,7 @@ return 1;'](continue)[/link][/p]</Text>
         <Attribute Id="description">One of Cassandra’s daggers.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -17328,6 +17347,7 @@ return 1;'](continue)[/link][/p]</Text>
         <Attribute Id="description">The seal bears the mark of a hippogriff on a chequered background.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -17336,6 +17356,7 @@ return 1;'](continue)[/link][/p]</Text>
         <Attribute Id="description">A piece of mandrake root, like a little misshapen man.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -17344,6 +17365,7 @@ return 1;'](continue)[/link][/p]</Text>
         <Attribute Id="description">A vial, containing holy water, blessed in the name of the All-Mother.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -17352,6 +17374,7 @@ return 1;'](continue)[/link][/p]</Text>
         <Attribute Id="description">A blue porcelain, in the shape of a heart containing a wispy lock of golden hair.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -17359,6 +17382,7 @@ return 1;'](continue)[/link][/p]</Text>
         <Attribute Id="name">Silver shuriken</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -17367,6 +17391,7 @@ return 1;'](continue)[/link][/p]</Text>
         <Attribute Id="description">A rune-carved ivory-handled dagger.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -17374,15 +17399,16 @@ return 1;'](continue)[/link][/p]</Text>
         <Attribute Id="name">Healing potion (+8)</Attribute>
         <Attribute Id="description">A potion of healing. You may drink it at any time and regain up to [tag]plus:return 8;[/tag] points of lost Endurance.</Attribute>
       </Attributes>
-      <Events>
-        <Event Name="onUsed">[p][script]if ($.inBattle) {
+      <Events />
+      <Hooks>
+        <Hook Name="onUsed">if ($.inBattle) {
   context.showPopupMessage('You cannot use that during combat.');
 } else {
   context.increasePlayerEndurance(8);
   context.removeItem(context.player, 'healingPotion8', 1);
   context.showPopupMessage('You restore 8 Endurance.');
-}[/script][/p]</Event>
-      </Events>
+}</Hook>
+      </Hooks>
     </Item>
     <Item>
       <Attributes>
@@ -17391,6 +17417,7 @@ return 1;'](continue)[/link][/p]</Text>
         <Attribute Id="description">A potion filled with a blue liquid and labelled ‘Waters of protection from Ethereal Flame’.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -17398,6 +17425,7 @@ return 1;'](continue)[/link][/p]</Text>
         <Attribute Id="name">Small ruby</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -17405,15 +17433,16 @@ return 1;'](continue)[/link][/p]</Text>
         <Attribute Id="name">Healing potion (+10)</Attribute>
         <Attribute Id="description">[p]A potion of healing in a crystal bottle. You may drink it at any time when you are not involved in combat, and restore up to 10 points of lost Endurance.[/p]</Attribute>
       </Attributes>
-      <Events>
-        <Event Name="onUsed">[p][script]if ($.inBattle) {
+      <Events />
+      <Hooks>
+        <Hook Name="onUsed">if ($.inBattle) {
   context.showPopupMessage('You cannot use that during combat.');
 } else {
   context.increasePlayerEndurance(10);
   context.removeItem(context.player, 'healingPotion10', 1);
   context.showPopupMessage('You restore 10 Endurance.');
-}[/script][/p]</Event>
-      </Events>
+}</Hook>
+      </Hooks>
     </Item>
     <Item>
       <Attributes>
@@ -17421,6 +17450,7 @@ return 1;'](continue)[/link][/p]</Text>
         <Attribute Id="name">Yellow china flower</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -17429,6 +17459,7 @@ return 1;'](continue)[/link][/p]</Text>
         <Attribute Id="description">A small statuette of the goddess Dama.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -17437,6 +17468,7 @@ return 1;'](continue)[/link][/p]</Text>
         <Attribute Id="description">A coin showing the head of your father and marked ‘Coronation Day’.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -17445,6 +17477,7 @@ return 1;'](continue)[/link][/p]</Text>
         <Attribute Id="description">A bracelet of red coral.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -17453,6 +17486,7 @@ return 1;'](continue)[/link][/p]</Text>
         <Attribute Id="description">A jade lotus blossom.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -17460,6 +17494,7 @@ return 1;'](continue)[/link][/p]</Text>
         <Attribute Id="name">Amber pendant</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -17467,6 +17502,7 @@ return 1;'](continue)[/link][/p]</Text>
         <Attribute Id="name">Golden circlet</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -17475,6 +17511,7 @@ return 1;'](continue)[/link][/p]</Text>
         <Attribute Id="description">[p][bold]First Supplicant[/bold]: the Lord High Steward of the Usurper’s court, a follower of Nemesis who administered the city at the whim of the Dark Overlord.[/p][p][bold]Second Supplicant[/bold]: Force-Lady Gwyneth, High Priestess of the Temple to Dama.[/p][p][bold]Third Supplicant[/bold]: Golspiel of the Silver Tongue, a merchant.[/p][p][bold]Fourth Supplicant[/bold]: the Demagogue, a mob orator, popular with the common people.[/p][p][bold]Fifth Supplicant[/bold]: Greystaff, High Priest of Temple to Avatar.[/p][p][bold]Sixth Supplicant[/bold]: Foxglove, a priestess of Nemesis, the head of the Usurper’s ‘Secret Informers’ – a master spy.[/p][p][bold]Seventh Supplicant[/bold]: Solstice, High Priest of the Temple to Time.[/p][p][bold]Eighth Supplicant[/bold]: Parsifal, High Grandmaster of the Temple to Kwon," my humble self. Your Majesty.[/p]</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -17482,6 +17519,7 @@ return 1;'](continue)[/link][/p]</Text>
         <Attribute Id="name">Purple jade ring</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -17490,6 +17528,7 @@ return 1;'](continue)[/link][/p]</Text>
         <Attribute Id="description">A small black scorpion set in amber is its stone – an insignia of the Ninja of the Way of the Scorpion.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -17497,6 +17536,7 @@ return 1;'](continue)[/link][/p]</Text>
         <Attribute Id="name">Amulet of Nullaq</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -17505,6 +17545,7 @@ return 1;'](continue)[/link][/p]</Text>
         <Attribute Id="description">A gold signet ring bearing a carven lion upon it.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -17512,15 +17553,16 @@ return 1;'](continue)[/link][/p]</Text>
         <Attribute Id="name">Healing potion (+5)</Attribute>
         <Attribute Id="description">You may drink this at any time to restore up to [tag]plus:return 5;[/tag] points of lost Endurance.</Attribute>
       </Attributes>
-      <Events>
-        <Event Name="onUsed">[p][script]if ($.inBattle) {
+      <Events />
+      <Hooks>
+        <Hook Name="onUsed">if ($.inBattle) {
   context.showPopupMessage('You cannot use that during combat.');
 } else {
   context.increasePlayerEndurance(5);
   context.removeItem(context.player, 'healingPotion5', 1);
   context.showPopupMessage('You restore 5 Endurance.');
-}[/script][/p]</Event>
-      </Events>
+}</Hook>
+      </Hooks>
     </Item>
     <Item>
       <Attributes>
@@ -17529,6 +17571,7 @@ return 1;'](continue)[/link][/p]</Text>
         <Attribute Id="description">A bottle of poison.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -17536,6 +17579,7 @@ return 1;'](continue)[/link][/p]</Text>
         <Attribute Id="name">Several gems</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -17543,6 +17587,7 @@ return 1;'](continue)[/link][/p]</Text>
         <Attribute Id="name">Potion of brown liquid</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -17550,10 +17595,11 @@ return 1;'](continue)[/link][/p]</Text>
         <Attribute Id="name">Map</Attribute>
         <Attribute Id="description">A battle map showing the disposition of the troops.</Attribute>
       </Attributes>
-      <Events>
-        <Event Name="onUsed">[script]context.closeInventory();
-context.visitEpisode('Map1');[/script]</Event>
-      </Events>
+      <Events />
+      <Hooks>
+        <Hook Name="onUsed">context.closeInventory();
+context.visitEpisode('Map1');</Hook>
+      </Hooks>
     </Item>
     <Item>
       <Attributes>
@@ -17561,10 +17607,11 @@ context.visitEpisode('Map1');[/script]</Event>
         <Attribute Id="name">Map</Attribute>
         <Attribute Id="description">A battle map showing the disposition of the troops.</Attribute>
       </Attributes>
-      <Events>
-        <Event Name="onUsed">[script]context.closeInventory();
-context.visitEpisode('Map2');[/script]</Event>
-      </Events>
+      <Events />
+      <Hooks>
+        <Hook Name="onUsed">context.closeInventory();
+context.visitEpisode('Map2');</Hook>
+      </Hooks>
     </Item>
     <Item>
       <Attributes>
@@ -17572,10 +17619,11 @@ context.visitEpisode('Map2');[/script]</Event>
         <Attribute Id="name">Map</Attribute>
         <Attribute Id="description">A battle map showing the disposition of the troops.</Attribute>
       </Attributes>
-      <Events>
-        <Event Name="onUsed">[script]context.closeInventory();
-context.visitEpisode('Map3');[/script]</Event>
-      </Events>
+      <Events />
+      <Hooks>
+        <Hook Name="onUsed">context.closeInventory();
+context.visitEpisode('Map3');</Hook>
+      </Hooks>
     </Item>
     <Item>
       <Attributes>
@@ -17583,10 +17631,11 @@ context.visitEpisode('Map3');[/script]</Event>
         <Attribute Id="name">Map</Attribute>
         <Attribute Id="description">A battle map showing the disposition of the troops.</Attribute>
       </Attributes>
-      <Events>
-        <Event Name="onUsed">[script]context.closeInventory();
-context.visitEpisode('Map4');[/script]</Event>
-      </Events>
+      <Events />
+      <Hooks>
+        <Hook Name="onUsed">context.closeInventory();
+context.visitEpisode('Map4');</Hook>
+      </Hooks>
     </Item>
     <Item>
       <Attributes>
@@ -17594,10 +17643,11 @@ context.visitEpisode('Map4');[/script]</Event>
         <Attribute Id="name">Map</Attribute>
         <Attribute Id="description">A battle map showing the disposition of the troops.</Attribute>
       </Attributes>
-      <Events>
-        <Event Name="onUsed">[script]context.closeInventory();
-context.visitEpisode('Map5');[/script]</Event>
-      </Events>
+      <Events />
+      <Hooks>
+        <Hook Name="onUsed">context.closeInventory();
+context.visitEpisode('Map5');</Hook>
+      </Hooks>
     </Item>
     <Item>
       <Attributes>
@@ -17605,10 +17655,11 @@ context.visitEpisode('Map5');[/script]</Event>
         <Attribute Id="name">Map</Attribute>
         <Attribute Id="description">A battle map showing the disposition of the troops.</Attribute>
       </Attributes>
-      <Events>
-        <Event Name="onUsed">[script]context.closeInventory();
-context.visitEpisode('Map6');[/script]</Event>
-      </Events>
+      <Events />
+      <Hooks>
+        <Hook Name="onUsed">context.closeInventory();
+context.visitEpisode('Map6');</Hook>
+      </Hooks>
     </Item>
     <Item>
       <Attributes>
@@ -17617,6 +17668,7 @@ context.visitEpisode('Map6');[/script]</Event>
         <Attribute Id="description">An ebony rod topped by a cone of alabaster.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -17624,16 +17676,17 @@ context.visitEpisode('Map6');[/script]</Event>
         <Attribute Id="name">Elixir of health</Attribute>
         <Attribute Id="description">[p]A vial containing a pale blue liquid. You may drink it at any time when you are not involved in combat, and restore any lost Endurance.[/p]</Attribute>
       </Attributes>
-      <Events>
-        <Event Name="onUsed">[p][script]if ($.inBattle) {
+      <Events />
+      <Hooks>
+        <Hook Name="onUsed">if ($.inBattle) {
   context.showPopupMessage('You cannot use that during combat.');
 } else {
   const restored = 20 - context.player.endurance;
   context.player.endurance = 20;
   context.removeItem(context.player, 'elixirOfHealth', 1);
   context.showPopupMessage(`You restore ${restored} Endurance.`);
-}[/script][/p]</Event>
-      </Events>
+}</Hook>
+      </Hooks>
     </Item>
     <Item>
       <Attributes>
@@ -17642,6 +17695,7 @@ context.visitEpisode('Map6');[/script]</Event>
         <Attribute Id="description">A small jewelled pin with a golden bullthrush for a head.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -17649,6 +17703,7 @@ context.visitEpisode('Map6');[/script]</Event>
         <Attribute Id="name">Tyutchev’s belt pouch</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
   </Items>
   <Characters>
@@ -17660,14 +17715,15 @@ context.visitEpisode('Map6');[/script]</Event>
         <Attribute Id="endurance">20</Attribute>
         <Attribute Id="maxInnerForce">5</Attribute>
       </Attributes>
-      <Events>
-        <Event Name="onInit">[script]context.target.addItem(context.createItem('ninjaEquipment'));
+      <Events />
+      <Hooks>
+        <Hook Name="onInit">context.target.addItem(context.createItem('ninjaEquipment'));
 context.target.addItem(context.createItem('ironSleeves'));
 context.target.addItem(context.createItem('flashPowder'));
 context.target.addItem(context.createItem('spiderfish'));
 context.target.addItem(context.createItem('bloodOfNil'));
-context.target.addItem(context.createItem('shuriken', 5));[/script]</Event>
-      </Events>
+context.target.addItem(context.createItem('shuriken', 5));</Hook>
+      </Hooks>
     </Character>
     <Character>
       <Attributes>
@@ -17680,6 +17736,7 @@ context.target.addItem(context.createItem('shuriken', 5));[/script]</Event>
         <Attribute Id="defenceKwonsFlail">6</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -17699,6 +17756,7 @@ context.target.addItem(context.createItem('shuriken', 5));[/script]</Event>
         <Attribute Id="defenceKwonsFlail">5</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -17719,6 +17777,7 @@ context.target.addItem(context.createItem('shuriken', 5));[/script]</Event>
         <Attribute Id="defenceKwonsFlail">6</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -17735,6 +17794,7 @@ context.target.addItem(context.createItem('shuriken', 5));[/script]</Event>
         <Attribute Id="defenceKwonsFlail">4</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -17754,6 +17814,7 @@ context.target.addItem(context.createItem('shuriken', 5));[/script]</Event>
         <Attribute Id="defenceKwonsFlail">6</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -17761,6 +17822,7 @@ context.target.addItem(context.createItem('shuriken', 5));[/script]</Event>
         <Attribute Id="name">Cobra man</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -17780,6 +17842,7 @@ context.target.addItem(context.createItem('shuriken', 5));[/script]</Event>
         <Attribute Id="defenceKwonsFlail">6</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -17799,6 +17862,7 @@ context.target.addItem(context.createItem('shuriken', 5));[/script]</Event>
         <Attribute Id="defenceKwonsFlail">5</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -17817,6 +17881,7 @@ context.target.addItem(context.createItem('shuriken', 5));[/script]</Event>
         <Attribute Id="defenceKwonsFlail">5</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -17825,6 +17890,7 @@ context.target.addItem(context.createItem('shuriken', 5));[/script]</Event>
         <Attribute Id="endurance">20</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -17843,6 +17909,7 @@ context.target.addItem(context.createItem('shuriken', 5));[/script]</Event>
       <Events>
         <Event Name="onGotHit">The flames sear you. You lose [tag]minus:return 1;[/tag] Endurance. [script]return context.reducePlayerEndurance(1);[/script]</Event>
       </Events>
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -17858,6 +17925,7 @@ context.target.addItem(context.createItem('shuriken', 5));[/script]</Event>
         <Attribute Id="endurance">18</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -17876,6 +17944,7 @@ context.target.addItem(context.createItem('shuriken', 5));[/script]</Event>
         <Attribute Id="defenceKwonsFlail">6</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -17895,6 +17964,7 @@ context.target.addItem(context.createItem('shuriken', 5));[/script]</Event>
         <Attribute Id="defenceKwonsFlail">6</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -17909,6 +17979,7 @@ context.target.addItem(context.createItem('shuriken', 5));[/script]</Event>
         <Attribute Id="endurance">12</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -17928,6 +17999,7 @@ context.target.addItem(context.createItem('shuriken', 5));[/script]</Event>
         <Attribute Id="defenceKwonsFlail">5</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -17947,6 +18019,7 @@ context.target.addItem(context.createItem('shuriken', 5));[/script]</Event>
         <Attribute Id="defenceKwonsFlail">4</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -17965,6 +18038,7 @@ context.target.addItem(context.createItem('shuriken', 5));[/script]</Event>
         <Attribute Id="defenceKwonsFlail">4</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -17984,6 +18058,7 @@ context.target.addItem(context.createItem('shuriken', 5));[/script]</Event>
         <Attribute Id="defenceKwonsFlail">4</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -18001,6 +18076,7 @@ context.target.addItem(context.createItem('shuriken', 5));[/script]</Event>
         <Attribute Id="defenceKwonsFlail">5</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -18019,6 +18095,7 @@ context.target.addItem(context.createItem('shuriken', 5));[/script]</Event>
         <Attribute Id="defenceKwonsFlail">5</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -18035,6 +18112,7 @@ context.target.addItem(context.createItem('shuriken', 5));[/script]</Event>
         <Attribute Id="defenceKwonsFlail">6</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -18047,6 +18125,7 @@ context.target.addItem(context.createItem('shuriken', 5));[/script]</Event>
         <Attribute Id="endurance">13</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -18059,6 +18138,7 @@ context.target.addItem(context.createItem('shuriken', 5));[/script]</Event>
         <Attribute Id="endurance">17</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -18081,6 +18161,7 @@ context.target.addItem(context.createItem('shuriken', 5));[/script]</Event>
   $.skipEnemyAttack = true;
 }[/script][/p]</Event>
       </Events>
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -18101,6 +18182,7 @@ context.target.addItem(context.createItem('shuriken', 5));[/script]</Event>
         <Attribute Id="defenceKwonsFlail">6</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -18115,6 +18197,7 @@ context.target.addItem(context.createItem('shuriken', 5));[/script]</Event>
         <Attribute Id="endurance">7</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -18129,6 +18212,7 @@ context.target.addItem(context.createItem('shuriken', 5));[/script]</Event>
         <Attribute Id="endurance">8</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -18147,6 +18231,7 @@ context.target.addItem(context.createItem('shuriken', 5));[/script]</Event>
         <Attribute Id="defenceKwonsFlail">5</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -18165,6 +18250,7 @@ context.target.addItem(context.createItem('shuriken', 5));[/script]</Event>
         <Attribute Id="defenceKwonsFlail">5</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -18177,6 +18263,7 @@ context.target.addItem(context.createItem('shuriken', 5));[/script]</Event>
       <Events>
         <Event Name="onDefeat">[script]$.opponents = &amp;ob;&amp;cb;;[/script] The sword collapses to the ground.</Event>
       </Events>
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -18198,6 +18285,7 @@ context.target.addItem(context.createItem('shuriken', 5));[/script]</Event>
         <Attribute Id="defenceKwonsFlail">12</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -18221,6 +18309,7 @@ context.target.addItem(context.createItem('shuriken', 5));[/script]</Event>
         <Event Name="onHit">You subtract [tag]minus:return 2;[/tag] from your next two die rolls as a numbing cold slows your reactions. [script]context.addCondition(player, 'numbingCold', 3);[/script]</Event>
         <Event Name="onDefeat">[p][script]context.removeCondition(player, 'numbingCold');[/script][/p]</Event>
       </Events>
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -18240,6 +18329,7 @@ context.target.addItem(context.createItem('shuriken', 5));[/script]</Event>
         <Attribute Id="defenceKwonsFlail">6</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -18265,6 +18355,7 @@ $.opponent.canAttack = false;[/script][/p]</Event>
         <Event Name="onTurn">[if]return $.round &amp;gt; 1;[/if]The second dog has you in its grip and you lose [tag]minus:return 2;[/tag] Endurance as it tries to drag you to the ground. [script]return context.reducePlayerEndurance(2);[/script][endif /]</Event>
         <Event Name="onDefeat">[p][script]context.removeCondition(player, 'handicapped');[/script][/p]</Event>
       </Events>
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -18284,6 +18375,7 @@ $.opponent.canAttack = false;[/script][/p]</Event>
         <Attribute Id="defenceKwonsFlail">5</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -18293,6 +18385,7 @@ $.opponent.canAttack = false;[/script][/p]</Event>
         <Attribute Id="attackModifier">1</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -18308,6 +18401,7 @@ $.opponent.canAttack = false;[/script][/p]</Event>
         <Attribute Id="defenceKwonsFlail">6</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -18327,6 +18421,7 @@ $.opponent.canAttack = false;[/script][/p]</Event>
         <Attribute Id="defenceKwonsFlail">1</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -18342,6 +18437,7 @@ $.opponent.canAttack = false;[/script][/p]</Event>
         <Attribute Id="endurance">19</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -18351,6 +18447,7 @@ $.opponent.canAttack = false;[/script][/p]</Event>
         <Attribute Id="endurance">13</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -18369,6 +18466,7 @@ $.opponent.canAttack = false;[/script][/p]</Event>
       <Events>
         <Event Name="onGotHit">[script]$.skipEnemyAttack = true;[/script]</Event>
       </Events>
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -18379,6 +18477,7 @@ $.opponent.canAttack = false;[/script][/p]</Event>
         <Attribute Id="canAttack">False</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -18396,7 +18495,6 @@ $.opponent.canAttack = false;[/script][/p]</Event>
         <Attribute Id="defenceKwonsFlail">6</Attribute>
       </Attributes>
       <Events>
-        <Event Name="onInit">[script]context.target.addItem(context.createItem('healingPotion8'));[/script]</Event>
         <Event Name="onGotDamage">[script]if ($.opponent.getItem('healingPotion8')) {
   if ($.opponent.endurance - $.damageRoll &amp;lt;= 4) {
     $.damageRoll = Math.min($.damageRoll, $.opponent.endurance - 1);
@@ -18404,6 +18502,9 @@ $.opponent.canAttack = false;[/script][/p]</Event>
   }
 }[/script]</Event>
       </Events>
+      <Hooks>
+        <Hook Name="onInit">context.target.addItem(context.createItem('healingPotion8'));</Hook>
+      </Hooks>
     </Character>
     <Character>
       <Attributes>
@@ -18429,6 +18530,7 @@ if ($.opponent.endurance - $.damageRoll &amp;lt;= 12) {
   $.skipEnemyAttack = true;
 }[/script]</Event>
       </Events>
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -18444,6 +18546,7 @@ if ($.opponent.endurance - $.damageRoll &amp;lt;= 12) {
         <Attribute Id="endurance">25</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -18458,6 +18561,7 @@ if ($.opponent.endurance - $.damageRoll &amp;lt;= 12) {
       <Events>
         <Event Name="onHit">[script]player.isWerewolf = true;[/script]</Event>
       </Events>
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -18481,6 +18585,7 @@ if ($.opponent.endurance - $.damageRoll &amp;lt;= 8) {
   $.skipEnemyAttack = true;
 }[/script]</Event>
       </Events>
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -18505,6 +18610,7 @@ if (player.getItem('goldenCirclet')) {
   $.damageRoll = Math.max(0, $.damageRoll - 4);
 }[/script]</Event>
       </Events>
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -18522,6 +18628,7 @@ if (player.getItem('goldenCirclet')) {
   $.damageRoll = Math.max(0, $.damageRoll - 4);
 }[/script]</Event>
       </Events>
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -18546,6 +18653,7 @@ if (player.getItem('goldenCirclet')) {
   $.damageRoll = Math.max(0, $.damageRoll - 4);
 }[/script]</Event>
       </Events>
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -18559,6 +18667,7 @@ if (player.getItem('goldenCirclet')) {
         <Attribute Id="defenceKwonsFlail">5</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -18571,6 +18680,7 @@ if (player.getItem('goldenCirclet')) {
         <Attribute Id="endurance">19</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -18587,6 +18697,7 @@ if (player.getItem('goldenCirclet')) {
         <Attribute Id="defenceKwonsFlail">8</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -18596,6 +18707,7 @@ if (player.getItem('goldenCirclet')) {
         <Attribute Id="endurance">15</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -18608,6 +18720,7 @@ if (player.getItem('goldenCirclet')) {
         <Attribute Id="endurance">11</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -18623,6 +18736,7 @@ if (player.getItem('goldenCirclet')) {
       <Events>
         <Event Name="onGotMissed"> He sidesteps your flailing leg and wraps the chain around it. Dropping to one knee he sweeps your other leg from under you. You land heavily, sitting in the grass. Disengaging the chain, the Ninja drives his chain-wrapped fist at your face, smashing you backwards. Lose [tag]minus:return 4;[/tag] Endurance. [script]return context.reducePlayerEndurance(4);[/script]You ignore the pain and use the momentum to roll backwards onto your feet. You may attack once more.[script]$.skipEnemyAttack = true;[/script]</Event>
       </Events>
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -18635,6 +18749,7 @@ if (player.getItem('goldenCirclet')) {
         <Attribute Id="defenceKwonsFlail">6</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -18656,6 +18771,7 @@ if (player.getItem('goldenCirclet')) {
   $.skipEnemyAttack = true;
 }[/script]</Event>
       </Events>
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -18671,6 +18787,7 @@ if (player.getItem('goldenCirclet')) {
         <Attribute Id="endurance">9</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -18688,6 +18805,7 @@ if (player.getItem('goldenCirclet')) {
         <Attribute Id="defenceKwonsFlail">6</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -18701,6 +18819,7 @@ if (player.getItem('goldenCirclet')) {
         <Attribute Id="defenceKwonsFlail">6</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -18717,6 +18836,7 @@ if (player.getItem('goldenCirclet')) {
         <Attribute Id="defenceKwonsFlail">4</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -18743,6 +18863,7 @@ if ($.opponent.endurance - $.damageRoll &amp;lt;= 6) {
   $.skipEnemyAttack = true;
 }[/script][/p]</Event>
       </Events>
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -18752,10 +18873,8 @@ if ($.opponent.endurance - $.damageRoll &amp;lt;= 6) {
         <Attribute Id="endurance">22</Attribute>
         <Attribute Id="defenceSceptre">8</Attribute>
       </Attributes>
-      <Events>
-        <Event Name="onHit">[p][/p]</Event>
-        <Event Name="onInit">[p][/p]</Event>
-      </Events>
+      <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -18776,6 +18895,7 @@ if ($.opponent.endurance - $.damageRoll &amp;lt;= 6) {
         <Attribute Id="defenceSceptre">6</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -18796,6 +18916,7 @@ if ($.opponent.endurance - $.damageRoll &amp;lt;= 6) {
         <Attribute Id="defenceSceptre">5</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -18816,6 +18937,7 @@ if ($.opponent.endurance - $.damageRoll &amp;lt;= 6) {
         <Attribute Id="defenceSceptre">5</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -18839,6 +18961,7 @@ if ($.opponent.endurance - $.damageRoll &amp;lt;= 6) {
   $.skipEnemyAttack = true;
 }[/script]</Event>
       </Events>
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -18852,6 +18975,7 @@ if ($.opponent.endurance - $.damageRoll &amp;lt;= 6) {
         <Attribute Id="defenceKwonsFlail">5</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Character>
     <Character>
       <Attributes>
@@ -18878,8 +19002,10 @@ if ($.opponent.endurance - $.damageRoll &amp;lt;= 6) {
 if (context.target.hitsReceived == 2) {
   $.skipEnemyAttack = true;
 }[/script]</Event>
-        <Event Name="onInit">[script]context.target.hitsReceived = 0;[/script]</Event>
       </Events>
+      <Hooks>
+        <Hook Name="onInit">context.target.hitsReceived = 0;</Hook>
+      </Hooks>
     </Character>
     <Character>
       <Attributes>
@@ -18896,8 +19022,10 @@ if (context.target.hitsReceived == 2) {
 if (context.target.hitsReceived == 2) {
   $.skipEnemyAttack = true;
 }[/script]</Event>
-        <Event Name="onInit">[script]context.target.hitsReceived = 0;[/script]</Event>
       </Events>
+      <Hooks>
+        <Hook Name="onInit">context.target.hitsReceived = 0;</Hook>
+      </Hooks>
     </Character>
   </Characters>
   <Skills>
@@ -18909,6 +19037,7 @@ if (context.target.hitsReceived == 2) {
         <Attribute Id="description">Doubles the damage of your next successful attack.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Skill>
     <Skill>
       <Attributes>
@@ -18917,6 +19046,7 @@ if (context.target.hitsReceived == 2) {
         <Attribute Id="description">You begin the adventure with five ‘Shuriken’. The type you specialise in are ‘throwing stars’, small razor sharp star shaped disks of metal. You can throw these up to a range of about 30 feet with devastating effect. If you throw a Shuriken, you will be given a Defence number for your target. Roll two dice, and if the score is higher than the Defence number, you will have hit your target. If this is the case, roll one die. The score is the amount of damage the Shuriken does. Subtract it from your target’s Endurance. You may find yourself in a position where you are unable to retrieve a Shuriken once you have thrown it. If you have none left, you can no longer use this skill.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Skill>
     <Skill>
       <Attributes>
@@ -18925,6 +19055,7 @@ if (context.target.hitsReceived == 2) {
         <Attribute Id="description">Requiring excellent muscular co-ordination, hand and eye judgement and reflexes, this skill will enable you to knock aside, or even catch, missiles such as arrows or spears.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Skill>
     <Skill>
       <Attributes>
@@ -18933,6 +19064,7 @@ if (context.target.hitsReceived == 2) {
         <Attribute Id="description">The ability to leap and jump using flips, cartwheels etc. like a tumbler or gymnast.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Skill>
     <Skill>
       <Attributes>
@@ -18941,6 +19073,7 @@ if (context.target.hitsReceived == 2) {
         <Attribute Id="description">This involves taking small doses of virulent poisons over long periods of time, slowly building up the body’s resistance. This enables the Ninja to survive most poison attempts.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Skill>
     <Skill>
       <Attributes>
@@ -18949,6 +19082,7 @@ if (context.target.hitsReceived == 2) {
         <Attribute Id="description">[p]Requiring long and arduous training, a Ninja with this ability is able to slow down his heart rate and metabolism through will power alone, thus appearing to be dead.[/p]</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Skill>
     <Skill>
       <Attributes>
@@ -18957,6 +19091,7 @@ if (context.target.hitsReceived == 2) {
         <Attribute Id="description">A Ninja with this skill is able to dislocate the joints of the body and to maximise the body’s suppleness, allowing movement through small spaces, and escape from bonds and chains by slipping out of them.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Skill>
     <Skill>
       <Attributes>
@@ -18965,6 +19100,7 @@ if (context.target.hitsReceived == 2) {
         <Attribute Id="description">Sometimes known as spitting Needles, a Ninja with this skill can place small darts, coated with a powerful poison that acts in the blood stream, onto his tongue. By curling the tongue into an ‘O’ shape and spitting or blowing, the dart can be propelled up to an effective range of about 15 feet. A useful surprise attack, the source of which is not always perceptible.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Skill>
     <Skill>
       <Attributes>
@@ -18973,6 +19109,7 @@ if (context.target.hitsReceived == 2) {
         <Attribute Id="description">The ability to open locked doors, chests etc. A Ninja with this skill would carry various lockpicks in the pockets of his costume, including a small crowbar or jemmy. You are also trained to notice traps and to use the lock-picking tools to disarm them.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Skill>
     <Skill>
       <Attributes>
@@ -18981,6 +19118,7 @@ if (context.target.hitsReceived == 2) {
         <Attribute Id="description">Comprehensive training in the use of a Grappling Hook and hand and foot clamps, or Cat’s Claws. The padded four-pronged hook has 40 feet of rope attached to it. Used to hook over walls, niches etc., allowing the Ninja to pull himself up the rope. The Cat’s Claws are spiked clamps, worn over the palm of the hand and the instep of the feet, enabling the Ninja to imbed his Claws into a wall and climb straight up like a fly, and even to crawl across ceilings.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Skill>
     <Skill>
       <Attributes>
@@ -18990,6 +19128,7 @@ if (context.target.hitsReceived == 2) {
         <Attribute Id="description">Parry an incoming attack.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Skill>
     <Skill>
       <Attributes>
@@ -18998,6 +19137,7 @@ if (context.target.hitsReceived == 2) {
         <Attribute Id="description">A powerful kick you learned from Togawa, the Mystic.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Skill>
     <Skill>
       <Attributes>
@@ -19006,6 +19146,7 @@ if (context.target.hitsReceived == 2) {
         <Attribute Id="description">ShinRen, the Training of the Heart, allows you to ‘read’ people like an open book. In addition, you are able to endure heat, cold, wind, rain, hunger, thirst and pain.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Skill>
     <Skill>
       <Attributes>
@@ -19014,6 +19155,7 @@ if (context.target.hitsReceived == 2) {
         <Attribute Id="description">Yubi-Jutsu is the martial skill of Nerve-Striking. You know how to maim and kill with even quite light blows to vital nerve centres, a technique especially useful when beset by many adversaries at once, or against a formidable human foe.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Skill>
   </Skills>
   <Battles />
