@@ -1,0 +1,946 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Scenario>
+  <Properties>
+    <Id>3069839c-142d-4118-9890-a409fdf38d29</Id>
+    <Name>Варварският бог</Name>
+    <InitialEpisode>22</InitialEpisode>
+    <Description>И дойде денят, в който древните предания и предсказанията на ясновидците се сбъднаха... Старият свят се огъна под яростта и бясната омраза на безбройните пълчища варвари, прииждащи като морски талази от дивите северни гори, безбрежните степи на Изтока и жарките южни пустини.
+... И бликна кръв, кръвта на хилядите бойци, и напои плодородните поля...
+... Но тогава Боговете ни изпратиха спасението.
+Един човек...
+Един герой...</Description>
+    <Discoverable>True</Discoverable>
+  </Properties>
+  <GlobalScripts>
+    <Script Name="items">context.getItemCount = function(items) {
+  let result = 0;
+  for (let i = 0; i &lt; items.length; i++) {
+    const item = items[i];
+    result += item.stack;
+  }
+  return result;
+}</Script>
+    <Script Name="player">context.increasePlayerLife = function(value) {
+  this.player.life = Math.min(this.player.life + value, this.player.maxLife);
+  this.updateLifeLevels();
+}
+
+context.reducePlayerLife = function(value, skipDeathCheck) {
+  this.player.life -= value;
+  this.updateLifeLevels();
+  if (this.player.life &lt;= 0 &amp;&amp; !skipDeathCheck) {
+    context.gameOver();
+    return context.DEATH_MESSAGE;
+  }
+}
+
+context.updateLifeLevels = function() {
+  if (this.player.life &gt;= 41) {
+    this.player.lifeLevel = 'I ниво (здрав)';
+    this.player.lifeBonus = 5;
+    this.player.unarmedSkill = 1;
+    this.player.weaponSkill = 2;
+    this.player.precision = 3;
+    this.player.agility = 4;
+  } else if (this.player.life &gt;= 16) {
+    this.player.lifeLevel = 'II ниво (ранен)';
+    this.player.lifeBonus = 3;
+    this.player.unarmedSkill = 0;
+    this.player.weaponSkill = 1;
+    this.player.precision = 2;
+    this.player.agility = 2;
+  } else if (this.player.life &gt; 0) {
+    this.player.lifeLevel = 'III ниво (осакатен)';
+    this.player.lifeBonus = 1;
+    this.player.unarmedSkill = 0;
+    this.player.weaponSkill = 0;
+    this.player.precision = 0;
+    this.player.agility = 0;
+  } else {
+    this.player.lifeLevel = 'IV ниво (убит)';
+    this.player.lifeBonus = 0;
+    this.player.unarmedSkill = 0;
+    this.player.weaponSkill = 0;
+    this.player.precision = 0;
+    this.player.agility = 0;
+  }
+}</Script>
+    <Script Name="constants">context.DEFEAT_MESSAGE = "Приключението ти свършва тук.";
+context.DEATH_MESSAGE = "Умираш от раните си и приключението ти завършва."</Script>
+    <Script Name="battle">context.startBattle = function() {
+  const $ = this.state;
+  $.opponents = [];
+  for (let i = 0; i &lt; arguments.length; i++) {
+    $.opponents.push(context.createCharacter(arguments[i]));
+  }
+  $.inBattle = true;
+  $.selectedOpponent = -1;
+  $.outcome = '';
+  $.lostLife = 0;
+}
+
+context.endBattle = function() {
+  const $ = this.state;
+  $.inBattle = false;
+  $.weaponPoisoned = false;
+}</Script>
+  </GlobalScripts>
+  <GlobalDefinition>
+    <Attributes />
+    <Events />
+    <Hooks />
+  </GlobalDefinition>
+  <JournalEntryDefinition>
+    <Attributes>
+      <Attribute Id="id" Name="Id" IsIntrinsic="true" IsMandatory="true" IsUnique="true" Type="String" DefaultValue="" />
+      <Attribute Id="name" Name="Name" IsIntrinsic="true" IsMandatory="true" IsUnique="false" Type="String" DefaultValue="" />
+      <Attribute Id="description" Name="Description" IsIntrinsic="true" IsMandatory="false" IsUnique="false" Type="Description" DefaultValue="" />
+      <Attribute Id="visible" Name="Visible" IsIntrinsic="true" IsMandatory="true" IsUnique="false" Type="Boolean" DefaultValue="true" Description="Specifies whether to show this entry in the journal." />
+      <Attribute Id="canDelete" Name="CanDelete" IsIntrinsic="true" IsMandatory="true" IsUnique="false" Type="Boolean" DefaultValue="true" Description="Specifies whether this entry can be deleted by the user." />
+    </Attributes>
+    <Events />
+    <Hooks>
+      <Hook Name="onRead" IsIntrinsic="true" Description="Invoked when the entry is read." />
+    </Hooks>
+  </JournalEntryDefinition>
+  <ItemDefinition>
+    <Attributes>
+      <Attribute Id="id" Name="Id" IsIntrinsic="true" IsMandatory="true" IsUnique="true" Type="String" Description="A unique item identifier." />
+      <Attribute Id="name" Name="Name" IsIntrinsic="true" IsMandatory="true" IsUnique="false" Type="String" Description="A human readable name." />
+      <Attribute Id="description" Name="Description" IsIntrinsic="false" IsMandatory="false" IsUnique="false" Type="Description" DefaultValue="" Category="" />
+    </Attributes>
+    <Events />
+    <Hooks>
+      <Hook Name="onInit" IsIntrinsic="true" Description="Invoked when an item instance is created." />
+      <Hook Name="onUsed" IsIntrinsic="true" Description="Invoked when the item is used." />
+    </Hooks>
+  </ItemDefinition>
+  <CharacterDefinition>
+    <Attributes>
+      <Attribute Id="id" Name="Id" IsIntrinsic="true" IsMandatory="true" IsUnique="true" Type="String" Description="A unique item identifier." />
+      <Attribute Id="name" Name="Name" IsIntrinsic="true" IsMandatory="true" IsUnique="false" Type="String" Description="A human readable name." />
+      <Attribute Id="life" Name="Жизнени точки" IsIntrinsic="false" IsMandatory="true" IsUnique="false" Type="Integer" DefaultValue="50" Category="Attributes" />
+      <Attribute Id="maxLife" Name="Максимални жизнени точки" IsIntrinsic="false" IsMandatory="true" IsUnique="false" Type="Integer" DefaultValue="50" Category="" />
+      <Attribute Id="lifeLevel" Name="Ниво на живот" IsIntrinsic="false" IsMandatory="false" IsUnique="false" Type="String" DefaultValue="I ниво (здрав)" Category="Attributes" />
+      <Attribute Id="lifeBonus" Name="Ниво на живот (бонус)" IsIntrinsic="false" IsMandatory="false" IsUnique="false" Type="Integer" DefaultValue="5" Category="Attributes" />
+      <Attribute Id="unarmedSkill" Name="Умение за ръкопашен бой" IsIntrinsic="false" IsMandatory="false" IsUnique="false" Type="Integer" DefaultValue="1" Category="Attributes" />
+      <Attribute Id="weaponSkill" Name="Умение за бой с хладни оръжия" IsIntrinsic="false" IsMandatory="false" IsUnique="false" Type="Integer" DefaultValue="2" Category="Attributes" />
+      <Attribute Id="precision" Name="Точност" IsIntrinsic="false" IsMandatory="false" IsUnique="false" Type="Integer" DefaultValue="3" Category="Attributes" />
+      <Attribute Id="agility" Name="Ловкост" IsIntrinsic="false" IsMandatory="false" IsUnique="false" Type="Integer" DefaultValue="4" Category="Attributes" />
+      <Attribute Id="type" Name="Тип" IsIntrinsic="false" IsMandatory="true" IsUnique="false" Type="String" DefaultValue="human" Category="" />
+      <Attribute Id="strength" Name="Сила" IsIntrinsic="false" IsMandatory="false" IsUnique="false" Type="Integer" DefaultValue="10" Category="" />
+    </Attributes>
+    <Events />
+    <Hooks>
+      <Hook Name="onInit" IsIntrinsic="true" Description="Invoked when a character instance is created." />
+    </Hooks>
+  </CharacterDefinition>
+  <SkillDefinition>
+    <Attributes>
+      <Attribute Id="id" Name="Id" IsIntrinsic="true" IsMandatory="true" IsUnique="true" Type="String" Description="A unique skill identifier." />
+      <Attribute Id="name" Name="Name" IsIntrinsic="true" IsMandatory="true" IsUnique="false" Type="String" Description="A human readable name." />
+      <Attribute Id="passive" Name="Passive" IsIntrinsic="true" IsMandatory="false" IsUnique="false" Type="Boolean" DefaultValue="False" Description="Indicates whether the skill is passive or can be explicitly activated." />
+    </Attributes>
+    <Events />
+    <Hooks />
+  </SkillDefinition>
+  <Episodes>
+    <Episode Id="Intro" IsMarked="true" Location="42.5;32.5">
+      <Text>[p]И дойде денят, в който древните предания и предсказанията на ясновидците се сбъднаха…[/p][p]Старият свят се огъна под яростта и бясната омраза на безбройните пълчища варвари, прииждащи като морски талази от дивите северни гори, безбрежните степи на Изтока и жарките южни пустини.[/p][p]… И бликна кръв, кръвта на хилядите бойци, и напои плодородните поля…[/p][p]… Но тогава Боговете ни изпратиха спасението.[/p][p]Един човек…[/p][p]Един герой…[/p][p][link target='Rules1'](продължи)[/link][/p][p][image source='1' title='' hspace='0' vspace='0' align='center' width='499' height='453' /][/p]</Text>
+    </Episode>
+    <Episode Id="Rules1" IsMarked="true" Location="62.5;32.5">
+      <Text>[p][bold]ОСНОВЕН ПРИНЦИП[/bold][/p][p]В тази книга често се налага да изпробваш късмета си. Стойността му се измерва с едно произволно число от 1 до 12, което се определя чрез на случаен принцип, често чрез натискане на специален бутон ([clicker]return true;[/clicker][tag]general:return 'Шанс';[/tag][endclicker /]). В повечето случаи това число се нарича Шанс.[/p][p][link target='Rules2'](продължи)[/link][/p][p][image source='2' title='' hspace='0' vspace='0' align='center' width='331' height='501' /][/p]</Text>
+    </Episode>
+    <Episode Id="1" IsMarked="true" Location="257.5;32.5">
+      <Text>[p]Кърваво зарево изгрява над Ханджаб и обагря в пурпур улиците на града и нощта наоколо, разсейвайки тъмнината.[/p][p]Но изгревът е далече.[/p][p]Приготовленията в казармената част на Елитния имперски легион, приютена в Централния дворец, са към края си. Войниците край теб с мрачни лица стягат оръжията си. Поемаш дълбоко въздух и го изпускаш постепенно, концентриран върху чувствата си. Когато вдишваш отново, съзнанието ти е чисто — никакъв страх, никакво колебание. Няма място за отстъпление. Ако загубите тази битка, целият свят е загубен.[/p][p]Отеква тръбният, зовящ звук на бойния рог. Време е. Войниците се строяват и тръгват в бърз ход. Оставаш най-отзад. Колоната потъва в лепкавия мрак на подземията, разпръскван на места от трепкащата светлина на факлите, наредени по влажните каменни стени.[/p][p][link target='7'](продължи)[/link][/p]</Text>
+    </Episode>
+    <Episode Id="7" IsMarked="true" Location="257.5;52.5">
+      <Text>[p]Никой не очакваше това. Макар всички да знаеха древните предания, никой не вярваше в тях. Никой не можеше да повярва, че Старият свят — могъщ и самоуверен, ще бъде заплашен от няколкото диви племена отвъд Голямата стена.[/p][p]До деня, в който безчислените варварски пълчища, събрани от всички краища на Дивото, се стовариха върху цивилизацията като юмрук на Божия гняв. Северните провинции бяха прегазени за два дни. Легионите, изпратени да спрат нашествието, също. Отличното въоръжение и военното изкуство отстъпиха пред дивата ярост, с която варварите се хвърляха в бой с Имперската армия. Умираха с хиляди, но хилядите се заменяха с милиони, а войските биваха изклани. Жестокият поход бе спрян едва при Голямата стена - някога граница с Дивото — с общите усилия на Имперските легиони и армиите на кралствата, обединили се пред надвисналата опасност. Но и това не бе за дълго. Бесните атаки по цялото протежение на стената продължиха и скоро стана ясно, че отбраната няма да издържи. Вече се хвърляха в бой последните останали войски. И Елитният Имперски Легион, войник от който си и ти…[/p][p]Разпръсваш с усилие рояка мисли и Дръце — едната стисва твоите през кръста, а другата задушава вика ти. Залиташ към стената, но удар не последва. Камъкът като че се огъва под тежестта ти и те пропуска през себе си. В следващия миг разбираш, че сте минали през въртяща се плоча, а в момента сте в някакъв тайник отвъд стената. Мракът е пълен. За момент спираш да буйстваш и с изненада установяваш, че ръцете отхлабват хватката си. Още миг и си свободен. Усещаш тялото на похитителя пред себе си. Сега е моментът да действаш.[/p][p][link target='224']Ще извадиш меча си и ще се опиташ да го съсечеш, преди да те е сграбчил отново[/link].[br /][link target='495']Или ще изчакаш[/link].[/p]</Text>
+    </Episode>
+    <Episode Id="224" IsMarked="true" Location="247.5;72.5">
+      <Text>[p]Безшумно изтегляш меча и воден от безпогрешното си чувство, безмилостно насочваш страшен удар към главата на противника си. Острието просвистява в мрака, разсичайки празното пространство, и звънва на каменния под. Ръката ти болезнено се извива зад гърба, докато опираш с тласък гърди в стената.[/p][p]Гласът — познат, но забравен, уморен от грижи, но жизнен, звънва в ухото ти:[/p][p]— Нелошо изпълнение на глупав план, момко.[/p][p]О, богове, това е…[/p][p]Ръцете те пускат, но този път и не помисляш да се съпротивляваш. Задъхан се облягаш на стената, изреждайки по свой адрес всички ругатни, които ти се струват достойни за глупостта ти.[/p][p][link target='495'](продължи)[/link][/p]</Text>
+    </Episode>
+    <Episode Id="495" IsMarked="true" Location="267.5;72.5">
+      <Text>[p]В мрака припламва с пукот искра и разпалва бледа синкава светлина, която засиява около теб и високата, загърната в тъмен, златоизвезан плащ фигура. Качулката рязко се отмята, разкривайки пред невярващия ти поглед бледо и изпито лице, което би могло да се нарече старческо, ако не бяха очите — черни и необикновено жизнени. Вертикалните бръчки по високото чело и извивката на тънките, стиснати устни издават силата на ума и волята на този човек. Погледът му е леко насмешлив:[/p][p]— Радвам се да те видя отново, момчето ми.[/p][p]Върховният жрец! Докато умът ти отчаяно търси отговора на въпроса: „Какво може да иска от мен най-влиятелният човек в Империята?“, той махва повелително с ръка:[/p][p]— Да вървим! Времето е безценно.[/p][p]Призрачно сияние, следващо движенията му, осветява тъмния вход на стълбище.[/p][p][link target='624'](продължи)[/link][/p]</Text>
+    </Episode>
+    <Episode Id="624" IsMarked="true" Location="287.5;72.5">
+      <Text>[p]Стръмното стълбище се извива нагоре и нагоре, без начало и край. Подскачаш задъхан по стъпалата, стараейки се да не изоставаш от водача си, който сякаш се носи над тях.[/p][p]Вече ти се струва, че е минала цяла вечност, когато стълбите внезапно свършват и се озоваваш, капнал, на някаква открита площадка под изцъклените звезди — кулата на Централния дворец, най-високата точка в Ханджаб. Гледката спира дъха ти: целият град, огромен и необхватен, окъпан в призрачна лунна светлина. Малко по на север гигантският тъмен силует на Голямата стена пресича нощта. Над него трепти светлината на хилядите лагерни огньове. Измамна тишина е надвиснала над необятното бойно поле.[/p][p]Жрецът прави сложно движение с ръка и сиянието, вече ненужно, се разтапя в мрака.[/p][p]— Дойде времето, момчето ми.[/p][p]Чувството на предопределеност и обреченост прозвучава в гласа му и минава като ток по цялото ти тяло.[/p][p]— Ще се изправиш пред най-могъщата черна сила, съществувала някога…[/p][p]Макар да звучи невероятно и абсурдно, с всяка фибра на тялото си можеш да усетиш, че това е истина.[/p][p][link target='512'](продължи)[/link][/p]</Text>
+    </Episode>
+    <Episode Id="512" IsMarked="true" Location="307.5;72.5">
+      <Text>[p]— Знаеш, че с баща ти сме приятели — подхваща отново жрецът.[/p][p]Кимваш безмълвно. Семейството ти е от Турил, където си роден, но в ранното ти детство се преместихте в столицата заради влиятелния пост, предложен на баща ти точно от Върховния жрец. Подобна чест се оказва на малцина. Оттогава са и първите спомени от добрия побелял човек, идващ от време на време вкъщи да поговори с татко…[/p][p]— Идвах заради теб момчето ми.[br /]— Но защо… — промълвяваш.[br /]— Исках да следя развитието ти. Както и по-нататък.[/p][p]Внезапно искрицата на подозрението блясва в съзнанието ти и се разгаря: обучението от малък в науки и бойни изкуства, специалното училище, завършено с отличие, висшата школа и накрая постъпването в Елитните части…[/p][p]— Нищо не е случайност, момчето ми. Зад всичко бях аз.[/p][p]Безмълвният въпрос се чете в погледа ти.[/p][p]— Трябваше да те подготвя за мисията.[br /]— Какво… трябва да направя? — питаш с несигурен глас, страхувайки се от отговора.[br /]— Да унищожиш Гуор.[/p][p][link target='5'](продължи)[/link][/p]</Text>
+    </Episode>
+    <Episode Id="5" IsMarked="true" Location="327.5;72.5">
+      <Text>[p]— Богът на Злото… — успяваш да промълвиш.[br /]— Ще ти разкажа това, което трябва да знаеш… — жрецът спира за момент, поглежда те внимателно и започва: — Някога Гуор е бил един от Седемте повелителя. Някога… Преди да се превърне във властелин на Мрака. Срещу нарастващата му черна мощ се изправили останалите шест. Битката продължила с векове, но накрая Гуор бил победен и осъден на вечно заточение. Душата му била вселена в скала. Проклятието ще тегне над нея, докато Гуор намери своя народ — хората, които ще вярват в него и ще изпълнят повелите му…[br /]— Варварите — отронва се от устните ти.[br /]— Точно така. Но това би било невъзможно, докато е в плен на скалата. Омагьосан кръг.[br /]— Тогава как…[br /]— Преди повече от десет века черните магьосници откриват душата му и опитват да я освободят. Ако Гуор отново стане бог, то те биха се превърнали в полубогове. Но без да се изпълни условието на Шестимата, това е невъзможно.[br /]— И те тръгват да търсят народа на Гуор…[br /]— Преди това построяват около скалата огромен храм, изпълнен с магически клопки.[br /]— Но от какво трябва да се пази Богът на мрака?![br /]— От Бялата магия на Древните. Докато проклятието тегне над него, той е беззащитен.[br /]— Но нали Древният град е изгорен от Небесния огън?[br /]— Това става по-късно. И може би ти е интересно как и защо Центърът на древната цивилизация, толкова по-развита от нашата, е бил унищожен за няколко мига?… Боговете пазят ревниво тайните си, момчето ми. Белите жреци, дръзнали да надникнат отвъд границите на Земното, докарали смърт и унищожение на хората и земите си. Но Бялата магия е все още там, сред обгорените руини на Древния град.[br /]— Как Черните магьосници са успели да посветят варварите във вярата на Злото?[br /]— Не особено трудно, тъй като тя и без това е близка на характерите им. Пророците на Гуор били избивани, изгаряни на клада и накрая прогонени от Стария свят. Тогава намерили прием и убежище отвъд Голямата стена. След дълги години странствания Дивото било кръстосано от край до край. Всички варварски племена приели вярата в Гуор и основната повеля: след хиляда години всички да се вдигнат като един, да прегазят Стария свят и да намерят своя бог.[br /]— Но това става сега! Къде е заточен Гуор?[br /]— В Алкирия. Малкото южно кралство, изолирано от останалия свят.[br /]— Но там някъде е и Древният град…[br /]— Не е случайност. Сигурно вече си разбрал какво трябва да направиш, момчето ми…[/p][p]Кимваш неуверено.[/p][p]— Трябва да отидеш в Алкирия, да откриеш храма на Гуор и да го унищожиш с Бялата магия. Това ще ги лиши от вяра и цел. Тогава лесно ще ги победим.[br /]— А какво… какво ще стане, ако не успея? Или ако не искам да опитам.[br /]— Ще умреш…[/p][p]Трепваш.[/p][p]— … заедно с мен и всички останали. Отбраната на Стената няма да издържи повече от две седмици. След това Ханджаб ще бъде прегазен и нищо повече няма да спре варварите по пътя към техния бог. А щом стигнат до него… Това ще е краят на света. Никой не ще устои на възраждащата се черна мощ на Злото.[/p][p]Разбираш или по-скоро усещаш страшната реалност, която лъха от думите му.[/p][p]— Приемам — казваш твърдо. — Ако трябва да изгубя живота си, поне ще си струва.[/p][p]Жрецът се усмихва уморено и се обръща. Внезапна мисъл минава през ума ти.[/p][p]— Последен въпрос![/p][p]Той те поглежда отново.[/p][p]— Защо точно аз?[/p][p]Гласът му е леденосериозен, както преди:[/p][p]— Ти си Избраният. В деня на раждането ти имаше десетки знамения.[/p][p]Кимваш впечатлен.[/p][p]— А сега ще се срещнеш с един свой познат.[/p][p][link target='609'](продължи)[/link][/p]</Text>
+    </Episode>
+    <Episode Id="609" IsMarked="true" Location="347.5;72.5">
+      <Text>[p]— Привет, шефе! Как е бойният дух?[/p][p]Обръщаш се рязко и сграбчваш в прегръдките си новодошлия.[/p][p]— Слим, негоднико! Значи още си жив?[/p][p]Слим — най-добрият ти приятел още от детските ти години — демонстрира една от лукаво-обидените си усмивки — „Съмняваш ли се?“. И той служи в Охраната — другото име на Имперския Легион — но преди седмица бе изпратен на бойното поле като командващ малка бойна част.[/p][p]— Защо ме наричаш „шефе“? — запитваш и внезапно разтваряш широко очи, разбрал отговора — Ти идваш с мен?![br /]— Не беше по мое искане — оправдава се Слим.[br /]— Но това е чудесно![br /]— С нас идват Барт (общ приятел) и още десетина. Не те подценяваме, но когато човек се изправя срещу бог, няма да му е излишен и цял полк.[/p][p]Изведнъж съдбоносната Мисия, осеяна с трудности и опасности, започва да ти се струва като неделен излет.[/p][p]— Казвах ти, че все някой ден ще ти излезе късмета и ето… — Слим не успява да сдържи смеха си. Гледаш го мрачно миг-два и се разхилваш с него.[/p][p]Жрецът, изчезнал някъде, се появява в мрака зад теб и слага ръка на рамото ти:[/p][p]— Време е.[/p][p]Обръщаш се с нежелание и тръгваш след него. Слим махва и се спуска надолу по стълбите.[/p][p][link target='3'](продължи)[/link][/p]</Text>
+    </Episode>
+    <Episode Id="3" IsMarked="true" Location="367.5;72.5">
+      <Text>[p]След няколко тъмни коридора спирате пред дебела, обкована в желязо врата. Жрецът повдига ръка и тя се разтваря с тихо скърцане. Прекрачваш прага и попадаш в огромна слабо осветена каменна зала. Покрай дългите стени са наредени стотици прашни рафтове и купища сандъци.[/p][p]— За да изпълниш мисията, ще ти трябва нещо повече от късмет, момчето ми. Тук можеш да намериш всичко, което ти е необходимо. Тръгваш покрай един от рафтовете, отрупан с оръжия, и преди да стигнеш до края, вече си направил избора си: дълъг, масивен меч, орнаментирана дръжка във формата на змия и голям боен нож със зъбци по обратната страна на острието.[/p][p][image source='5' title='' hspace='0' vspace='0' align='center' width='703' height='128' /][/p][p]Препасваш меча и пристягаш с ремъци калъфа на ножа към долната част на крака си. Скоро сменяш почти изцяло облеклото си — броня върху рамената и част от гърдите и гърба, кожи и метални шипове по ръцете и краката и дълъг, черен, извезан по ръбовете плащ. Няма да ти е излишна и пълната кесия, която прибираш — пет диаманта, десет рубина и двадесет опала (1 диамант е приблизително равен на 5 рубина или 25 опала).[script]context.addItem(player, 'sword');
+context.addItem(player, 'knife');
+context.addItem(player, 'diamond', 5);
+context.addItem(player, 'ruby', 10);
+context.addItem(player, 'opal', 25);[/script][/p][p][image source='6' title='' hspace='0' vspace='0' align='center' width='263' height='208' /][/p][p]Преди да продължиш, избери едно число и прибави към него 6. Сборът показва колко предмета още можеш да вземеш от залата.[/p][p][embed value='Roll' /][script]player.carryLimit = $.result + 6;[/script][/p][p]Можеш да вземеш [tag]info:return `${$.result} + 6 = ${player.carryLimit}`;[/tag] предмета.[/p][p][image source='7' title='' hspace='0' vspace='0' align='center' width='418' height='327' /][/p][p]Спираш пред огромен меднообкован сандък и повдигаш с мъка капака. Вълшебното му съдържание спира дъха ти:[/p][p]1. [tag]item:return context.getItem('dew');[/tag] — шишенце с прозрачна течност. След като я изпиеш, за известно време ставаш по-лек от въздуха.[/p][p][image source='8' title='' hspace='0' vspace='0' align='center' width='144' height='173' /][/p][p]2. [tag]item:return context.getItem('seed');[/tag] — кристална сфера с няколко светещи семена в нея. Ако се разбие, те покълват светкавично и разцъфват в изпепеляващи пламъци.[/p][p][image source='9' title='' hspace='0' vspace='0' align='center' width='194' height='178' /][/p][p]3. [tag]item:return context.getItem('snake');[/tag] — малка стъкленица с червеникава течност — изключително бързодействаща и смъртоносна отрова.[/p][p]Можеш да я употребиш и без да се споменава в текста: ако преди битката намажеш острието на меча си с нея, още първият удар ще погуби противника ти.[/p][p][image source='11' title='' hspace='0' vspace='0' align='center' width='95' height='105' /][/p][p]4. [tag]item:return context.getItem('necklace');[/tag] — сребърно изображение на магически символ. Ако го поставиш на врата на някого, ще можеш да разчетеш мислите му.[/p][p][image source='12' title='' hspace='0' vspace='0' align='center' width='316' height='194' /][/p][p]5. [tag]item:return context.getItem('dust');[/tag] — кожена кесийка със сивкав едрозърнест пясък. Превръща в камък всичко, до което се докосне. Употребата му, дори и без да е споменат в текста, ще те отърве от един противник.[/p][p][image source='13' title='' hspace='0' vspace='0' align='center' width='200' height='155' /][/p][p]6. [tag]item:return context.getItem('skin');[/tag] — зеленикава гъста течност, за която не е сигурно дали е приготвена от кожата на саламандър, но е сигурно, че ако я намажеш по тялото си, ще те предпази и от най-свирепия огън.[/p][p][image source='14' title='' hspace='0' vspace='0' align='center' width='140' height='87' /][/p][p]7. [tag]item:return context.getItem('glow');[/tag] — употребявано от Върховния жрец: синкава светлина, следваща движенията ти. Изключително полезно в тъмнината.[/p][p][image source='15' title='' hspace='0' vspace='0' align='center' width='227' height='214' /][/p][p]8. [tag]item:return context.getItem('powder');[/tag] — самият прах е видим, но прави невидимо всичко, до което се докосне.[/p][p][image source='16' title='' hspace='0' vspace='0' align='center' width='186' height='96' /][/p][p]9. [tag]item:return context.getItem('potion');[/tag] — мътна тъмножълтеникава течност. Ще те спаси и от най-тежките рани. Можеш да го използваш, без да е споменат в текста, за да възвърнеш изгубените точки от една битка.[/p][p][image source='17' title='' hspace='0' vspace='0' align='center' width='93' height='107' /][/p][p]Всички предмети дотук могат да се използват само по веднъж. Ако желаеш, можеш да вземеш два или повече от един вид, стига да не превишиш определения общ брой. Същото важи и за следващите ти придобивки.[/p][p]1. [tag]item:return context.getItem('rope');[/tag] — 30 метра дълго, тънко и здраво, с разклонена метална кука в единия край.[/p][p]Многократна употреба, освен ако в текста не е споменато унищожаването или изгубването му.[/p][p][image source='18' title='' hspace='0' vspace='0' align='center' width='532' height='199' /][/p][p]2. [tag]item:return context.getItem('keys');[/tag] — уникално приспособление, чрез което дори неопитен в „занаята“ човек като теб би могъл да се справи с всяка ключалка.[/p][p][image source='19' title='' hspace='0' vspace='0' align='center' width='186' height='166' /][/p][p]3. [tag]item:return context.getItem('rusk');[/tag] — парче изсушен хляб, приготвен от много рядко зърнено растение. Равнява се на два цели хляба.[/p][p][image source='20' title='' hspace='0' vspace='0' align='center' width='173' height='88' /][/p][p]4. [tag]item:return context.getItem('smoke');[/tag] — малко метално топче, което след удар избухва в гъсти кълба бял дим.[/p][p][image source='21' title='' hspace='0' vspace='0' align='center' width='63' height='52' /][/p][p]5. [tag]item:return context.getItem('cats');[/tag] — метални куки, прикрепящи се с ремъци към ръцете и краката. С тяхна помощ може да се изкачи почти всяка стена.[/p][p]Многократна употреба.[/p][p][image source='22' title='' hspace='0' vspace='0' align='center' width='296' height='211' /][/p][p]6. [tag]item:return context.getItem('antidote');[/tag] — изключително полезно нещо.[/p][p][image source='23' title='' hspace='0' vspace='0' align='center' width='115' height='134' /][/p][p]Накрая погледът ти се спира на една част от стената, окичена с метателни оръжия. Вниманието ти привличат три от тях:[/p][p]1. [tag]item:return context.getItem('bowAndArrows');[/tag].[/p][p][image source='24' title='' hspace='0' vspace='0' align='center' width='453' height='229' /][/p][p]2. [tag]item:return context.getItem('twoShurikens');[/tag].[/p][p][image source='25' title='' hspace='0' vspace='0' align='center' width='164' height='115' /][/p][p]3. [tag]item:return context.getItem('throwingKnife');[/tag] — малко двуостро ножче, прикрепено към ръката ти. Ако ремъкът, който го придържа, се отхлаби, е достатъчно едно рязко движение, за да се изстреля оръжието в желаната посока.[/p][p]Можеш да го използваш и без да е споменат в текста, за да убиеш един от противниците си (ако е човек).[/p][p][image source='26' title='' hspace='0' vspace='0' align='center' width='303' height='151' /][/p][p][script]$.itemsSelected = false;
+$.inventory = &amp;ob;&amp;cb;;
+$.items = &amp;ob;
+  context.createItem('dew'),
+  context.createItem('seed'),
+  context.createItem('snake'),
+  context.createItem('necklace'),
+  context.createItem('dust'),
+  context.createItem('skin'),
+  context.createItem('glow'),
+  context.createItem('powder'),
+  context.createItem('potion'),
+  context.createItem('rope'),
+  context.createItem('keys'),
+  context.createItem('rusk'),
+  context.createItem('smoke'),
+  context.createItem('cats'),
+  context.createItem('antidote'),
+  context.createItem('bowAndArrows'),
+  context.createItem('twoShurikens'),
+  context.createItem('throwingKnife'),
+&amp;cb;;[/script][/p][p][clicker]if (!$.itemsSelected) {
+  context.showItemTransferDialog($.inventory, $.items, 'Инвентар', 'Премети', `Можеш да избереш ${player.carryLimit} предмета`, 'Предмети',
+    function(result) {
+      if ($.result) {
+        $.inventory = result.leftItems;
+      }
+    },
+    function(payload) {
+      return `Избрал си ${context.getItemCount(payload.leftItems)} предмета от общо ${player.carryLimit}`;
+    },
+    {
+      infinite: true
+    });
+}
+return true;[/clicker][tag]general:return 'Избери предмети';[/tag][endclicker /][/p][p][blocker]if (context.getItemCount($.inventory) &amp;gt; player.carryLimit) {
+  context.showPopupMessage('Избрал си прекалено много предмети');
+  return false;
+}
+$.itemsSelected = true;
+return true;[/blocker][tag]general:return 'Продължи';[/tag][endblocker /][script]for (let i = 0; i &amp;lt; $.inventory.length; i++) {
+  if ($.inventory&amp;ob;i&amp;cb;.id === 'bowAndArrows') {
+    context.addItem(player, 'bow', $.inventory&amp;ob;i&amp;cb;.stack);
+    context.addItem(player, 'arrow', $.inventory&amp;ob;i&amp;cb;.stack * 3);
+  } else if ($.inventory&amp;ob;i&amp;cb;.id === 'twoShurikens') {
+    context.addItem(player, 'shuriken', $.inventory&amp;ob;i&amp;cb;.stack * 2);
+  } else {
+    context.addItem(player, $.inventory&amp;ob;i&amp;cb;);
+  }
+}[/script][/p][p][/p][p]Завършваш дългото избиране. Това като че ли ще ти е достатъчно. Прибираш придобивките си в една здрава кожена походна торба и се отправяш към вратата, където те чака жрецът, проследил с интерес избора ти.[/p][p][link target='509'](продължи)[/link][/p]</Text>
+    </Episode>
+    <Episode Id="Rules2" IsMarked="true" Location="82.5;32.5">
+      <Text>[p][bold]НИВО НА ЖИВОТ[/bold][/p][p]Първото, което трябва да определиш, преди да започнеш играта, е броят на жизнените си точки. Прибави Шанс към 50 и запиши сбора на съответното място в дневника.[/p][p][embed value='Roll' /][script]player.maxLife = 50 + $.result;
+player.life = player.maxLife;[/script] Жизнените ти точки са [tag]info:return player.life;[/tag].[/p][p]По време на играта броят на жизнените точки ще намалява и ще се увеличава, но няма да може да надхвърля първоначалната си стойност, както и горната граница на съответното ниво на живот (вж. таблицата). Ако броят на жизнените точки падне до нула (IV ниво), играта приключва.[/p][p][embed value='LifeTable' /][/p][p]Можеш да направиш справка към тази таблица във всеки момент от приключението, като погледнеш в Журнала (горе вдясно).[script]context.showJournalEntry('rules');[/script][/p][p][link target='Rules3'](продължи)[/link][/p]</Text>
+    </Episode>
+    <Episode Id="Roll" IsMarked="true" Location="42.5;52.5">
+      <Text>[p][blocker]$.result = context.roll(1, 12);
+return true;[/blocker][tag]general:return 'Шанс';[/tag][endblocker /][/p][p]Избраното число е [tag]info:return $.result;[/tag].[/p]</Text>
+    </Episode>
+    <Episode Id="LifeTable" IsMarked="true" Location="42.5;72.5">
+      <Text>[p][table width='60%' halign='center'][col width='40%' halign='left'][/col][col width='40%' halign='left'][/col][col width='20%' halign='left'][/col][tr][th][p]Ниво на живот[/p][/th][th][p]Граници[/p][/th][th][p]Бонус[/p][/th][/tr][tr][td][p]I ниво (здрав)[/p][/td][td][p]от 62 до 41 точки[/p][/td][td][p]+5 точки[/p][/td][/tr][tr][td][p]II ниво (ранен)[/p][/td][td][p]от 40 до 16 точки[/p][/td][td][p]+3 точки[/p][/td][/tr][tr][td][p]III ниво (осакатен)[/p][/td][td][p]от 15 до 1 точки[/p][/td][td][p]+1 точка[/p][/td][/tr][tr][td][p]IV ниво (убит)[/p][/td][td][p]0 точки[/p][/td][td][p][symbol value='mdash' /][/p][/td][/tr][/table][/p]</Text>
+    </Episode>
+    <Episode Id="Rules3" IsMarked="true" Location="102.5;32.5">
+      <Text>[p][bold]УМЕНИЯ[/bold][/p][p]В тази книга разполагаш с Умения, на които съответства дадена числова стойност, изменяща се спрямо Нивото на живот (вж. таблицата).[/p][p][embed value='SkillTable' /][/p][p][link target='Rules4'](продължи)[/link][/p]</Text>
+    </Episode>
+    <Episode Id="Rules" IsMarked="true" Location="42.5;92.5">
+      <Text>[p][bold]НИВО НА ЖИВОТ[/bold][/p][p][embed value='LifeTable' /][/p][p][bold]УМЕНИЯ[/bold][/p][p][embed value='SkillTable' /][/p][p][link target=':return'](обратно)[/link][/p]</Text>
+    </Episode>
+    <Episode Id="Rules4" IsMarked="true" Location="122.5;32.5">
+      <Text>[p][bold]СИЛА[/bold][/p][p]Силата ти не е постоянно число. За всяка битка тя е различна и се получава от числовата стойност на Ниво на живот и Уменията ти в дадения момент.[/p][p]Пример: Силата ти се получава от Ниво на живот и Умение за бой с хладни оръжия. Ако в момента се намираш във II ниво (ранен), събираш [tag]info:return 3;[/tag] точки от Ниво на живот с [tag]info:return 1;[/tag] от Умения за бой с хладни оръжия, Силата ти за тази битка е [tag]info:return 4;[/tag].[/p][p][link target='Rules5'](продължи)[/link][/p]</Text>
+    </Episode>
+    <Episode Id="SkillTable" IsMarked="true" Location="62.5;72.5">
+      <Text>[table width='80%' halign='center'][col width='30%' halign='left'][/col][col width='30%' halign='left'][/col][col width='20%' halign='left'][/col][col width='20%' halign='left'][/col][tr][th][p]Умение за[br /]ръкопашен бой[/p][/th][th][p]Умение за бой с хладни[br /]оръжия[/p][/th][th][p]Точност[/p][/th][th][p]Ловкост[/p][/th][/tr][tr][td][p]I ниво — 1 т.[/p][/td][td][p]I ниво — 2 т.[/p][/td][td][p]I ниво — 3 т.[/p][/td][td][p]I ниво — 4 т.[/p][/td][/tr][tr][td][p]II ниво — 0 т.[/p][/td][td][p]II ниво — 1 т.[/p][/td][td][p]II ниво — 2 т.[/p][/td][td][p]II ниво — 2 т.[/p][/td][/tr][tr][td][p]III ниво — 0 т.[/p][/td][td][p]III ниво — 0 т.[/p][/td][td][p]III ниво — 0 т.[/p][/td][td][p]III ниво — 0 т.[/p][/td][/tr][/table]</Text>
+    </Episode>
+    <Episode Id="Rules5" IsMarked="true" Location="142.5;32.5">
+      <Text>[p][bold]ПРАВИЛА НА БИТКИТЕ[/bold][/p][p]Всеки от противниците ти има Сила и известен бой жизнени точки. За да нанесеш удар, трябва да посочиш едно произволно число и да го прибавиш към Силата си. Ако сборът е по-голям от Силата на противника, броят на жизнените му точки намалява с две. Ако е по-малък — твоите намаляват с две. Ако е равен и двамата губите по една жизнена точка. Битката продължава, докато някой изчерпи жизнените си точки.[/p][p]Пример: Сила на противника — 12, жизнени точки — 6. Твоята сила е 7.[/p][p]Посочваш числото 8. Събираш го със силата си. Сборът — 15 — е по-голям от силата на противника. Жизнените му точки остават четири.[/p][p]Посочваш числото 2. Сборът — 9 — е по-малък от противниковата сила — губиш 2 точки.[/p][p]Посочваш 5. Сборът — 12 — е равен на Силата на противника. И двамата губите по една точка и т.н.[/p][p][link target='Maps'](продължи)[/link][/p]</Text>
+    </Episode>
+    <Episode Id="Maps" IsMarked="true" Location="162.5;32.5">
+      <Text>[p][bold]КАРТИ[/bold][/p][p][image source='3' title='' hspace='0' vspace='0' align='center' width='663' height='554' /][/p][p][image source='4' title='' hspace='0' vspace='0' align='center' width='480' height='696' /][/p][p]Картите също са достъпни в Журнала по всяко време на приключението.[script]context.showJournalEntry('map1');
+context.showJournalEntry('map2');[/script][/p][p][link target='1'](продължи)[/link][/p]</Text>
+    </Episode>
+    <Episode Id="Map1" IsMarked="true" Location="62.5;92.5">
+      <Text>[p][image source='3' title='' hspace='0' vspace='0' align='center' width='663' height='554' /][/p][p][link target=':return'](обратно)[/link][/p]</Text>
+    </Episode>
+    <Episode Id="Map2" IsMarked="true" Location="82.5;92.5">
+      <Text>[p][image source='4' title='' hspace='0' vspace='0' align='center' width='480' height='696' /][/p][p][link target=':return'](обратно)[/link][/p]</Text>
+    </Episode>
+    <Episode Id="509" IsMarked="true" Location="387.5;72.5">
+      <Text>[p]— Готов ли си?[/p][p]Кимваш твърдо.[/p][p]— Да вървим.[/p][p]Спускате се отново по безкрайните стълбища на кулата и излизате на една площадка ниско над вътрешния двор. Долу потропват дузина жребци, в чиито ездачи разпознаваш повечето от приятелите си в Легиона, Барт и Слим, който ожесточено ти маха с ръка:[/p][p][image source='27' title='' hspace='0' vspace='0' align='center' width='717' height='484' /][/p][p]— Хайде, бе! Само теб чакаме.[/p][p]Поглеждаш жреца.[/p][p]— Тръгвай, момчето ми. И нека Боговете бъдат с теб.[/p][p]Пренебрегвайки стълбищата, се мяташ от четириметровата височина върху седлото на чакащия кон. Слим и другите посрещат изпълнението с бурни овации. Дори на устните на жреца заиграва весела усмивка — за първи път през тази нощ.[/p][p]Подсмихваш се скромно и заемаш мястото си на водач. Обръщаш леко коня и махваш с ръка:[/p][p]— Е, приятели! Да видим сметката на дъртия Гуор![/p][p]Препускаш напред и те се понасят след теб, хилейки се и мърморейки одобрително. Отправяте се по пустите улици към южния край на града.[/p][p]На изток небето просветлява. Ражда се един нов ден. И една нова надежда.[/p][p][link target='330'](продължи)[/link][/p]</Text>
+    </Episode>
+    <Episode Id="330" IsMarked="true" Location="307.5;92.5">
+      <Text>[p]На излизане от града дръпваш рязко юздите на коня. Останалите спират край теб. Пред вас пътищата се разклоняват, следвайки посоките на света. Ти трябва да избереш пътя към Алкирия.[/p][p][link target='470']На изток край Голямата стена до морския град Турил, а после с кораб до южното пристанище Харп[/link].[br /][link target='524']На юг през степта до северната граница на Алкирия — Черната гора[/link].[/p]</Text>
+    </Episode>
+    <Episode Id="470" IsMarked="true" Location="197.5;112.5">
+      <Text>[p]Махваш с ръка и дузината войници се отклоняват по източния път. Дръпваш юздите на коня, докато те препускат в галоп покрай теб, по един и по двама, бързи, силни, могъщи ездачи.[/p][p]Но сравнени с въздигащата се мрачна мощ на Гуор, те са като дръвче пред буря.[/p][p]Пришпорваш зафирския си жребец, жилаво, нервно животно, готово да бяга две денонощия, без да спре, сякаш бяга за живота си, и подминаваш хората си, докато отново си начело.[/p][p]Слим препуска, както винаги, приведен, отпуснат, ухилен до уши, сякаш готов да падне всеки миг и бърз като вятъра.[/p][p]Прашният път завива наляво към Стената. Край вас прелитат струпаните армии мъже от целия Стар свят, събрани до тази каменна крепост дълга стотици километри и спряла бесния пристъп на варварите.[/p][p]Десетки хиляди мъже, които ще умрат, за да защитят Стария свят от безчисленото зло. Мъже, които ще умрат, ако не успееш.[/p][p]Казваш това на Слим. Известно време той втренчено гледа пламъците на лагерния огън.[/p][p]Радваш се, че те разбира. Най-сетне тъжно промълвява:[/p][p]— Има и жени.[br /]— Какво?[br /]— Има и жени, които ще умрат, ако не успеем. Спомни си само многобройните жени — воини, които срещнахме. За тях най-ми е жал — той те поглежда тъжно, докато вече не може да се сдържа, и избухва в смях.[/p][p]Възмутено ставаш и се отдалечаваш към конете.[/p][p][link target='375'](продължи)[/link][/p]</Text>
+    </Episode>
+    <Episode Id="524" Location="447.5;112.5">
+      <Text />
+    </Episode>
+    <Episode Id="375" IsMarked="true" Location="197.5;132.5">
+      <Text>[p]Препускате в галоп целия ден, но често спирате, за да изчаквате огромните групи строени войници, които се придвижват към стената, пресичайки пътя ви. Ядосваш се, че се бавиш, мислейки, че с едно знаме с герба на върховния жрец ще минавате през тях като нож през масло, но Слим е прав: Мисията ви е тайна и вие не трябва да сте нищо повече от пътуващи воини.[/p][p]Когато се свечерява, се настанявате на лагер сред хаотично разположени части от пъстрата армия. Ще потеглите рано на следващия ден и по обяд ще сте в Турил, ако Боговете са съгласни с това.[/p][p]Лагерът ви е просто устроен: до огъня са налягали воините, около които с дрънчене на букаи обикалят пасящите коне. Наглеждаш ги: изглеждат по-малко уморени от теб самия. Умираш за сън.[/p][p]Недалеч забелязваш друг лагер с ярко светещи огньове.[/p][p][link target='574']Ще отидеш ли да видиш кои са съседите ви[/link].[br /][link target='443']Или ще останеш при своите[/link].[/p]</Text>
+    </Episode>
+    <Episode Id="574" IsMarked="true" Location="187.5;152.5">
+      <Text>[p]Проверяваш за всеки случай как стои мечът на кръста ти и се отправяш бавно към съседния лагер, попивайки обстановката около себе си: дрънчене, викове, танцуващи огньове, войници навсякъде, коне, оръжия. За теб, роденият воин, всичко това успокоява и прави човека уверен в силите си.[/p][p]Бивакът на съседите ви е по-голям. Тук се е настанила малка войскова част, в хората от която разпознаваш войници от Западните кралства — сурови и опитни бойци с жълтеникава кожа, плащащи твърде голям данък на религиозните си обичаи да вземат пленници, които после убиват по сложни ритуали. Подсмихваш се, когато си припомняш забележката на Слим: „Правят огромни жертви, за да пленят някой беснеещ варварин, когото после умъртвяват с нокът от кокошка.“[/p][p]Началникът им, облечен в кожи в топлата вечер, с бързи крачки се доближава и спира пред теб. Нанизът от зъби на гърдите му издрънчава при отривистия поклон. Неуверено отвръщаш на поздрава. Устните му се изопват в усмивка:[/p][p]— Ъ-ъ… шай?[/p][p]Кимваш.[/p][p]След малко двамата седите край огъня, отпивайки чай с мляко, налят в дървени чаши. Разговаряте с жестове и мимики за това, колко много войници има наоколо и как побеждавате варварите. Неочаквано той скача на крака и те подканва да го последваш. Тръгваш след него и той те завежда до една групичка коне, които разпъжда с викове и удари. От тъмното изниква огромна и груба клетка от здрави греди, завързани с дебели четири пръста въжета. В нея са насядали по земята десетина мръсни и раздърпани варвари: две жени, едно младо момче и останалите — едри и силни войни. Водачът ти взема един кол и започва да ръчка един от тях, полугол брадат исполин. Обръща се, за да ти се усмихне, и в същия миг варваринът мълниеносно сграбчва кола и го дръпва толкова силно и бързо, че жълтокожият се блъсва в клетката. Макар и замаян, той отскача, преди пленникът да го сграбчи за гърлото. Тръгваш след него обратно, докато варваринът чупи кола на парчета.[/p][p]Сбогуваш се с поклон и се връщаш в лагера си.[/p][p][link target='443'](продължи)[/link][/p]</Text>
+    </Episode>
+    <Episode Id="443" IsMarked="true" Location="207.5;152.5">
+      <Text>[p]Воините са налягали около огъня и някои от тях вече са се пренесли в царството на сънищата. И последните остатъци от деня са вече удавени в мрак, който трепти от отблясъците на лагерните пламъци. Чувстваш се страшно уморен. Струва ти се, че ако не легнеш веднага, ще паднеш. Ще останеш ли на стража пръв или ще определиш някой друг?[/p][p][link target='586']Ще останеш[/link].[br /][link target='663']Или не[/link].[/p]</Text>
+    </Episode>
+    <Episode Id="586" IsMarked="true" Location="207.5;172.5">
+      <Text>[p]Сядаш до огъня бавно, протягайки изтръпналите си крака. Оглеждаш спътниците си, налягали, завити с плащовете си. Слим спи безшумно, отвит, както винаги, а останалите сумтят, мърморят и хъркат. Главата ти клюмва на гърдите. „Просто ще си почина — мислиш си — ще се вслушвам във всеки шум.“ От дълбокия сън те изважда потупване по рамото. Рязко се обръщаш. Един от спътниците ти се усмихва:[/p][p]— Остави на мен. Уморен си.[/p][p]Поглеждаш го с благодарност.[/p][p]— Как ти е името, човече?[br /]— Чад. От Конната гвардия. Легни сега.[/p][p]Ще приемеш ли?[/p][p][link target='371']Да[/link].[br /][link target='584']Не[/link].[/p]</Text>
+    </Episode>
+    <Episode Id="663" IsMarked="true" Location="187.5;172.5">
+      <Text>[p]Оглеждаш уморено спътниците си.[/p][p]— Доброволец за стража? — подвикваш без особена надежда.[/p][p]Един от мъжете се надига на лакът:[/p][p]— Добре.[br /]— Как ти е името, човече? — възкликваш с благодарност.[br /]— Чад. Ханджабска Конна гвардия.[br /]— След два часа събуди някого. Може и мен.[/p][p]Той кимва и става на крака. Отпускаш се, уморен до смърт, и заспиваш веднага, потъвайки[br /]дълбоко в обятията на съня.[/p][p][link target='371'](продължи)[/link][/p]</Text>
+    </Episode>
+    <Episode Id="371" IsMarked="true" Location="187.5;192.5">
+      <Text>[p]Сънуваш детството си в Ханджаб. Незнайно защо, в паметта ти изплуват образите на приятелите ти от улицата. Замисляте някаква пакост, може би кражба на сливи. Но собственикът се появява с тояга в ръка и те е страх, страхуваш се до смърт… докато се събуждаш рязко и отваряш очи, уверен, че нещо не е наред. Леко издишаш, после си поемаш въздух и заедно с това сетивата ти заработват. Чуваш пукането на огъня, усещаш грапавата земя под себе си, миризмата на дим… и на опасност. Близка опасност. Сграбчваш меча и се обръщаш по гръб. Нищо. Само пръхтенето на конете. В мрака няма силуети. Нищо. Тихо лягаш отново на една страна, стиснал здраво оръжието си.[/p][p][link target='738'](продължи)[/link][/p]</Text>
+    </Episode>
+    <Episode Id="584" IsMarked="true" Location="207.5;192.5">
+      <Text>[p]— Не, ще остана — настояваш.[/p][p]Той свива рамене леко обиден.[/p][p]— Виж, не те подценявам — обясняваш — просто ще остана.[/p][p]Ще те събудя след два часа. Чад ляга обратно, без да продума. Не усещаш как сънят те[br /]оборва и как тупваш на земята дълбоко заспал.[/p][p][link target='245'](продължи)[/link][/p]</Text>
+    </Episode>
+    <Episode Id="738" IsMarked="true" Location="177.5;212.5">
+      <Text>[p][embed value='RollLife' /][/p][p][if]return $.result &amp;gt; 11;[/if][link target='377'](продължи)[/link][else /][link target='691'](продължи)[/link][endif /][/p]</Text>
+    </Episode>
+    <Episode Id="RollLife" IsMarked="true" Location="62.5;52.5">
+      <Text>[p][blocker]$.result = context.roll(1, 12);
+return true;[/blocker][tag]general:return 'Шанс + Ниво на живот';[/tag][endblocker /][/p][p]Избраното число е [tag]info:return `${$.result} + ${player.lifeBonus} (Ниво на живот) = ${$.result + player.lifeBonus}`;[/tag].[script]$.result += player.lifeBonus;[/script][/p]</Text>
+    </Episode>
+    <Episode Id="377" IsMarked="true" Location="152.5;232.5">
+      <Text>[p]Не можеш да заспиш. Някаква невидима опасност не ти дава мира. Всички в лагера спят дълбоко, включително и пазачът до огъня. Надигаш се и се отправяш към него. Бутваш го по рамото и той тупва на земята, без да се събуди.[/p][p]„Дори похърква на пост“ — мислиш с отвращение.[/p][p]Хващаш го за рамената и го разтърсваш.[/p][p]— Ъ? — казва той, оглеждайки се с мътен поглед.[br /]— Спиш на стража — казваш тихо и отчетливо.[/p][p]Той гледа зад гърба ти с внезапно избистрени очи. Скачаш и се обръщаш, вдигайки ръка над главата си и протягайки другата към меча. Жесток удар с тояга те поваля на земята, но преди втория успяваш да забиеш оръжието в корема на нападателя.[/p][p]— Варвари! — изкрещява пазачът.[/p][p]Вече е късно. Тихи като сенки, десетина варвари са нападнали лагера ви и до всеки от хората ти е приклекнал по един, впил пръсти в гърлото му.[/p][p]„Слим“ — минава през ума ти. Търсещият ти поглед се спира на едно разчорлено същество, което се навежда над спящия ти приятел. Бързо![/p][p][embed value='RollAgility' /][/p][p][if]return $.result &amp;gt;= 12;[/if][link target='33'](продължи)[/link][else /][link target='454'](продължи)[/link][endif /][/p]</Text>
+    </Episode>
+    <Episode Id="691" IsMarked="true" Location="197.5;212.5">
+      <Text>[p]Унасяш се отново. Събуждат те отново пръсти, които обвиват гърлото ти и се впиват здраво в него. Помътнелият поглед едва различава някакъв едър силует, надвесен над теб. В ръцете си усещаш меча, бавно го измъкваш, все по-бавно, сантиметър по сантиметър, докато губиш съзнание…[/p][p][embed value='RollLife' /][/p][p][if]return $.result &amp;gt;= 12;[/if][link target='120'](продължи)[/link][else /][link target='765'](продължи)[/link][endif /][/p]</Text>
+    </Episode>
+    <Episode Id="RollAgility" IsMarked="true" Location="82.5;52.5">
+      <Text>[p][blocker]$.result = context.roll(1, 12);
+return true;[/blocker][tag]general:return 'Шанс + Ловкост';[/tag][endblocker /][/p][p]Избраното число е [tag]info:return `${$.result} + ${player.agilityBonus} (Ловкост) = ${$.result + player.agilityBonus}`;[/tag].[script]$.result += player.agilityBonus;[/script][/p]</Text>
+    </Episode>
+    <Episode Id="33" IsMarked="true" Location="142.5;252.5">
+      <Text>[p]С два скока доближаваш Слим и се хвърляш към нападателя му с протегнат меч. Острието попада в рамото и варваринът пада встрани. Скачаш върху него. Разчорлената коса открива лице на жена. В очите й има животински блясък. Не се поколебаваш и за миг и я пронизваш.[/p][p]— Пфу, отвратен съм — казва Слим зад гърба ти. Обръщаш се гневно. Надигнал се е на лакът.[br /]— Да убиваш жени — допълва.[br /]— Няма ли да се биеш?[/p][p]Той мързеливо се надига и пронизва един нападащ с нож варварин. Огромният мъж се просва на земята, сгърчва се и умира.[/p][p]— Внимавай — казва Слим.[/p][p]Обръщаш се светкавично. Срещу теб препуска на един от неоседланите коне широкоплещест варварин сграбчил огромен боздуган. Отскачаш встрани, а оръжието просвистява край ушите ти. Двубоят ще е твърде труден.[script]context.startBattle('barbarian');
+$.playerStrengthAttr1 = 'lifeBonus';
+$.playerStrengthAttr2 = 'weaponSkill';
+$.winEpisode = 35;
+$.loseEpisode = 381;[/script][/p][p]Силата на варварина ездач е 15, а жизнените точки — 10. Твоята се получава от Нивото на живот и Умението за бой с хладни оръжия.[/p][p][embed value='Battle' /][/p]</Text>
+    </Episode>
+    <Episode Id="454" IsMarked="true" Location="162.5;252.5">
+      <Text>[p]Втурваш се към Слим. Варваринът посяга да сграбчи гърлото му, но в следващия миг полита назад с хъркащ вик и нож в корема. Приятелят ти мързеливо се надига на лакът. Достигаш нападателя и с един удар го посичаш. Разчорлената коса открива лице на жена, озъбена в смъртна гримаса.[/p][p]— Пфу, отвратен съм — казва Слим зад гърба ти.[/p][p]Поглеждаш го.[/p][p]— Да ме принудят да убия жена. Мръсни варвари![/p][p]Той се надига и с един небрежен удар пронизва нападащия го мъжага. Варваринът се просва, сгърчва се и умира.[/p][p]Слим подритва презрително трупа и се отправя към следващия.[/p][p]Жесток удар в рамото те завърта. Изгубил равновесие, падаш на колене. Край теб на неоседлан кон профучава широкоплещест варварин, въртящ боздуган.[/p][p]Подпираш се на меча и се надигаш. Остра болка тупти в рамото ти (изгубил си [tag]minus:return 2;[/tag] жизнени точки).[script]return context.reducePlayerLife(2);[/script] Противникът ти грубо обръща коня и отново препуска към теб.[script]context.startBattle('barbarian');
+$.playerStrengthAttr1 = 'lifeBonus';
+$.playerStrengthAttr2 = 'weaponSkill';
+$.winEpisode = 35;
+$.loseEpisode = 381;[/script][/p][p]Силата му е 15, а жизнените точки 10. Твоята сила се получава от Ниво на живот и Умение за бой с хладни оръжия.[/p][p][embed value='Battle' /][/p]</Text>
+    </Episode>
+    <Episode Id="245" IsMarked="true" Location="217.5;212.5">
+      <Text>[p]Събуждаш се изведнъж, ледена пот е избила по челото ти, а когато отваряш очи, над теб се е надвесил огромен силует. Замахваш напосоки с меча и той се отдръпва. Надигаш се на крака и в следващия миг нападателят се хвърля към теб с нечовешка бързина и те поваля на земята, обвил пръсти около гърлото ти. Опитваш се да извадиш меча от ножницата, но натискът става все по-силен, а движенията ти все по-бавни, взорът ти бавно помътнява…[/p][p][embed value='RollLife' /][/p][p][if]return $.result &amp;gt;= 13;[/if][link target='120'](продължи)[/link][else /][link target='765'](продължи)[/link][endif /][/p]</Text>
+    </Episode>
+    <Episode Id="120" IsMarked="true" Location="197.5;232.5">
+      <Text>[p]Най-сетне успяваш да извадиш меча си и безсилно го насочваш нагоре. Чувстваш как потъва в нещо и отдалеч чуваш смъртен вик. Мракът пред очите ти бавно се разсейва. С пъшкане избутваш човека от себе си и го оглеждаш, както лежиш по гръб: варварин![/p][p]Скачаш моментално на крака. Из лагера са плъзнали десетина огромни брадати варвари и избиват хората ти, като ги душат или чупят вратовете им. Слим безшумно се плъзга насам-натам като повей на смъртта.[/p][p]Жесток удар в рамото те поваля на колене. Край теб профучава на неоседлан кон едър варварин, въртящ тежък боздуган. Подпираш се на меча и се надигаш. Остра болка пронизва ръката ти (изгубил си [tag]mins:return 2;[/tag] жизнени точки).[script]return context.reducePlayerLife(2);[/script] Противникът ти грубо обръща коня и препуска към теб.[script]context.startBattle('barbarian');
+$.playerStrengthAttr1 = 'lifeBonus';
+$.playerStrengthAttr2 = 'weaponSkill';
+$.winEpisode = 35;
+$.loseEpisode = 381;[/script][/p][p]Силата му е 15, а жизнените точки 10. Твоята сила се получава от Нивото на живот и Умението за бой с хладни оръжия.[/p][p][embed value='Battle' /][/p]</Text>
+    </Episode>
+    <Episode Id="765" IsMarked="true" Location="217.5;232.5">
+      <Text>[p]Бавно се връщаш в съзнание. Всяко вдишване прогаря гърлото ти. Мъчиш се да отвориш очи, когато върху лицето ти плисва ледена течност. Изпръхтяваш и поглеждаш. Небето сивее. Над теб се е надвесил Слим с ведро в ръце.[/p][p]— Ако ме чуваш, мигни! — заповядва той.[/p][p]Усърдно мигаш. В лицето ти се излива нов поток студена вода. Изплюваш я и сърдито казваш:[/p][p]— Добре де…[br /]— Исках да съм сигурен — прекъсва те Слим.[/p][p]Тромаво се надигаш на лакът. Гърлото те боли, вратът ти е схванат, а в слепоочията ти пулсира непрекъснато тежко туптене. Ръката ти е съсечена и привързана.[/p][p]— Един варварин те душеше и се опита да ти счупи врата — обяснява Слим — аз го убих.[br /]— А ръката?[br /]— Извинявай. Какво? Порязах те, докато го убивах.[/p][p]Поклащаш глава и сядаш тежко. Отмалял си. Изгубил си общо [tag]minus:return 8;[/tag] жизнени точки.[script]return context.reducePlayerLife(8);[/script][/p][p]— А останалите? — питаш немощно.[/p][p]Слим свежда очи.[/p][p][link target='695'](продължи)[/link][/p]</Text>
+    </Episode>
+    <Episode Id="695" IsMarked="true" Location="217.5;252.5">
+      <Text>[p]Оглеждаш се. В лагера цари застинал хаос. Върху огъня се е проснал някой и белият дим се издига бавно към просветляващото небе. Навсякъде лежат труповете на варварите и на хората ти. Много от войниците са убити в съня им и са проснати с нелепо обърнати глави. Живите не са много.[/p][p]— Колко — питаш тихо.[br /]— Осем — още по-тихо казва Слим.[br /]— Живи? — прошепваш.[br /]— Убити — четеш го по устните му. Надига глава. Очите му блестят. — Все пак оставаме петима. Ще успеем, ще видиш! Колко е то до Турил, нали?[/p][p]Кимваш. Нямаш сили да кажеш нищо.[/p][p]„Още в началото — минава през ума — в самото начало. Осем убити от варварите. Варварите.“[/p][p]Рязко вдигаш глава:[/p][p]— Откъде дойдоха?[br /]— От съседния лагер. Някакви Западни части ги пленили, за да ги гъделичкат с въглен по петите. Прегризали въжетата, избили всички и дошли тук…[br /]— Откъде знаеш?[br /]— Началникът и още двама оцелели, защото не били там. Дойде и ми го описа с жестове.[/p][p]Ставаш.[/p][p]— Къде? — пита Слим.[br /]— Да тръгваме към Турил. Слънцето изгрява.[/p][p]Той скача и усмивка се прокрадва по изнуреното му лице.[/p][p]— Нали ще успеем? — казваш почти на себе си.[/p][p][link target='534'](продължи)[/link][/p]</Text>
+    </Episode>
+    <Episode Id="Battle" IsMarked="true" Location="42.5;112.5">
+      <Text>[p]Започва нов боен рунд![script]$.selectedOpponent = -1;
+$.playerStrength = player&amp;ob;$.playerStrengthAttr1&amp;cb; + player&amp;ob;$.playerStrengthAttr2&amp;cb;;
+const def = context.getCharacterDefinition();
+$.playerStrengthString = `${player&amp;ob;$.playerStrengthAttr1&amp;cb;} (${def.attributes&amp;ob;$.playerStrengthAttr1&amp;cb;.name}) + ${player&amp;ob;$.playerStrengthAttr2&amp;cb;} (${def.attributes&amp;ob;$.playerStrengthAttr2&amp;cb;.name}) = ${$.playerStrength}`;[/script][/p][p]Твоятя сила за този рунд е [tag]info:return $.playerStrengthString;[/tag].[/p][p][embed value='BattleRound' /][/p][p][if]return $.outcome === 'win';[/if][script]context.endBattle();[/script][link target='script:' script='return $.winEpisode;'](продължи)[/link][else /][if]return $.outcome === 'lose';[/if][link target='script:' script='return $.loseEpisode;'](продължи)[/link][else /][link target='Battle'](продължи)[/link][endif /][endif /][/p]</Text>
+    </Episode>
+    <Episode Id="BattleRound" IsMarked="true" Location="62.5;112.5">
+      <Text>[p][tag]character:return $.opponents&amp;ob;0&amp;cb;;[/tag][/p][p][blocker]if ($.selectedOpponent === -1 &amp;amp;&amp;amp; $.opponents.length &amp;gt; 1) {
+  context.showPopupMessage('Избери противник!');
+  return false;
+} else {
+  return true;
+}[/blocker][tag]general:return "Атакувай!"[/tag][endblocker /][/p][p][script]$.opponent = $.opponents.length === 1 ? $.opponents&amp;ob;0&amp;cb; : $.opponents&amp;ob;$.selectedOpponent&amp;cb;;
+$.enemyHit = false;
+$.attackRoll = context.roll(1, 12);[/script][/p][p]Избраното число е [tag]info:return $.attackRoll;[/tag]. [if]return $.attackRoll + $.playerStrength &amp;gt; $.opponent.strength;[/if]Атаката ти е успешна и противникът губи [tag]info:return 2;[/tag] жизнени точки.[script]$.opponent.life -= 2;
+$.enemyHit = true;[/script][else /][if]return $.attackRoll + $.playerStrength &amp;lt; $.opponent.strength;[/if]Противникът те удря и губиш [tag]minus:return 2;[/tag] жизнени точки.[script]context.reducePlayerLife(2, true);
+$.lostLife += 2;[/script][else /]И двамата губите по [tag]minus:return 1;[/tag] жизнена точка.[script]$.opponent.life -= 1;
+$.enemyHit = true;
+context.reducePlayerLife(1, true);
+$.lostLife += 1;[/script][endif /][endif /][if]return $.enemyHit &amp;amp;&amp;amp; $.weaponPoisoned;[/if] Отровата убива противника ти мигновено.[script]$.opponent.life = 0;[/script][endif /][/p][p][if]return $.opponent.life &amp;lt;= 0;[/if]Победил си [script]return $.opponent.name;[/script].[script]const index = $.opponents.indexOf($.opponent);
+if (index !== -1) {
+  $.opponents.splice(index, 1);
+}
+if ($.opponents.length === 0) {
+  $.outcome = 'win';
+}[/script][else /][script]if (player.life &amp;lt;= 0) {
+  $.outcome = 'lose';
+}[/script][endif /][/p]</Text>
+    </Episode>
+    <Episode Id="381" IsMarked="true" Location="177.5;232.5">
+      <Text>[p]Замахваш към противника си, но той ловко отбягва удара и свистящият боздуган те поваля на колене. След втория удар рухваш под копитата на разбеснелия се кон.[/p][p]Съзнанието ти бавно угасва, докато смъртта те обгръща в студените си черни пръсти. Ти загина от варварска ръка, както ще загине и Старият свят.[/p]</Text>
+    </Episode>
+    <Episode Id="35" IsMarked="true" Location="197.5;252.5">
+      <Text>[p]Гмурваш се под поредния му удар и едновременно с обръщането го съсичаш почти на две. Конят изтрополява, отнасяйки трупа нанякъде.[/p][p]Оглеждаш се. Неколцина варвари бягат в тъмното, яхнали конете ви, а Слим довършва тези, които са останали.[/p][p]В светлината на огъня се втурват двама-трима от воините на Запада, обитаващи съседния лагер, крещейки възбудено. Изреваваш яростно, разбирайки каква е работата, и замахваш към тях с меча си. Те смутено побягват.[/p][p]— Хей, човече, те са ни съюзници! — подвиква Слим.[/p][p]Обръщаш се към него, червен от гняв:[/p][p]— Били са техни пленници. Пуснали са ги да избягат, проклети да са![br /]— Защо са дошли тук? — пита разсъдливо Слим.[br /]— Не знам. Знам, че ще отида и ще…[br /]— Чакай…[/p][p]Обръщаш се бясно и се упътваш към другия лагер. Небето бавно посивява. Слим свива рамене и се заема с войниците.[/p][p][link target='111'](продължи)[/link][/p]</Text>
+    </Episode>
+    <Episode Id="111" IsMarked="true" Location="197.5;272.5">
+      <Text>[p]В съседния лагер няма жива душа. Всички лежат избити, удушени или съсечени със собствените им оръжия. В единия край на лагера се издига огромна клетка от трупи, свързани с дебели въжета. Четири пръста коноп са прегризани, докато се образува дупка, за да се провре варварин.[/p][p]Връщаш се в лагера.[/p][p]До Слим са насядали оцелелите. Общо четирима. Разпознаваш Чад от Конната гвардия. До него е верният ти подчинен Барт. Слим намира погледа ти.[/p][p]— Ще успеем. Ще успеем.[/p][p]Затваряш очи.[/p][p]„В началото — минава през ума ти — осем в самото начало.“[/p][p]— Да тръгваме — казваш гласно.[/p][p]Слим скача на крака и усмивка се плъзва по изнуреното му лице.[/p][p]— Нали ще успеем? — промълвяваш.[/p][p][link target='534'](продължи)[/link][/p]</Text>
+    </Episode>
+    <Episode Id="534" IsMarked="true" Location="217.5;272.5">
+      <Text>[p]След час достигате мястото, където пътят завива надясно, отдалечавайки се от Стената. Пред вас се издига малък хълм. Спирате. Втренчваш се в хилядната армия, която оставяте.[/p][p]— За какво си мислиш? — пита Слим — За това каква надеждна защита оставяме зад гърба си?[/p][p]Поглеждаш го и той млъква.[/p][p]— Оставяме хората, които ще удържат варварите, докато сторим нещо — казваш тежко.[br /]— Но на нас ни се пада най-трудното — настоява Слим.[br /]— Държиш да ме успокоиш, така ли? — питаш.[br /]— Хей, той се пошегува! — извиква Слим.[/p][p]Уморено се усмихваш. Чад се приближава към теб:[/p][p]— Ако разрешиш, ще препусна зад хълма, за да проверя.[/p][p]Поглеждаш към Слим. Той свива рамене. Ще разрешиш ли?[/p][p][link target='65']Да[/link].[br /][link target='418']Не[/link].[/p]</Text>
+    </Episode>
+    <Episode Id="65" IsMarked="true" Location="207.5;292.5">
+      <Text>[p]— Добре — казваш.[/p][p]Той препуска напред по пътя и скоро се изгубва от погледа ти. Двамата със Слим бъбрите още малко, докато Барт и другият мъж тихо обсъждат достойнствата на зафирските жребци. След малко Чад се връща и сдържано кимва:[/p][p]— Чисто е. Мога да ви водя — добавя без особено желание.[/p][p][link target='422']Ще му позволиш ли да води[/link].[br /][link target='547']Или предпочиташ да е ясно кой е водачът в групата[/link].[/p]</Text>
+    </Episode>
+    <Episode Id="418" IsMarked="true" Location="227.5;292.5">
+      <Text>[p]— Няма нужда — отсичаш — Знам пътя.[/p][p]Слим те поглежда насмешливо. Озъбваш му се. „Все пак съм роден там“ — успокояваш се. Но също така е вярно, че не си бил в Турил повече от три години. Препускате отново и щом преваляте хълма, се спускате надолу в бесен галоп.[/p][p][link target='70'](продължи)[/link][/p]</Text>
+    </Episode>
+    <Episode Id="766" Location="227.5;1167.5">
+      <Text />
+    </Episode>
+    <Episode Id="422" IsMarked="true" Location="217.5;312.5">
+      <Text>[p]Махваш с ръка. Чад излиза най-отпред и препускате нагоре по хълма. Щом го преваляте, той повежда коня си надолу в тръс и вие го последвате, задържайки животните.[/p][p]— Хайде бе — извиква Слим — Какво става?[/p][p]Чад неочаквано рязко пришпорва жребеца си и пак спира, изоставайки покрай вас.[/p][p]— Конна гвардия — промърморва насмешливо приятелят ти и се спуска в галоп. Готвиш се да го последваш, когато неочаквано жребецът му се спъва с нещо и Слим хвръква напред, просвайки се на земята.[/p][p]Рязко се обръщаш към Чад.[/p][p]— Нали провери пътя, проклет да си? Ако му се е случило нещо… — млъкваш.[/p][p]Чад студено се усмихва.[/p][p][link target='70'](продължи)[/link][/p]</Text>
+    </Episode>
+    <Episode Id="547" IsMarked="true" Location="197.5;312.5">
+      <Text>[p]— Ще мина пръв — отсичаш.[/p][p]Препускате нагоре по хълма и щом го превалите, се спускате надолу в бесен галоп.[/p][p][link target='70'](продължи)[/link][/p]</Text>
+    </Episode>
+    <Episode Id="70" IsMarked="true" Location="227.5;332.5">
+      <Text>[p][embed value='Roll' /][/p][p][if]return $.result % 2 === 0;[/if][link target='723'](продължи)[/link][else /][link target='647'](продължи)[/link][endif /][/p]</Text>
+    </Episode>
+    <Episode Id="723" IsMarked="true" Location="217.5;352.5">
+      <Text>[p]Не знаеш какво те спасява: нервният кон, ловкостта или просто късметът, но летящата към теб стрела не се забива в целта си, а те подминава, спирайки в земята на хълма.[/p][p]Преди да откриеш кой я е изпратил, конят ти рязко нарушава крачката си и се накланя напред, хвърляйки те на земята.[/p][p][link target='18'](продължи)[/link][/p]</Text>
+    </Episode>
+    <Episode Id="647" IsMarked="true" Location="237.5;352.5">
+      <Text>[p]Неочаквано към теб просвистява нещо и в крака ти се впива малка стрела. Изохкваш и в следния миг конят ти рязко се спъва и ти политваш към земята. Падаш тежко върху ранения си крак и болката за момент те зашеметява. Губиш [tag]minus:return 4;[/tag] жизнени точки.[script]return context.reducePlayerLife(4);[/script][/p][p][link target='18'](продължи)[/link][/p]</Text>
+    </Episode>
+    <Episode Id="18" IsMarked="true" Location="227.5;372.5">
+      <Text>[p]В праха на пътя са опънати две въжета и благодарение на тях малкият ви отряд е спрян успешно. Не знаеш от кого. Нито защо.[/p][p]Тежко се изправяш, измъквайки меча си, и откриваш, че Слим вече е сторил същото. Барт е вдигнал заплашително боздугана си, а другият войник в момента става, накуцвайки.[/p][p]Търсещият ти поглед открива Чад на хълма, препускащ нагоре в обратна посока.[/p][p]„Подлец — мислиш учудено. — Страхливец.“[/p][p]— Предател! — извиква бясно Слим и хваща ножа си за хвърляне. Нечия стрела го изпреварва, събаряйки Чад от коня, пронизан в гърба.[/p][p]За момент четиримата стоите, вдигнали оръжията си. Слим отваря уста, за да каже нещо и в същия миг отвсякъде заваляват стрели — бързи, точни и смъртоносни.[/p][p][link target='145'](продължи)[/link][/p]</Text>
+    </Episode>
+    <Episode Id="145" IsMarked="true" Location="207.5;372.5">
+      <Text>[p]Без да мислиш, завърташ меча и метал издрънчава в метал, когато острието отхвърля летящата стрела. Посрещаш втората, миг преди да прониже лицето ти. „Няма да издържа още една“, блясва в ума ти.[/p][p]— Бързо! — изкрещява Слим — Зад скалата![/p][p]Втурваш се натам, но спираш пред падналия Барт. Оглеждаш се безумно.[/p][p]— Върви! — крещи Слим.[br /]— Върви! — промълвява Барт. Тялото му потръпва от стрелата, която в същия миг се забива в него.[/p][p]Затичваш се отново. Другият мъж от отряда се втурва към теб и след две крачки се хвърля, разперил ръце, посрещайки летящата към теб смърт с гърдите си. Следващата стрела издрънчава в камъка, зад който се скриваш.[/p][p][link target='22'](продължи)[/link][/p]</Text>
+    </Episode>
+    <Episode Id="22" IsMarked="true" Location="187.5;372.5">
+      <Text>[p]Задъхано се оглеждаш. Стрелите престават да се сипят, но тренираното ти съзнание вече е сигурно за това откъде са изстреляни.[/p][p]— Чакай тук — казва задъхано Слим, скача и се доближава до края на самотната скала, която стърчи край пътя. Хората с лъковете са от другата страна, зад купчините храсти. Зад скалата са завързани краищата на двете въжета, които сега лежат в мрака, изпълнили задачата си.[br /]— Вземам левия — отсича Слим.[/p][p]Кимваш. „Откъде пък е сигурен, че са двама.“[/p][p]— Стреляй, когато ти кажа — добавя.[br /]— Добре.[script]context.addItem(player, 'arrow', 3);[/script][/p][p]Ако имаш [tag]item:return context.getItem('bowAndArrows');[/tag] [link target='script:523' script='context.removeItem(player, &amp;apos;arrow&amp;apos;, 1); return 523;' condition='return player.getItem(&amp;apos;arrow&amp;apos;);']Лък и стрели[/link], [tag]item:return context.getItem('throwingKnife');[/tag] [link target='script:523' script='context.removeItem(player, &amp;apos;throwingKnife&amp;apos;, 1); return 523;' condition='return player.getItem(&amp;apos;throwingKnife&amp;apos;);']Нож за хвърляне[/link] или [tag]item:return context.getItem('shuriken');[/tag] [link target='script:523' script='context.removeItem(player, &amp;apos;shuriken&amp;apos;, 1); return 523;' condition='return player.getItem(&amp;apos;shuriken&amp;apos;);']Шурикен[/link], сега е моментът да ги използваш.[br /][link target='338']Ако нямаш нито едно от тях[/link].[/p]</Text>
+    </Episode>
+    <Episode Id="523" IsMarked="true" Location="197.5;392.5">
+      <Text>[p]Претегляш на ръка оръжието. За да улучиш, ще са ти необходими единадесет точки от Шанс и[br /]Точност. Имаш право само на един опит.[/p][p][embed value='RollPrecision' /][/p][p][if]return $.result &amp;gt;= 11;[/if][link target='265'](продължи)[/link][else /][link target='698'](продължи)[/link][endif /][/p]</Text>
+    </Episode>
+    <Episode Id="338" IsMarked="true" Location="177.5;392.5">
+      <Text>[p]— Слим — казваш.[/p][p]Той се обръща рязко.[/p][p]— Нямам с какво да стрелям.[/p][p]Известно време се гледате право в очите. Слим клати тъжно глава, но в погледа му блестят искрици смях.[/p][p]— Какъв глупак — казва накрая и се ухилва — Какво щастие, че имам един нож в повече. Ще се разделя с него с удоволствие… — протягаш нетърпеливо ръка. Сега ще ги избиеш. Готов си — … срещу един рубин.[/p][p]Поглеждаш го смаяно:[/p][p]— Слим?[/p][p]Той свива рамене.[/p][p]— Проклет да си — процеждаш — ще ти го дам след това.[br /]— Сега — настоява Слим — те ще почакат.[/p][p]Даваш му рубина.[script]context.removeItem(player, 'ruby', 1);[/script][/p][p][link target='523'](продължи)[/link][/p]</Text>
+    </Episode>
+    <Episode Id="RollPrecision" IsMarked="true" Location="102.5;52.5">
+      <Text>[p][blocker]$.result = context.roll(1, 12);
+return true;[/blocker][tag]general:return 'Шанс + Точност';[/tag][endblocker /][/p][p]Избраното число е [tag]info:return `${$.result} + ${player.precisionBonus} (Точност) = ${$.result + player.precisionBonus}`;[/tag].[script]$.result += player.precisionBonus;[/script][br /][/p]</Text>
+    </Episode>
+    <Episode Id="265" IsMarked="true" Location="187.5;412.5">
+      <Text>[p]— Сега! — казва Слим и се хвърля пред скалата. От храстите моментално забръмчава стрела и преди да се забие в ръката му, той хвърля ножа си натам, откъдето е дошла.[/p][p]Крясъкът още не е заглъхнал, когато втора излита от друго място и улучва Слим в подметката на ботуша, докато той пълзи обратно. Бърз като светкавица, мяташ своето оръжие и с удоволствие наблюдаваш как стрелецът се свлича на пътя.[/p][p][link target='89'](продължи)[/link][/p]</Text>
+    </Episode>
+    <Episode Id="698" IsMarked="true" Location="207.5;412.5">
+      <Text>[p]— Сега — казва Слим и се хвърля пред скалата. От храстите моментално забръмчава стрела и миг преди да се забие в ръката му той хвърля ножа си натам, откъдето е дошла.[/p][p]Крясъкът още не е заглъхнал, когато втора излита от друго място и улучва Слим в подметката на ботуша, докато той пълзи обратно. Прицелваш се и стреляш, но не улучваш.[/p][p]Човекът зад храстите може би вече е поставил следващата стрела. Хвърляш се към Слим и го издърпваш обратно зад скалата в безопасност, но стрелата, предназначена за него, се забива в тялото ти. Свличаш се зад камъка. Слим скача с рев въпреки раните си и с нечовешка сила хвърля меча си. Невярващо гледаш как огромното острие се върти във въздуха и потъва в човека с лъка, а тялото му отхвръква назад от силата на удара. Силите на приятеля ти стигат до тук и той се свлича, задъхан и кървящ. И ти не си по-добре. Изгубил си [tag]minus:return 4;[/tag] жизнени точки.[script]return context.reducePlayerLife(4);[/script] Почиваш си, без да мърдаш. След малко Слим започва да се смее.[/p][p]— Какво — изохкваш.[/p][p]Той се задъхва от смях:[/p][p]— Две… две обиколки на лагера допълнително… за лоша стрелба, вой… войнико…[/p][p]Не искаш, но се разкикотваш с него. Наистина не беше много точен този път.[/p][p][link target='89'](продължи)[/link][/p]</Text>
+    </Episode>
+    <Episode Id="89" IsMarked="true" Location="197.5;432.5">
+      <Text>[p]В труповете на двамата стрелци не откривате нищо особено, освен два рубина, които братска си поделяте. Намирате Чад в локва от кръв на хълма. Все още не можеш да повярваш.[script]context.addItem(player, 'ruby', 1);[/script][/p][p]— Беше предател — настоява Слим — организирал е засада. Изостана, защото е знаел за въжетата, но те го убиха, след като си свърши работата.[/p][p]Предател или не, той е мъртъв. Барт и другият мъж също. Още преди да стигнете в Алкирия, сте само двама. Вярно е, че Слим струва колкото десет бойци, а ти поне колкото трима, но все пак…[/p][p]Мрачни мисли се кълбят в душата ти. Слим си подсвирква, докато затяга седлото на един от конете. Гледаш го обвинително и мелодията бавно заглъхва.[/p][p]— Слушай — подема Слим — обяснявал съм ти го много пъти. Когато другите плачат, аз пея. Това е начин…[br /]— Знам — прекъсваш го — да тръгваме. И още нещо — той се обръща — свириш фалшиво.[/p][p][link target='133'](продължи)[/link][/p]</Text>
+    </Episode>
+    <Episode Id="133" Location="197.5;452.5">
+      <Text />
+    </Episode>
+  </Episodes>
+  <Transitions>
+    <Transition From="609" To="3" />
+    <Transition From="5" To="609" />
+    <Transition From="512" To="5" />
+    <Transition From="624" To="512" />
+    <Transition From="495" To="624" />
+    <Transition From="224" To="495" />
+    <Transition From="7" To="224" />
+    <Transition From="7" To="495" />
+    <Transition From="1" To="7" />
+    <Transition From="Intro" To="Rules1" />
+    <Transition From="Rules1" To="Rules2" />
+    <Transition From="Rules3" To="Rules4" />
+    <Transition From="Rules2" To="Rules3" />
+    <Transition From="Rules4" To="Rules5" />
+    <Transition From="Rules5" To="Maps" />
+    <Transition From="Maps" To="1" />
+    <Transition From="3" To="509" />
+    <Transition From="509" To="330" />
+    <Transition From="330" To="470" />
+    <Transition From="330" To="524" />
+    <Transition From="470" To="375" />
+    <Transition From="375" To="574" />
+    <Transition From="375" To="443" />
+    <Transition From="574" To="443" />
+    <Transition From="443" To="586" />
+    <Transition From="443" To="663" />
+    <Transition From="586" To="371" />
+    <Transition From="586" To="584" />
+    <Transition From="371" To="738" />
+    <Transition From="377" To="33" />
+    <Transition From="377" To="454" />
+    <Transition From="663" To="371" />
+    <Transition From="584" To="245" />
+    <Transition From="245" To="120" />
+    <Transition From="245" To="765" />
+    <Transition From="738" To="377" />
+    <Transition From="738" To="691" />
+    <Transition From="691" To="120" />
+    <Transition From="691" To="765" />
+    <Transition From="765" To="695" />
+    <Transition From="Battle" To="Battle" />
+    <Transition From="35" To="111" />
+    <Transition From="695" To="534" />
+    <Transition From="111" To="534" />
+    <Transition From="534" To="65" />
+    <Transition From="534" To="418" />
+    <Transition From="65" To="422" />
+    <Transition From="65" To="547" />
+    <Transition From="418" To="70" />
+    <Transition From="422" To="70" />
+    <Transition From="547" To="70" />
+    <Transition From="70" To="723" />
+    <Transition From="70" To="647" />
+    <Transition From="723" To="18" />
+    <Transition From="647" To="18" />
+    <Transition From="18" To="145" />
+    <Transition From="145" To="22" />
+    <Transition From="338" To="523" />
+    <Transition From="22" To="523" />
+    <Transition From="22" To="523" />
+    <Transition From="22" To="523" />
+    <Transition From="22" To="338" />
+    <Transition From="523" To="265" />
+    <Transition From="523" To="698" />
+    <Transition From="265" To="89" />
+    <Transition From="698" To="89" />
+    <Transition From="89" To="133" />
+  </Transitions>
+  <Groups />
+  <Global>
+    <Attributes />
+    <Events />
+    <Hooks />
+  </Global>
+  <Journal>
+    <JournalEntry>
+      <Attributes>
+        <Attribute Id="id">rules</Attribute>
+        <Attribute Id="name">Правила</Attribute>
+        <Attribute Id="description">[p]Информация за нивата на живот и съответните бонуси.[/p]</Attribute>
+        <Attribute Id="visible">False</Attribute>
+        <Attribute Id="canDelete">False</Attribute>
+      </Attributes>
+      <Events />
+      <Hooks>
+        <Hook Name="onRead">context.visitEpisode('Rules');</Hook>
+      </Hooks>
+    </JournalEntry>
+    <JournalEntry>
+      <Attributes>
+        <Attribute Id="id">map1</Attribute>
+        <Attribute Id="name">Карта на империята</Attribute>
+        <Attribute Id="visible">False</Attribute>
+        <Attribute Id="canDelete">False</Attribute>
+      </Attributes>
+      <Events />
+      <Hooks>
+        <Hook Name="onRead">context.visitEpisode('Map1');</Hook>
+      </Hooks>
+    </JournalEntry>
+    <JournalEntry>
+      <Attributes>
+        <Attribute Id="id">map2</Attribute>
+        <Attribute Id="name">Карта на Алкирия</Attribute>
+        <Attribute Id="visible">False</Attribute>
+        <Attribute Id="canDelete">False</Attribute>
+      </Attributes>
+      <Events />
+      <Hooks>
+        <Hook Name="onRead">context.visitEpisode('Map2');</Hook>
+      </Hooks>
+    </JournalEntry>
+  </Journal>
+  <Items>
+    <Item>
+      <Attributes>
+        <Attribute Id="id">sword</Attribute>
+        <Attribute Id="name">Меч</Attribute>
+      </Attributes>
+      <Events />
+      <Hooks />
+    </Item>
+    <Item>
+      <Attributes>
+        <Attribute Id="id">knife</Attribute>
+        <Attribute Id="name">Боен нож</Attribute>
+      </Attributes>
+      <Events />
+      <Hooks />
+    </Item>
+    <Item>
+      <Attributes>
+        <Attribute Id="id">diamond</Attribute>
+        <Attribute Id="name">Диамант</Attribute>
+      </Attributes>
+      <Events />
+      <Hooks />
+    </Item>
+    <Item>
+      <Attributes>
+        <Attribute Id="id">ruby</Attribute>
+        <Attribute Id="name">Рубин</Attribute>
+      </Attributes>
+      <Events />
+      <Hooks />
+    </Item>
+    <Item>
+      <Attributes>
+        <Attribute Id="id">opal</Attribute>
+        <Attribute Id="name">Опал</Attribute>
+      </Attributes>
+      <Events />
+      <Hooks />
+    </Item>
+    <Item>
+      <Attributes>
+        <Attribute Id="id">dew</Attribute>
+        <Attribute Id="name">Ефирна роса</Attribute>
+        <Attribute Id="description">Шишенце с прозрачна течност. След като я изпиеш, за известно време ставаш по-лек от въздуха.</Attribute>
+      </Attributes>
+      <Events />
+      <Hooks />
+    </Item>
+    <Item>
+      <Attributes>
+        <Attribute Id="id">seed</Attribute>
+        <Attribute Id="name">Огнено семе</Attribute>
+        <Attribute Id="description">Кристална сфера с няколко светещи семена в нея. Ако се разбие, те покълват светкавично и разцъфват в изпепеляващи пламъци.</Attribute>
+      </Attributes>
+      <Events />
+      <Hooks />
+    </Item>
+    <Item>
+      <Attributes>
+        <Attribute Id="id">snake</Attribute>
+        <Attribute Id="name">Змийска жлъчка</Attribute>
+        <Attribute Id="description">[p]Малка стъкленица с червеникава течност — изключително бързодействаща и смъртоносна отрова.[/p][p]Можеш да я употребиш и без да се споменава в текста: ако преди битката намажеш острието на меча си с нея, още първият удар ще погуби противника ти.[/p]</Attribute>
+      </Attributes>
+      <Events />
+      <Hooks>
+        <Hook Name="onUsed">$.weaponPoisoned = true;
+context.showPopupMessage('Намазваш отровата върху оръжието си.');
+context.removeItem(player, 'snake', 1);</Hook>
+      </Hooks>
+    </Item>
+    <Item>
+      <Attributes>
+        <Attribute Id="id">necklace</Attribute>
+        <Attribute Id="name">Магически медальон</Attribute>
+        <Attribute Id="description">Сребърно изображение на магически символ. Ако го поставиш на врата на някого, ще можеш да разчетеш мислите му.</Attribute>
+      </Attributes>
+      <Events />
+      <Hooks />
+    </Item>
+    <Item>
+      <Attributes>
+        <Attribute Id="id">dust</Attribute>
+        <Attribute Id="name">Гранитен прах</Attribute>
+        <Attribute Id="description">Кожена кесийка със сивкав едрозърнест пясък. Превръща в камък всичко, до което се докосне. Употребата му, дори и без да е споменат в текста, ще те отърве от един противник.</Attribute>
+      </Attributes>
+      <Events />
+      <Hooks>
+        <Hook Name="onUsed">// TODO:</Hook>
+      </Hooks>
+    </Item>
+    <Item>
+      <Attributes>
+        <Attribute Id="id">skin</Attribute>
+        <Attribute Id="name">Саламандрова кожа</Attribute>
+        <Attribute Id="description">Зеленикава гъста течност, за която не е сигурно дали е приготвена от кожата на саламандър, но е сигурно, че ако я намажеш по тялото си, ще те предпази и от най-свирепия огън.</Attribute>
+      </Attributes>
+      <Events />
+      <Hooks />
+    </Item>
+    <Item>
+      <Attributes>
+        <Attribute Id="id">glow</Attribute>
+        <Attribute Id="name">Вълшебно сияние</Attribute>
+        <Attribute Id="description">Употребявано от Върховния жрец: синкава светлина, следваща движенията ти. Изключително полезно в тъмнината.</Attribute>
+      </Attributes>
+      <Events />
+      <Hooks />
+    </Item>
+    <Item>
+      <Attributes>
+        <Attribute Id="id">powder</Attribute>
+        <Attribute Id="name">Невидим прах</Attribute>
+        <Attribute Id="description">Самият прах е видим, но прави невидимо всичко, до което се докосне.</Attribute>
+      </Attributes>
+      <Events />
+      <Hooks />
+    </Item>
+    <Item>
+      <Attributes>
+        <Attribute Id="id">potion</Attribute>
+        <Attribute Id="name">Лековит балсам</Attribute>
+        <Attribute Id="description">Мътна тъмножълтеникава течност. Ще те спаси и от най-тежките рани. Можеш да го използваш, без да е споменат в текста, за да възвърнеш изгубените точки от една битка.</Attribute>
+      </Attributes>
+      <Events />
+      <Hooks>
+        <Hook Name="onUsed">if ($.lostLife &gt; 0) {
+  context.showPopupMessage(`Възстановяваш ${$.lostLife} жизнени точки.`);
+  context.removeItem(player, 'potion', 1);
+  context.increasePlayerLife($.lostLife);
+  $.lostLife = 0;
+} else {
+  context.showPopupMessage('Не си изгубил жизнени точки в последната битка.');
+}</Hook>
+      </Hooks>
+    </Item>
+    <Item>
+      <Attributes>
+        <Attribute Id="id">rope</Attribute>
+        <Attribute Id="name">Въже</Attribute>
+        <Attribute Id="description">30 метра дълго, тънко и здраво, с разклонена метална кука в единия край. Многократна употреба, освен ако в текста не е споменато унищожаването или изгубването му.</Attribute>
+      </Attributes>
+      <Events />
+      <Hooks />
+    </Item>
+    <Item>
+      <Attributes>
+        <Attribute Id="id">keys</Attribute>
+        <Attribute Id="name">Шперц</Attribute>
+        <Attribute Id="description">Уникално приспособление, чрез което дори неопитен в „занаята“ човек като теб би могъл да се справи с всяка ключалка.</Attribute>
+      </Attributes>
+      <Events />
+      <Hooks />
+    </Item>
+    <Item>
+      <Attributes>
+        <Attribute Id="id">rusk</Attribute>
+        <Attribute Id="name">Засищащ сухар</Attribute>
+        <Attribute Id="description">Парче изсушен хляб, приготвен от много рядко зърнено растение. Равнява се на два цели хляба.</Attribute>
+      </Attributes>
+      <Events />
+      <Hooks />
+    </Item>
+    <Item>
+      <Attributes>
+        <Attribute Id="id">smoke</Attribute>
+        <Attribute Id="name">Димна завеса</Attribute>
+        <Attribute Id="description">Малко метално топче, което след удар избухва в гъсти кълба бял дим.</Attribute>
+      </Attributes>
+      <Events />
+      <Hooks />
+    </Item>
+    <Item>
+      <Attributes>
+        <Attribute Id="id">cats</Attribute>
+        <Attribute Id="name">Котки</Attribute>
+        <Attribute Id="description">Метални куки, прикрепящи се с ремъци към ръцете и краката. С тяхна помощ може да се изкачи почти всяка стена. Многократна употреба.</Attribute>
+      </Attributes>
+      <Events />
+      <Hooks />
+    </Item>
+    <Item>
+      <Attributes>
+        <Attribute Id="id">antidote</Attribute>
+        <Attribute Id="name">Противоотрова</Attribute>
+        <Attribute Id="description">Изключително полезно нещо.</Attribute>
+      </Attributes>
+      <Events />
+      <Hooks />
+    </Item>
+    <Item>
+      <Attributes>
+        <Attribute Id="id">bow</Attribute>
+        <Attribute Id="name">Тангвински лък</Attribute>
+      </Attributes>
+      <Events />
+      <Hooks />
+    </Item>
+    <Item>
+      <Attributes>
+        <Attribute Id="id">arrow</Attribute>
+        <Attribute Id="name">Стрела</Attribute>
+      </Attributes>
+      <Events />
+      <Hooks />
+    </Item>
+    <Item>
+      <Attributes>
+        <Attribute Id="id">shuriken</Attribute>
+        <Attribute Id="name">Шурикен</Attribute>
+      </Attributes>
+      <Events />
+      <Hooks />
+    </Item>
+    <Item>
+      <Attributes>
+        <Attribute Id="id">throwingKnife</Attribute>
+        <Attribute Id="name">Нож за хвърляне</Attribute>
+        <Attribute Id="description">Малко двуостро ножче, прикрепено към ръката ти. Ако ремъкът, който го придържа, се отхлаби, е достатъчно едно рязко движение, за да се изстреля оръжието в желаната посока. Можеш да го използваш и без да е споменат в текста, за да убиеш един от противниците си (ако е човек).</Attribute>
+      </Attributes>
+      <Events />
+      <Hooks>
+        <Hook Name="onUsed">// TODO</Hook>
+      </Hooks>
+    </Item>
+    <Item>
+      <Attributes>
+        <Attribute Id="id">bowAndArrows</Attribute>
+        <Attribute Id="name">Тангвински лък с три стрели</Attribute>
+      </Attributes>
+      <Events />
+      <Hooks />
+    </Item>
+    <Item>
+      <Attributes>
+        <Attribute Id="id">twoShurikens</Attribute>
+        <Attribute Id="name">Два шурикена</Attribute>
+      </Attributes>
+      <Events />
+      <Hooks />
+    </Item>
+  </Items>
+  <Characters>
+    <Character>
+      <Attributes>
+        <Attribute Id="id">player</Attribute>
+        <Attribute Id="name">Ти</Attribute>
+      </Attributes>
+      <Events />
+      <Hooks />
+    </Character>
+    <Character>
+      <Attributes>
+        <Attribute Id="id">barbarian</Attribute>
+        <Attribute Id="name">Варварин</Attribute>
+        <Attribute Id="life">10</Attribute>
+        <Attribute Id="maxLife">10</Attribute>
+        <Attribute Id="strength">15</Attribute>
+      </Attributes>
+      <Events />
+      <Hooks />
+    </Character>
+  </Characters>
+  <Skills />
+  <Battles />
+  <Templates>
+    <Template Name="general">
+      <Content>&amp;lt;div class='general'&amp;gt;[script]return context.target;[/script]&amp;lt;/div&amp;gt;</Content>
+    </Template>
+    <Template Name="info">
+      <Content>&amp;lt;div class='info'&amp;gt;[script]return context.target;[/script]&amp;lt;/div&amp;gt;</Content>
+    </Template>
+    <Template Name="item">
+      <Content>&amp;lt;div class='item'&amp;gt;[script]return context.target.name;[/script]&amp;lt;div class='tooltip'&amp;gt;&amp;lt;p class='emphasize'&amp;gt;[script]return context.target.name;[/script]&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;&amp;lt;span class='description'&amp;gt;[script]return context.toHtml(context.target.description);[/script]&amp;lt;/span&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;/div&amp;gt;&amp;lt;/div&amp;gt;</Content>
+    </Template>
+    <Template Name="plus">
+      <Content>&amp;lt;div class='plus'&amp;gt;[script]return context.target;[/script]&amp;lt;/div&amp;gt;</Content>
+    </Template>
+    <Template Name="minus">
+      <Content>&amp;lt;div class='minus'&amp;gt;[script]return context.target;[/script]&amp;lt;/div&amp;gt;</Content>
+    </Template>
+    <Template Name="pickupItem">
+      <Content>&amp;lt;div class='item select'&amp;gt;[script]return context.target.name;[/script][if]return context.target.stack &amp;gt; 1[/if] x[script]return context.target.stack;[/script][endif /]&amp;lt;div class='tooltip'&amp;gt;&amp;lt;p class='emphasize'&amp;gt;[script]return context.target.name;[/script]&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;&amp;lt;span class='description'&amp;gt;[script]return context.toHtml(context.target.description);[/script]&amp;lt;/span&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;span class='highlight'&amp;gt;(Натисни за да вземеш)&amp;lt;/span&amp;gt;&amp;lt;/div&amp;gt;&amp;lt;/div&amp;gt;</Content>
+    </Template>
+    <Template Name="character">
+      <Content>&amp;lt;p&amp;gt;[script]return context.target.name.toUpperCase();[/script]&amp;lt;br /&amp;gt;&amp;lt;span&amp;gt;СИЛА:&amp;lt;/span&amp;gt; [script]return context.target&amp;ob;'strength'&amp;cb;;[/script]&amp;lt;br /&amp;gt;&amp;lt;span&amp;gt;ЖИВОТ:&amp;lt;/span&amp;gt; [script]return context.target.life;[/script]&amp;lt;/p&amp;gt;</Content>
+    </Template>
+    <Template Name="selectCharacter">
+      <Content>&amp;lt;div class='entity select'&amp;gt;[script]return context.target.name;[/script]&amp;lt;div class='tooltip'&amp;gt;&amp;lt;p class='emphasize'&amp;gt;[script]return context.target.name;[/script]&amp;lt;/p&amp;gt;&amp;lt;span class='highlight'&amp;gt;(Натисни за да избереш)&amp;lt;/span&amp;gt;&amp;lt;/div&amp;gt;&amp;lt;/div&amp;gt;</Content>
+    </Template>
+    <Template Name="useItem">
+      <Content>&amp;lt;div class='item select'&amp;gt;[script]return context.target.name;[/script][if]return context.target.stack &amp;gt; 1;[/if] x[script]return context.target.stack;[/script][endif /]&amp;lt;div class='tooltip'&amp;gt;&amp;lt;p class='emphasize'&amp;gt;[script]return context.target.name;[/script]&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;&amp;lt;span class='description'&amp;gt;[script]return context.toHtml(context.target.description);[/script]&amp;lt;/span&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;span class='highlight'&amp;gt;(Натисни за да използваш)&amp;lt;/span&amp;gt;&amp;lt;/div&amp;gt;&amp;lt;/div&amp;gt;</Content>
+    </Template>
+  </Templates>
+  <Images>
+    <Image Id="1">
+      <FileName>hero.png</FileName>
+    </Image>
+    <Image Id="2">
+      <FileName>hero-full.png</FileName>
+    </Image>
+    <Image Id="3">
+      <FileName>map1.png</FileName>
+    </Image>
+    <Image Id="4">
+      <FileName>map2.png</FileName>
+    </Image>
+    <Image Id="5">
+      <FileName>sword.png</FileName>
+    </Image>
+    <Image Id="6">
+      <FileName>pouch.png</FileName>
+    </Image>
+    <Image Id="7">
+      <FileName>chest.png</FileName>
+    </Image>
+    <Image Id="8">
+      <FileName>vial.png</FileName>
+    </Image>
+    <Image Id="9">
+      <FileName>ball.png</FileName>
+    </Image>
+    <Image Id="10">
+      <FileName>vial2.png</FileName>
+    </Image>
+    <Image Id="11">
+      <FileName>poison.png</FileName>
+    </Image>
+    <Image Id="12">
+      <FileName>necklace.png</FileName>
+    </Image>
+    <Image Id="13">
+      <FileName>dust.png</FileName>
+    </Image>
+    <Image Id="14">
+      <FileName>ointment.png</FileName>
+    </Image>
+    <Image Id="15">
+      <FileName>glow.png</FileName>
+    </Image>
+    <Image Id="16">
+      <FileName>dust2.png</FileName>
+    </Image>
+    <Image Id="17">
+      <FileName>vial21.png</FileName>
+    </Image>
+    <Image Id="18">
+      <FileName>rope.png</FileName>
+    </Image>
+    <Image Id="19">
+      <FileName>keys.png</FileName>
+    </Image>
+    <Image Id="20">
+      <FileName>rusk.png</FileName>
+    </Image>
+    <Image Id="21">
+      <FileName>pellet.png</FileName>
+    </Image>
+    <Image Id="22">
+      <FileName>catclaws.png</FileName>
+    </Image>
+    <Image Id="23">
+      <FileName>vial3.png</FileName>
+    </Image>
+    <Image Id="24">
+      <FileName>bow.png</FileName>
+    </Image>
+    <Image Id="25">
+      <FileName>shurikens.png</FileName>
+    </Image>
+    <Image Id="26">
+      <FileName>knife.png</FileName>
+    </Image>
+    <Image Id="27">
+      <FileName>riders.png</FileName>
+    </Image>
+  </Images>
+  <View>
+    <ScrollX>0</ScrollX>
+    <ScrollY>178</ScrollY>
+    <Zoom>66</Zoom>
+    <Width>454.5</Width>
+    <Height>1174.5</Height>
+  </View>
+</Scenario>
