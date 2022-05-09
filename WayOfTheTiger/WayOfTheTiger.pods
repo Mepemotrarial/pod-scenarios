@@ -6,6 +6,7 @@
     <InitialEpisode>Start</InitialEpisode>
     <Description>You are Avenger, a Ninja warrior, worshipper of Kwon, Supreme Master of Unarmed Combat. Trained in the Way of the Tiger, you are now an outstanding master of the martial arts, ready to use your deadly skills to overturn evil and to avenge the death of your foster-father, Naijishi.</Description>
     <Discoverable>True</Discoverable>
+    <Language>EN</Language>
   </Properties>
   <GlobalScripts>
     <Script Name="main">context.rollDice = function(dice, mod) {
@@ -535,7 +536,7 @@ context.addOrRemoveSkill = function(skillId) {
     </Attributes>
     <Events />
     <Hooks>
-      <Hook Name="onRead" IsIntrinsic="True" Description="Invoked when the entry is read." />
+      <Hook Name="onRead" IsIntrinsic="true" Description="Invoked when the entry is read." />
     </Hooks>
   </JournalEntryDefinition>
   <ItemDefinition>
@@ -590,13 +591,13 @@ context.addOrRemoveSkill = function(skillId) {
       <Attribute Id="defenceSceptre" Name="Defence against Sceptre" IsIntrinsic="false" IsMandatory="false" IsUnique="false" Type="Integer" DefaultValue="7" Category="" />
     </Attributes>
     <Events>
-      <Event Name="onGotHit" IsIntrinsic="False" Description="Invoked when the character is hit in battle." />
-      <Event Name="onHit" IsIntrinsic="False" Description="Invoked when the character hits another character in battle." />
-      <Event Name="onDefeat" IsIntrinsic="False" Description="Invoked when the character is defeated in battle." />
-      <Event Name="onAttacked" IsIntrinsic="False" Description="Invoked when the character attacks another character in battle." />
-      <Event Name="onTurn" IsIntrinsic="False" Description="Invoked at the end of each battle round." />
-      <Event Name="onGotDamage" IsIntrinsic="False" Description="Invoked when the character is damaged in battle." />
-      <Event Name="onGotMissed" IsIntrinsic="False" Description="Invoked when the character was missed in battle." />
+      <Event Name="onGotHit" IsIntrinsic="false" Description="Invoked when the character is hit in battle." />
+      <Event Name="onHit" IsIntrinsic="false" Description="Invoked when the character hits another character in battle." />
+      <Event Name="onDefeat" IsIntrinsic="false" Description="Invoked when the character is defeated in battle." />
+      <Event Name="onAttacked" IsIntrinsic="false" Description="Invoked when the character attacks another character in battle." />
+      <Event Name="onTurn" IsIntrinsic="false" Description="Invoked at the end of each battle round." />
+      <Event Name="onGotDamage" IsIntrinsic="false" Description="Invoked when the character is damaged in battle." />
+      <Event Name="onGotMissed" IsIntrinsic="false" Description="Invoked when the character was missed in battle." />
     </Events>
     <Hooks>
       <Hook Name="onInit" IsIntrinsic="true" Description="Invoked when a character instance is created." />
@@ -17137,6 +17138,7 @@ return 1;'](continue)[/link][/p]</Text>
     </Events>
     <Hooks />
   </Global>
+  <Journal />
   <Items>
     <Item>
       <Attributes>
@@ -17235,6 +17237,7 @@ return 1;'](continue)[/link][/p]</Text>
         <Attribute Id="description">A vial filled with powder.</Attribute>
       </Attributes>
       <Events />
+      <Hooks />
     </Item>
     <Item>
       <Attributes>
@@ -17717,12 +17720,12 @@ context.visitEpisode('Map6');</Hook>
       </Attributes>
       <Events />
       <Hooks>
-        <Hook Name="onInit">context.target.addItem(context.createItem('ninjaEquipment'));
-context.target.addItem(context.createItem('ironSleeves'));
-context.target.addItem(context.createItem('flashPowder'));
-context.target.addItem(context.createItem('spiderfish'));
-context.target.addItem(context.createItem('bloodOfNil'));
-context.target.addItem(context.createItem('shuriken', 5));</Hook>
+        <Hook Name="onInit">context.addItem(context.target, 'ninjaEquipment');
+context.addItem(context.target, 'ironSleeves');
+context.addItem(context.target, 'flashPowder');
+context.addItem(context.target, 'spiderfish');
+context.addItem(context.target, 'bloodOfNil');
+context.addItem(context.target, 'shuriken', 5);</Hook>
       </Hooks>
     </Character>
     <Character>
@@ -18350,10 +18353,10 @@ context.target.addItem(context.createItem('shuriken', 5));</Hook>
         <Attribute Id="defenceKwonsFlail">6</Attribute>
       </Attributes>
       <Events>
+        <Event Name="onDefeat">[p][script]context.removeCondition(player, 'handicapped');[/script][/p]</Event>
         <Event Name="onAttacked">[p]The dog clamps its jaws on your wrist. [script]context.addCondition(player, 'handicapped', 1000);
 $.opponent.canAttack = false;[/script][/p]</Event>
         <Event Name="onTurn">[if]return $.round &amp;gt; 1;[/if]The second dog has you in its grip and you lose [tag]minus:return 2;[/tag] Endurance as it tries to drag you to the ground. [script]return context.reducePlayerEndurance(2);[/script][endif /]</Event>
-        <Event Name="onDefeat">[p][script]context.removeCondition(player, 'handicapped');[/script][/p]</Event>
       </Events>
       <Hooks />
     </Character>
@@ -18503,7 +18506,7 @@ $.opponent.canAttack = false;[/script][/p]</Event>
 }[/script]</Event>
       </Events>
       <Hooks>
-        <Hook Name="onInit">context.target.addItem(context.createItem('healingPotion8'));</Hook>
+        <Hook Name="onInit">context.addItem(context.target, 'healingPotion8');</Hook>
       </Hooks>
     </Character>
     <Character>
