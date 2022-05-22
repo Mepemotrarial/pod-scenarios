@@ -5181,7 +5181,7 @@ if (!$.items) {
 $.itemPickedUp&amp;ob;context.getNextActivatorIndex()&amp;cb; = false;
 $.items&amp;ob;context.getNextActivatorIndex()&amp;cb; = $.item;[/script][clicker]const item = $.items&amp;ob;context.index&amp;cb;;
 if (!$.itemPickedUp&amp;ob;context.index&amp;cb;) {
-  player.addItem(item);
+  context.addItem(player, item);
   $.itemPickedUp&amp;ob;context.index&amp;cb; = true;
   if (item.stack &amp;gt; 1) {
     context.showPopupMessage(`You picked up ${item.stack} ${item.name}.`);
