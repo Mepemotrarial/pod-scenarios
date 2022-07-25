@@ -1606,8 +1606,7 @@ $.selectedItems = &amp;ob;&amp;cb;;[/script][/p][p][clicker]if (!$.itemsSelected
     },
     {
       infinite: $.infinite,
-      tag: 'price',
-      tagTemplate: '%sж'
+      tagTemplate: '%price ж'
     });
 }
 return true;[/clicker][tag]general:return 'Пазарувай';[/tag][endclicker /][/p][p][blocker]let gold = player.getItem('gold');
