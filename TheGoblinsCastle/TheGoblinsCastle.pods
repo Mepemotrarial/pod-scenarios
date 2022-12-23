@@ -799,7 +799,7 @@ $.knowsSecretDirection = true;[/script][/p][p][link target='193'](продълж
     </Episode>
     <Episode Id="181" IsMarked="true" Location="237.5;787.5">
       <Text>[p]Засилваш се и блъскаш вратата с рамо, но всичките ти усилия са напразни. Единственият резултат е болката в натъртеното рамо и загубата на две жизнени точки. Неуспехът те разгневява. Напъваш с меча, ала стоманата изведнъж се пречупва с остър пукот. Ето че остана и без оръжие![script]context.removeItem(player, 'sword', 1);
-context.removePlayerLife(2);[/script][/p][p]Няма как, ще трябва да слезеш на двора.[/p][p][link target='193'](продължи)[/link][/p]</Text>
+return context.reducePlayerLife(2);[/script][/p][p]Няма как, ще трябва да слезеш на двора.[/p][p][link target='193'](продължи)[/link][/p]</Text>
     </Episode>
     <Episode Id="106" IsMarked="true" Location="177.5;767.5">
       <Text>[p]В последния момент таласъмът дочува стъпките ти, обръща се и замахва с алебардата си. Отскачаш и нанасяш удар с меча. Борбата е безмилостна и само един от двама ви ще я завърши. Но кой?[script]context.startBattle('goblin106');
