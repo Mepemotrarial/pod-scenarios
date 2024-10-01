@@ -1,1 +1,3 @@
-This repository contains the publicly available scenarios of The Power of Darkness interactive adventure engine. It is not meant to be pulled or pushed to directly.
+This repository contains the publicly available scenarios of The Power of Darkness interactive adventure engine.
+
+The gamebooks found here are ported for testing purposes and all copyrights go to their respective owners.
