@@ -1073,7 +1073,7 @@ $.winEpisode = 196;[/script][/p][p][embed value='Battle' /][/p]</Text>
       <Text>[p]You feel how the talisman on your chest disintegrates, but its magical effect is undeniable. Your mind clears, and new strength fills your entire body.[/p][p][link target='110'](continue)[/link][/p]</Text>
     </Episode>
     <Episode Id="35" IsMarked="true" Location="437.5;642.5">
-      <Text>Всичко е безполезно! You can't escape from the vampire's deadly embrace. With every passing second, your blood and life are draining away. This cursed house will become your tomb, and it will be the end of the adventure, leaving your mission unaccomplished.</Text>
+      <Text>[p]Everything is useless! You can't escape from the vampire's deadly embrace. With every passing second, your blood and life are draining away. This cursed house will become your tomb, and it will be the end of the adventure, leaving your mission unaccomplished.[/p]</Text>
     </Episode>
     <Episode Id="94" IsMarked="true" Location="497.5;622.5">
       <Text>[p]You swing with all your might, but your sword only slices through the air. The vampire has leapt swiftly to the back of the room. The fight is clearly not going to be easy.[script]context.startBattle('vampire');
@@ -2336,7 +2336,7 @@ context.removeItem(player, 'gold', context.getItemPrice($.selectedItems));[/scri
       <Attributes>
         <Attribute Id="id">cloak</Attribute>
         <Attribute Id="name">Cloak of concealment</Attribute>
-        <Attribute Id="description">Тhis cloak constantly changes its color and blends with the surrounding hues. If you stand still and cloak yourself with it, it would be almost impossible for an opponent to detect you.</Attribute>
+        <Attribute Id="description">This cloak constantly changes its color and blends with the surrounding hues. If you stand still and cloak yourself with it, it would be almost impossible for an opponent to detect you.</Attribute>
       </Attributes>
       <Events />
       <Hooks />
@@ -2647,8 +2647,8 @@ context.showPopupMessage('You restore your life points');</Hook>
     </Character>
     <Character>
       <Attributes>
-        <Attribute Id="id">bulliar</Attribute>
-        <Attribute Id="name">Побойник</Attribute>
+        <Attribute Id="id">bully</Attribute>
+        <Attribute Id="name">Bully</Attribute>
         <Attribute Id="strength">7</Attribute>
         <Attribute Id="life">11</Attribute>
       </Attributes>
