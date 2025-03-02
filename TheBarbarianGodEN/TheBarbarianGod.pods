@@ -10,7 +10,7 @@
 One man...
 One hero...</Description>
     <Discoverable>True</Discoverable>
-    <Language>BG</Language>
+    <Language>EN</Language>
   </Properties>
   <GlobalScripts>
     <Script Name="items">context.getItemCount = function(items) {
