@@ -7,3 +7,5 @@ To try out the scenarios, you need to run the game engine. You can do this quick
 ```bash
 docker-compose up
 ```
+
+The command requires [docker and docker compose](https://docs.docker.com/compose/).
